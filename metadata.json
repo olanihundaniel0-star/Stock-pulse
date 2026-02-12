@@ -1,0 +1,7 @@
+{
+  "name": "StockPulse - Digital Inventory Management",
+  "description": "A comprehensive inventory management system for retailers featuring real-time tracking, role-based access, and detailed analytics.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
