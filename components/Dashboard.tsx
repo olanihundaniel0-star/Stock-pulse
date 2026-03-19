@@ -180,25 +180,35 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
             <span className="text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full animate-pulse">Live</span>
           </div>
           <div className="flex-1 space-y-4 overflow-y-auto max-h-80 pr-2">
-            {transactions.slice(0, 10).map((t) => (
-              <div key={t.id} className="flex gap-4 items-center">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                  t.type === TransactionType.STOCK_IN ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'
-                }`}>
-                  {t.type === TransactionType.STOCK_IN ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
+            {transactions.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center mb-3">
+                  <History size={24} className="text-slate-400" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{t.productName}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                    <span className={t.type === TransactionType.STOCK_IN ? 'text-emerald-600' : 'text-red-600'}>
-                      {t.type === TransactionType.STOCK_IN ? '+' : '-'}{t.quantity} units
-                    </span>
-                    <span>•</span>
-                    <span>{new Date(t.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                  </p>
-                </div>
+                <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">No activity yet</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Stock movements will appear here</p>
               </div>
-            ))}
+            ) : (
+              transactions.slice(0, 10).map((t) => (
+                <div key={t.id} className="flex gap-4 items-center">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    t.type === TransactionType.STOCK_IN ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'
+                  }`}>
+                    {t.type === TransactionType.STOCK_IN ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{t.productName}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                      <span className={t.type === TransactionType.STOCK_IN ? 'text-emerald-600' : 'text-red-600'}>
+                        {t.type === TransactionType.STOCK_IN ? '+' : '-'}{t.quantity} units
+                      </span>
+                      <span>•</span>
+                      <span>{new Date(t.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
           <button className="mt-6 text-sm font-semibold text-blue-900 dark:text-blue-400 flex items-center gap-2 hover:gap-3 transition-all">
             View all transactions <ArrowRight size={16} />

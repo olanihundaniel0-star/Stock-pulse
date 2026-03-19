@@ -9,7 +9,8 @@ import {
   ChevronLeft, 
   ChevronRight,
   Download,
-  AlertCircle
+  AlertCircle,
+  Package
 } from 'lucide-react';
 import { Product, UserRole } from '../types';
 
@@ -244,18 +245,37 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
                   <td colSpan={isAdmin ? 8 : 7} className="px-6 py-16 text-center">
                     <div className="flex flex-col items-center gap-4 text-slate-400 max-w-sm mx-auto">
                       <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center">
-                        <AlertCircle size={32} />
+                        {products.length === 0 ? <Package size={32} /> : <AlertCircle size={32} />}
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-slate-800 dark:text-white">No items found</p>
-                        <p className="text-sm mt-1">We couldn't find anything matching "<b>{searchTerm}</b>" across products, descriptions, or suppliers.</p>
+                        {products.length === 0 ? (
+                          <>
+                            <p className="text-lg font-bold text-slate-800 dark:text-white">No inventory items yet</p>
+                            <p className="text-sm mt-1">Add your first product to get started tracking your inventory.</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-lg font-bold text-slate-800 dark:text-white">No items found</p>
+                            <p className="text-sm mt-1">We couldn't find anything matching "<b>{searchTerm}</b>" across products, descriptions, or suppliers.</p>
+                          </>
+                        )}
                       </div>
-                      <button 
-                        onClick={() => { setSearchTerm(''); setCategoryFilter('All'); setStatusFilter('All'); }}
-                        className="text-sm font-bold text-blue-900 dark:text-blue-400 hover:underline"
-                      >
-                        Reset all filters
-                      </button>
+                      {products.length === 0 ? (
+                        <button 
+                          onClick={onAddProduct}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors text-sm font-bold"
+                        >
+                          <Plus size={16} />
+                          Add First Product
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => { setSearchTerm(''); setCategoryFilter('All'); setStatusFilter('All'); }}
+                          className="text-sm font-bold text-blue-900 dark:text-blue-400 hover:underline"
+                        >
+                          Reset all filters
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

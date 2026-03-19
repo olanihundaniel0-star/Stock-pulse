@@ -96,60 +96,74 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpd
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {users.map(u => (
-              <tr key={u.id} className="hover:bg-slate-50">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center font-bold">
-                      {u.name.charAt(0)}
+            {users.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-12 text-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
+                      <UserPlus size={24} className="text-slate-400" />
                     </div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-800">{u.name}</p>
-                      <p className="text-xs text-slate-400 flex items-center gap-1">
-                        <Mail size={10} /> {u.email}
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-1.5 text-sm">
-                    <Shield size={14} className={u.role === UserRole.ADMIN ? 'text-blue-900' : 'text-slate-400'} />
-                    <span className={u.role === UserRole.ADMIN ? 'font-bold text-blue-900' : 'text-slate-600'}>
-                      {u.role}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className={`flex items-center gap-1 text-xs font-bold uppercase ${
-                    u.status === 'Active' ? 'text-emerald-600' : 'text-slate-400'
-                  }`}>
-                    {u.status === 'Active' ? <CheckCircle size={14} /> : <XCircle size={14} />}
-                    {u.status}
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-xs text-slate-400">
-                  {u.lastLogin || 'Never'}
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <button 
-                      onClick={() => onUpdateUser({ ...u, status: u.status === 'Active' ? 'Inactive' : 'Active' })}
-                      className="p-2 text-slate-400 hover:text-blue-900 transition-colors"
-                      title="Toggle Status"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button 
-                      onClick={() => onDeleteUser(u.id)}
-                      className="p-2 text-slate-400 hover:text-red-600 transition-colors"
-                      title="Delete User"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <p className="text-sm font-semibold text-slate-600">No users yet</p>
+                    <p className="text-xs text-slate-400">Add your first user to get started</p>
                   </div>
                 </td>
               </tr>
-            ))}
+            ) : (
+              users.map(u => (
+                <tr key={u.id} className="hover:bg-slate-50">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center font-bold">
+                        {u.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">{u.name}</p>
+                        <p className="text-xs text-slate-400 flex items-center gap-1">
+                          <Mail size={10} /> {u.email}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-1.5 text-sm">
+                      <Shield size={14} className={u.role === UserRole.ADMIN ? 'text-blue-900' : 'text-slate-400'} />
+                      <span className={u.role === UserRole.ADMIN ? 'font-bold text-blue-900' : 'text-slate-600'}>
+                        {u.role}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className={`flex items-center gap-1 text-xs font-bold uppercase ${
+                      u.status === 'Active' ? 'text-emerald-600' : 'text-slate-400'
+                    }`}>
+                      {u.status === 'Active' ? <CheckCircle size={14} /> : <XCircle size={14} />}
+                      {u.status}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-xs text-slate-400">
+                    {u.lastLogin || 'Never'}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button 
+                        onClick={() => onUpdateUser({ ...u, status: u.status === 'Active' ? 'Inactive' : 'Active' })}
+                        className="p-2 text-slate-400 hover:text-blue-900 transition-colors"
+                        title="Toggle Status"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button 
+                        onClick={() => onDeleteUser(u.id)}
+                        className="p-2 text-slate-400 hover:text-red-600 transition-colors"
+                        title="Delete User"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

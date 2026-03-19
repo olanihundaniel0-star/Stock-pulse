@@ -72,20 +72,28 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="col-span-full">
             <label className="block text-sm font-semibold text-slate-700 mb-2">Select Product *</label>
-            <div className="relative">
-              <Package className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <select 
-                required
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
-                value={selectedProductId}
-                onChange={(e) => setSelectedProductId(e.target.value)}
-              >
-                <option value="">Search or select product...</option>
-                {products.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} ({p.quantity} in stock)</option>
-                ))}
-              </select>
-            </div>
+            {products.length === 0 ? (
+              <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                <Package className="mx-auto text-slate-400 mb-2" size={32} />
+                <p className="text-sm font-semibold text-slate-600">No products available</p>
+                <p className="text-xs text-slate-400 mt-1">Add products to your inventory first before recording stock movements.</p>
+              </div>
+            ) : (
+              <div className="relative">
+                <Package className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <select 
+                  required
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
+                  value={selectedProductId}
+                  onChange={(e) => setSelectedProductId(e.target.value)}
+                >
+                  <option value="">Search or select product...</option>
+                  {products.map(p => (
+                    <option key={p.id} value={p.id}>{p.name} ({p.quantity} in stock)</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <div>

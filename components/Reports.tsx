@@ -151,24 +151,38 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {products.slice(0, 10).map(p => (
-                  <tr key={p.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">{p.name}</td>
-                    <td className="px-6 py-4 mono text-xs text-slate-500 dark:text-slate-400">{p.sku}</td>
-                    <td className="px-6 py-4 dark:text-slate-300">{p.quantity}</td>
-                    <td className="px-6 py-4 dark:text-slate-300">${p.sellingPrice.toFixed(2)}</td>
-                    {isAdmin && <td className="px-6 py-4 font-medium dark:text-slate-200">${(p.costPrice * p.quantity).toLocaleString()}</td>}
-                    <td className="px-6 py-4">
-                      {p.quantity === 0 ? (
-                        <span className="text-red-600 dark:text-red-400 font-bold">Out of Stock</span>
-                      ) : p.quantity < p.reorderLevel ? (
-                        <span className="text-orange-600 dark:text-orange-400 font-semibold">Low Stock</span>
-                      ) : (
-                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Healthy</span>
-                      )}
+                {products.length === 0 ? (
+                  <tr>
+                    <td colSpan={isAdmin ? 6 : 5} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center">
+                          <FileText size={24} className="text-slate-400" />
+                        </div>
+                        <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">No inventory data yet</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">Add products to see status reports</p>
+                      </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  products.slice(0, 10).map(p => (
+                    <tr key={p.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">{p.name}</td>
+                      <td className="px-6 py-4 mono text-xs text-slate-500 dark:text-slate-400">{p.sku}</td>
+                      <td className="px-6 py-4 dark:text-slate-300">{p.quantity}</td>
+                      <td className="px-6 py-4 dark:text-slate-300">${p.sellingPrice.toFixed(2)}</td>
+                      {isAdmin && <td className="px-6 py-4 font-medium dark:text-slate-200">${(p.costPrice * p.quantity).toLocaleString()}</td>}
+                      <td className="px-6 py-4">
+                        {p.quantity === 0 ? (
+                          <span className="text-red-600 dark:text-red-400 font-bold">Out of Stock</span>
+                        ) : p.quantity < p.reorderLevel ? (
+                          <span className="text-orange-600 dark:text-orange-400 font-semibold">Low Stock</span>
+                        ) : (
+                          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Healthy</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -215,26 +229,40 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {filteredMovement.map(t => (
-                <tr key={t.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                  <td className="px-6 py-4 text-slate-500 dark:text-slate-400">{new Date(t.date).toLocaleString()}</td>
-                  <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">{t.productName}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
-                      t.type === TransactionType.STOCK_IN ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                    }`}>
-                      {t.type.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className={`px-6 py-4 font-bold ${t.type === TransactionType.STOCK_IN ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                    {t.type === TransactionType.STOCK_IN ? '+' : '-'}{t.quantity}
-                  </td>
-                  <td className="px-6 py-4 dark:text-slate-300">{t.userName}</td>
-                  <td className="px-6 py-4 text-slate-500 dark:text-slate-400 truncate max-w-xs">
-                    {t.type === TransactionType.STOCK_IN ? t.supplier || 'Restock' : t.reason || 'Sale'}
+              {filteredMovement.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center">
+                        <History size={24} className="text-slate-400" />
+                      </div>
+                      <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">No transactions yet</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">Stock movements will appear here as you record them</p>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredMovement.map(t => (
+                  <tr key={t.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400">{new Date(t.date).toLocaleString()}</td>
+                    <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">{t.productName}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
+                        t.type === TransactionType.STOCK_IN ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                      }`}>
+                        {t.type.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td className={`px-6 py-4 font-bold ${t.type === TransactionType.STOCK_IN ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {t.type === TransactionType.STOCK_IN ? '+' : '-'}{t.quantity}
+                    </td>
+                    <td className="px-6 py-4 dark:text-slate-300">{t.userName}</td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 truncate max-w-xs">
+                      {t.type === TransactionType.STOCK_IN ? t.supplier || 'Restock' : t.reason || 'Sale'}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -285,20 +313,30 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
               Top Profit Contributors
             </h3>
             <div className="space-y-4">
-              {products.slice(0, 5).sort((a, b) => (b.sellingPrice - b.costPrice) - (a.sellingPrice - a.costPrice)).map(p => {
-                const pProfit = p.sellingPrice - p.costPrice;
-                return (
-                  <div key={p.id} className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-semibold dark:text-slate-200">{p.name}</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">${pProfit.toFixed(2)} / unit</span>
-                    </div>
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                      <div className="bg-blue-900 dark:bg-blue-600 h-full" style={{ width: `${(pProfit / p.sellingPrice) * 100}%` }}></div>
-                    </div>
+              {products.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center mb-3">
+                    <BarChart size={24} className="text-slate-400" />
                   </div>
-                );
-              })}
+                  <p className="text-sm text-slate-500 dark:text-slate-400">No products to analyze</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Add products to see profit contributors</p>
+                </div>
+              ) : (
+                products.slice(0, 5).sort((a, b) => (b.sellingPrice - b.costPrice) - (a.sellingPrice - a.costPrice)).map(p => {
+                  const pProfit = p.sellingPrice - p.costPrice;
+                  return (
+                    <div key={p.id} className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-semibold dark:text-slate-200">{p.name}</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">${pProfit.toFixed(2)} / unit</span>
+                      </div>
+                      <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div className="bg-blue-900 dark:bg-blue-600 h-full" style={{ width: `${(pProfit / p.sellingPrice) * 100}%` }}></div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
 
