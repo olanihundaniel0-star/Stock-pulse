@@ -64,17 +64,23 @@
   opacity: 0 !important;
 }
 
+.bg-dot-pattern {
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.dark .bg-dot-pattern {
+  background-image: radial-gradient(#334155 1px, transparent 1px);
+}
+
 .btn-hover-effect {
   transition:
     transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-    box-shadow 0.25s ease,
-    background-color 0.25s ease;
-  will-change: transform, box-shadow, background-color;
+    box-shadow 0.25s ease;
+  will-change: transform, box-shadow;
 }
 .btn-hover-effect:hover {
   transform: scale(1.03);
-  box-shadow: 0 8px 24px rgba(15, 23, 41, 0.35);
-  background-color: #2563eb;
+  box-shadow: 0 8px 24px rgba(15, 23, 41, 0.25);
 }
 .btn-hover-effect:active {
   transform: scale(0.96);
