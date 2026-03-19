@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard';
 import Inventory from './components/Inventory';
 import StockOperations from './components/StockOperations';
 import LandingPage from './components/LandingPage';
+import LoginPage from './components/LoginPage';
 import ProductForm from './components/ProductForm';
 import Reports from './components/Reports';
 import UserManagement from './components/UserManagement';
@@ -197,8 +198,8 @@ const App: React.FC = () => {
   };
 
   if (activePage === 'landing') return <LandingPage onLogin={() => setActivePage('login')} />;
-  if (activePage === 'login') return <Login onLogin={handleLogin} />;
-  if (!state.currentUser) return <Login onLogin={handleLogin} />;
+  if (activePage === 'login') return <LoginPage onLogin={handleLogin} onBack={() => setActivePage('landing')} />;
+  if (!state.currentUser) return <LoginPage onLogin={handleLogin} onBack={() => setActivePage('landing')} />;
 
   const renderPage = () => {
     switch (activePage) {
