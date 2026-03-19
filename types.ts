@@ -19,7 +19,7 @@ export enum StockOutReason {
 }
 
 export interface User {
-  id: string;
+  id: string | number;
   name: string;
   email: string;
   role: UserRole;
@@ -28,7 +28,7 @@ export interface User {
 }
 
 export interface Product {
-  id: string;
+  id: string | number;
   name: string;
   sku: string;
   category: string;
@@ -46,8 +46,8 @@ export interface Product {
 }
 
 export interface Transaction {
-  id: string;
-  productId: string;
+  id: string | number;
+  productId: string | number;
   productName: string;
   type: TransactionType;
   quantity: number;
