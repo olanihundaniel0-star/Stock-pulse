@@ -63,7 +63,7 @@ const Layout: React.FC<LayoutProps> = ({
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+    <div className="stockpulse-app-content flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       {/* Mobile Sidebar Overlay: Only show when sidebar is OPEN on mobile */}
       {isSidebarOpen && (
         <div 

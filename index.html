@@ -37,118 +37,120 @@
         
         /* ========================================
            GLOBAL DARK MODE OVERRIDES
+           Only applies within .stockpulse-app-content
+           (excludes Landing Page and Login Page)
            ======================================== */
         
         /* Input fields */
-        .dark input,
-        .dark select,
-        .dark textarea {
+        .dark .stockpulse-app-content input,
+        .dark .stockpulse-app-content select,
+        .dark .stockpulse-app-content textarea {
           background-color: rgb(30 41 59) !important; /* slate-800 */
           color: rgb(248 250 252) !important; /* slate-50 */
           border-color: rgb(51 65 85) !important; /* slate-700 */
         }
-        .dark input::placeholder,
-        .dark textarea::placeholder {
+        .dark .stockpulse-app-content input::placeholder,
+        .dark .stockpulse-app-content textarea::placeholder {
           color: rgb(148 163 184) !important; /* slate-400 */
         }
-        .dark input:focus,
-        .dark select:focus,
-        .dark textarea:focus {
+        .dark .stockpulse-app-content input:focus,
+        .dark .stockpulse-app-content select:focus,
+        .dark .stockpulse-app-content textarea:focus {
           border-color: rgb(59 130 246) !important; /* blue-500 */
         }
         
         /* Labels - form field labels, small caps labels */
-        .dark label {
+        .dark .stockpulse-app-content label {
           color: rgb(203 213 225) !important; /* slate-300 */
         }
         
         /* Primary headings (text-slate-800, text-slate-900) */
-        .dark .text-slate-800,
-        .dark .text-slate-900 {
+        .dark .stockpulse-app-content .text-slate-800,
+        .dark .stockpulse-app-content .text-slate-900 {
           color: rgb(248 250 252) !important; /* slate-50 */
         }
         
         /* Secondary text (text-slate-600, text-slate-700) */
-        .dark .text-slate-600,
-        .dark .text-slate-700 {
+        .dark .stockpulse-app-content .text-slate-600,
+        .dark .stockpulse-app-content .text-slate-700 {
           color: rgb(203 213 225) !important; /* slate-300 */
         }
         
         /* Muted/description text (text-slate-400, text-slate-500) */
-        .dark .text-slate-400 {
+        .dark .stockpulse-app-content .text-slate-400 {
           color: rgb(148 163 184) !important; /* slate-400 - keep as is, already visible */
         }
-        .dark .text-slate-500 {
+        .dark .stockpulse-app-content .text-slate-500 {
           color: rgb(148 163 184) !important; /* slate-400 */
         }
         
         /* Table headers and rows */
-        .dark thead {
+        .dark .stockpulse-app-content thead {
           background-color: rgb(30 41 59) !important; /* slate-800 */
         }
-        .dark th {
+        .dark .stockpulse-app-content th {
           color: rgb(148 163 184) !important; /* slate-400 */
         }
-        .dark td {
+        .dark .stockpulse-app-content td {
           color: rgb(226 232 240) !important; /* slate-200 */
         }
-        .dark tbody tr:hover {
+        .dark .stockpulse-app-content tbody tr:hover {
           background-color: rgb(30 41 59) !important; /* slate-800 */
         }
         
         /* Card backgrounds */
-        .dark .bg-slate-50 {
+        .dark .stockpulse-app-content .bg-slate-50 {
           background-color: rgb(30 41 59) !important; /* slate-800 */
         }
-        .dark .bg-slate-100 {
+        .dark .stockpulse-app-content .bg-slate-100 {
           background-color: rgb(51 65 85) !important; /* slate-700 */
         }
-        .dark .bg-white {
+        .dark .stockpulse-app-content .bg-white {
           background-color: rgb(15 23 42) !important; /* slate-900 */
         }
         
         /* Borders */
-        .dark .border-slate-100,
-        .dark .border-slate-200 {
+        .dark .stockpulse-app-content .border-slate-100,
+        .dark .stockpulse-app-content .border-slate-200 {
           border-color: rgb(51 65 85) !important; /* slate-700 */
         }
         
         /* Icons in inputs and muted icons */
-        .dark svg.text-slate-400,
-        .dark svg.text-slate-500,
-        .dark .text-slate-400 svg,
-        .dark .text-slate-500 svg {
+        .dark .stockpulse-app-content svg.text-slate-400,
+        .dark .stockpulse-app-content svg.text-slate-500,
+        .dark .stockpulse-app-content .text-slate-400 svg,
+        .dark .stockpulse-app-content .text-slate-500 svg {
           color: rgb(148 163 184) !important; /* slate-400 */
         }
         
         /* Sidebar text */
-        .dark nav span,
-        .dark nav p {
+        .dark .stockpulse-app-content nav span,
+        .dark .stockpulse-app-content nav p {
           color: rgb(203 213 225); /* slate-300 */
         }
         
         /* Stat card numbers */
-        .dark h4 {
+        .dark .stockpulse-app-content h4 {
           color: rgb(248 250 252) !important; /* slate-50 */
         }
         
         /* Button cancel/secondary states */
-        .dark .bg-slate-100.text-slate-600 {
+        .dark .stockpulse-app-content .bg-slate-100.text-slate-600 {
           background-color: rgb(51 65 85) !important; /* slate-700 */
           color: rgb(203 213 225) !important; /* slate-300 */
         }
         
         /* Blue accent colors for admin badges etc */
-        .dark .text-blue-900 {
+        .dark .stockpulse-app-content .text-blue-900 {
           color: rgb(96 165 250) !important; /* blue-400 */
         }
-        .dark .bg-blue-100 {
+        .dark .stockpulse-app-content .bg-blue-100 {
           background-color: rgb(30 58 138) !important; /* blue-900 */
         }
         
         /* Dividers */
-        .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
-        .dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+        .dark .stockpulse-app-content .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+        .dark .stockpulse-app-content .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
           border-color: rgb(51 65 85) !important; /* slate-700 */
         }
     </style>
