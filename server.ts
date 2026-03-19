@@ -3,7 +3,7 @@ import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import sqlite3 from 'sqlite3';
+import Database from 'better-sqlite3';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
@@ -15,39 +15,43 @@ const PORT = 3000;
 const DB_PATH = './stockpulse.db';
 
 // Database Initialization
-const db = new sqlite3.Database(DB_PATH, (err) => {
-  if (err) {
-    console.error('Error opening database', err.message);
-  } else {
-    console.log('Connected to SQLite database');
-    initializeDatabase();
-  }
-});
+const db = new Database(DB_PATH);
+db.pragma('journal_mode = WAL');
+
+console.log('Connected to SQLite database');
+initializeDatabase();
 
 function query(sql: string, params: any[] = []): Promise<any[]> {
   return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
+    try {
+      const stmt = db.prepare(sql);
+      resolve(stmt.all(params));
+    } catch (err) {
+      reject(err);
+    }
   });
 }
 
 function get(sql: string, params: any[] = []): Promise<any> {
   return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
+    try {
+      const stmt = db.prepare(sql);
+      resolve(stmt.get(params));
+    } catch (err) {
+      reject(err);
+    }
   });
 }
 
 function run(sql: string, params: any[] = []): Promise<{ lastID: number, changes: number }> {
   return new Promise((resolve, reject) => {
-    db.run(sql, params, function(err) {
-      if (err) reject(err);
-      else resolve({ lastID: this.lastID, changes: this.changes });
-    });
+    try {
+      const stmt = db.prepare(sql);
+      const info = stmt.run(params);
+      resolve({ lastID: info.lastInsertRowid as number, changes: info.changes });
+    } catch (err) {
+      reject(err);
+    }
   });
 }
 
@@ -99,12 +103,7 @@ async function initializeDatabase() {
   `;
 
   try {
-    await new Promise((resolve, reject) => {
-      db.exec(schema, (err) => {
-        if (err) reject(err);
-        else resolve(null);
-      });
-    });
+    db.exec(schema);
 
     // Seed admin if not exists
     const admin = await get('SELECT * FROM users WHERE email = ?', ['admin@stockpulse.com']);
