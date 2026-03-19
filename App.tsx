@@ -20,62 +20,65 @@ import Settings from "./components/Settings";
 
 // Simple Auth Screen
 const MainIllustration = () => (
-  <svg width="360" height="280" viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-slate-800 dark:text-slate-200">
+  <svg width="400" height="320" viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#0f1729]">
+    {/* Subtle Grid Background */}
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeOpacity="0.05" strokeWidth="1" />
+    </pattern>
+    <rect width="400" height="320" fill="url(#grid)" />
+
     {/* Base Line */}
-    <line x1="20" y1="200" x2="300" y2="200" stroke="currentColor" strokeWidth="1" strokeOpacity="0.3" />
+    <line x1="40" y1="280" x2="360" y2="280" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
     
-    {/* Shelf */}
-    <rect x="40" y="80" width="60" height="120" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <line x1="40" y1="120" x2="100" y2="120" stroke="currentColor" strokeWidth="2" />
-    <line x1="40" y1="160" x2="100" y2="160" stroke="currentColor" strokeWidth="2" />
-    <rect x="48" y="88" width="24" height="16" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <rect x="76" y="92" width="16" height="12" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <rect x="48" y="128" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <circle cx="56" cy="136" r="4" stroke="currentColor" strokeWidth="2" />
-    <rect x="72" y="128" width="20" height="16" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <line x1="76" y1="134" x2="88" y2="134" stroke="currentColor" strokeWidth="2" />
-    <rect x="46" y="168" width="28" height="20" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <line x1="50" y1="176" x2="70" y2="176" stroke="currentColor" strokeWidth="2" />
-    <line x1="50" y1="182" x2="64" y2="182" stroke="currentColor" strokeWidth="2" />
-    <rect x="80" y="172" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <line x1="84" y1="178" x2="92" y2="178" stroke="currentColor" strokeWidth="2" />
-
-    {/* Monitor */}
-    <rect x="130" y="90" width="60" height="40" rx="6" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <rect x="136" y="96" width="30" height="28" rx="2" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <line x1="172" y1="100" x2="184" y2="100" stroke="currentColor" strokeWidth="2" />
-    <line x1="172" y1="108" x2="180" y2="108" stroke="currentColor" strokeWidth="2" />
-    <line x1="172" y1="116" x2="186" y2="116" stroke="currentColor" strokeWidth="2" />
+    {/* Warehouse Shelf */}
+    <rect x="60" y="120" width="100" height="160" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <line x1="60" y1="170" x2="160" y2="170" stroke="currentColor" strokeWidth="1.5" />
+    <line x1="60" y1="220" x2="160" y2="220" stroke="currentColor" strokeWidth="1.5" />
     
-    {/* Connection Line */}
-    <line x1="160" y1="130" x2="160" y2="160" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4 4" />
-    <rect x="150" y="160" width="20" height="16" stroke="currentColor" strokeWidth="2" fill="transparent" />
-
-    {/* Floating Elements */}
-    <polygon points="210,80 230,80 220,60" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <line x1="190" y1="70" x2="200" y2="66" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
-    <line x1="192" y1="80" x2="202" y2="78" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
+    {/* Boxes on Shelf */}
+    <rect x="70" y="130" width="30" height="40" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <line x1="70" y1="145" x2="100" y2="145" stroke="currentColor" strokeWidth="1.5" />
     
-    <circle cx="230" cy="120" r="10" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <line x1="242" y1="116" x2="252" y2="112" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
-    <line x1="244" y1="126" x2="254" y2="128" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
+    <rect x="110" y="140" width="40" height="30" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <circle cx="130" cy="155" r="4" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    
+    <rect x="65" y="180" width="45" height="40" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <line x1="75" y1="190" x2="95" y2="190" stroke="currentColor" strokeWidth="1.5" />
+    <line x1="75" y1="200" x2="90" y2="200" stroke="currentColor" strokeWidth="1.5" />
+    
+    <rect x="120" y="190" width="30" height="30" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <line x1="125" y1="195" x2="145" y2="215" stroke="currentColor" strokeWidth="1.5" />
+    
+    <rect x="80" y="240" width="60" height="40" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <rect x="90" y="250" width="40" height="20" stroke="currentColor" strokeWidth="1.5" fill="transparent" strokeDasharray="2 2" />
 
-    {/* List Document */}
-    <rect x="210" y="150" width="18" height="24" stroke="currentColor" strokeWidth="2" fill="transparent" />
-    <line x1="214" y1="156" x2="224" y2="156" stroke="currentColor" strokeWidth="2" />
-    <line x1="214" y1="162" x2="220" y2="162" stroke="currentColor" strokeWidth="2" />
-    <line x1="214" y1="168" x2="224" y2="168" stroke="currentColor" strokeWidth="2" />
-
-    {/* Main List */}
-    <rect x="168" y="180" width="36" height="44" rx="2" stroke="currentColor" strokeWidth="2" fill="white" />
-    <rect x="168" y="180" width="36" height="12" rx="2" fill="#0f172a" />
-    <text x="186" y="189" fill="white" fontSize="6" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">LIST</text>
-    <circle cx="174" cy="198" r="1.5" fill="#3b82f6" />
-    <line x1="178" y1="198" x2="198" y2="198" stroke="currentColor" strokeWidth="1.5" />
-    <circle cx="174" cy="206" r="1.5" fill="#3b82f6" />
-    <line x1="178" y1="206" x2="194" y2="206" stroke="currentColor" strokeWidth="1.5" />
-    <circle cx="174" cy="214" r="1.5" fill="#3b82f6" />
-    <line x1="178" y1="214" x2="198" y2="214" stroke="currentColor" strokeWidth="1.5" />
+    {/* Barcode Scanner */}
+    <path d="M 220 180 L 240 180 L 250 200 L 250 240 L 220 240 Z" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <rect x="225" y="190" width="20" height="15" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <line x1="235" y1="215" x2="235" y2="230" stroke="currentColor" strokeWidth="1.5" />
+    
+    {/* Scanner Beam */}
+    <path d="M 200 190 L 170 170 L 170 210 Z" fill="currentColor" fillOpacity="0.05" stroke="currentColor" strokeWidth="1" strokeOpacity="0.3" strokeDasharray="4 4" />
+    
+    {/* Document/Clipboard */}
+    <rect x="270" y="100" width="60" height="80" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <line x1="285" y1="100" x2="315" y2="100" stroke="currentColor" strokeWidth="3" />
+    <line x1="285" y1="120" x2="315" y2="120" stroke="currentColor" strokeWidth="1.5" />
+    <line x1="285" y1="135" x2="305" y2="135" stroke="currentColor" strokeWidth="1.5" />
+    <line x1="285" y1="150" x2="315" y2="150" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="285" y="165" width="10" height="10" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    
+    {/* Floating Decorative Elements (Line Art) */}
+    <circle cx="200" cy="80" r="12" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    <polygon points="240,50 255,75 225,75" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
+    
+    {/* Barcode Motif */}
+    <line x1="300" y1="220" x2="300" y2="250" stroke="currentColor" strokeWidth="2" />
+    <line x1="306" y1="220" x2="306" y2="250" stroke="currentColor" strokeWidth="1" />
+    <line x1="310" y1="220" x2="310" y2="250" stroke="currentColor" strokeWidth="3" />
+    <line x1="316" y1="220" x2="316" y2="250" stroke="currentColor" strokeWidth="1.5" />
+    <line x1="322" y1="220" x2="322" y2="250" stroke="currentColor" strokeWidth="1" />
+    <line x1="326" y1="220" x2="326" y2="250" stroke="currentColor" strokeWidth="2" />
   </svg>
 );
 
@@ -126,34 +129,37 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
   const floatingObjects = [
     { 
       id: 1, 
-      content: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12 2 22 20 2 20" /></svg>, 
-      className: 'text-slate-300 dark:text-slate-700 w-8 h-8', 
+      content: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12 2 22 20 2 20" /></svg>, 
+      className: 'text-[#0f1729] opacity-20 w-6 h-6', 
       top: '15%', left: '10%', factor: 0.04, scatterX: -50, scatterY: -60 
     },
     { 
       id: 2, 
-      content: <div className="w-3 h-3 rounded-full bg-slate-200 dark:bg-slate-800" />, 
+      content: <div className="w-2 h-2 rounded-full border border-[#0f1729] opacity-30" />, 
       className: '', 
-      top: '20%', left: '85%', factor: 0.06, scatterX: 60, scatterY: -20 
+      top: '25%', left: '85%', factor: 0.06, scatterX: 60, scatterY: -20 
     },
     { 
       id: 3, 
-      content: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /><rect x="4" y="4" width="16" height="18" rx="2" ry="2" /><line x1="8" y1="10" x2="16" y2="10" /><line x1="8" y1="14" x2="16" y2="14" /></svg>, 
-      className: 'text-slate-300 dark:text-slate-700 w-8 h-8', 
-      top: '80%', left: '15%', factor: 0.05, scatterX: -40, scatterY: 50 
+      content: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="6" y="2" width="12" height="20" rx="2" ry="2" /><line x1="10" y1="6" x2="14" y2="6" /><line x1="10" y1="10" x2="14" y2="10" /></svg>, 
+      className: 'text-[#0f1729] opacity-20 w-6 h-6', 
+      top: '75%', left: '15%', factor: 0.05, scatterX: -40, scatterY: 50 
     },
     { 
       id: 4, 
-      content: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="4" y1="4" x2="4" y2="20" /><line x1="8" y1="4" x2="8" y2="20" /><line x1="12" y1="4" x2="12" y2="20" /><line x1="16" y1="4" x2="16" y2="20" /><line x1="20" y1="4" x2="20" y2="20" /></svg>, 
-      className: 'text-slate-300 dark:text-slate-700 w-8 h-8', 
-      top: '85%', left: '85%', factor: 0.07, scatterX: 50, scatterY: 50 
+      content: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="6" y1="4" x2="6" y2="20" /><line x1="10" y1="4" x2="10" y2="20" /><line x1="14" y1="4" x2="14" y2="20" /><line x1="18" y1="4" x2="18" y2="20" /></svg>, 
+      className: 'text-[#0f1729] opacity-20 w-6 h-6', 
+      top: '80%', left: '80%', factor: 0.07, scatterX: 50, scatterY: 50 
     },
   ];
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-slate-950 transition-colors duration-300">
+    <div className="min-h-screen flex bg-[#f8f8f6] transition-colors duration-300">
       {/* Left Pane - Illustration */}
-      <div className="hidden lg:flex w-1/2 bg-[#f8f9fa] dark:bg-slate-900 relative items-center justify-center overflow-hidden bg-dot-pattern">
+      <div className="hidden lg:flex w-[45%] relative items-center justify-center overflow-hidden">
+        {/* Faint grid pattern behind */}
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#0f1729 0.5px, transparent 0.5px)', backgroundSize: '24px 24px', opacity: 0.05 }}></div>
+        
         {/* Floating Objects */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           {floatingObjects.map((obj, index) => {
@@ -183,29 +189,29 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
         {/* Main Illustration */}
         <div className="relative z-10 flex flex-col items-center">
           <MainIllustration />
-          <p className="mt-12 text-slate-500 dark:text-slate-400 font-serif italic text-xl tracking-wide">
+          <p className="mt-8 text-[#0f1729] font-serif italic text-xl tracking-wide opacity-80">
             Every item. Every count. In control.
           </p>
         </div>
       </div>
 
       {/* Right Pane - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative z-10">
+      <div className="w-full lg:w-[55%] flex items-center justify-center p-8 sm:p-12 lg:p-24 relative z-10 bg-white shadow-[-20px_0_40px_rgba(0,0,0,0.02)]">
         <div className="max-w-md w-full space-y-10">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-10 h-10 bg-[#0f172a] dark:bg-white text-white dark:text-[#0f172a] rounded-xl flex items-center justify-center font-bold text-xl italic">S</div>
-            <span className="font-bold text-xl text-slate-900 dark:text-white">StockPulse</span>
+            <div className="w-10 h-10 bg-[#0f1729] text-white rounded-xl flex items-center justify-center font-bold text-xl italic">S</div>
+            <span className="font-bold text-xl text-[#0f1729]">StockPulse</span>
           </div>
 
           {/* Headings */}
           <div>
-            <h1 className="text-4xl font-bold text-[#0f172a] dark:text-white tracking-tight">Welcome back</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-3 italic font-serif text-lg">Sign in to manage your inventory</p>
+            <h1 className="text-4xl font-bold text-[#0f1729] tracking-tight">Welcome back</h1>
+            <p className="text-[#0f1729] opacity-60 mt-3 italic font-serif text-lg">Sign in to manage your inventory</p>
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm rounded-lg border border-red-100 dark:border-red-900/30 font-medium">
+            <div className="p-4 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 font-medium">
               {error}
             </div>
           )}
@@ -213,22 +219,22 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
           {/* Form */}
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-900 dark:text-slate-200">Email Address</label>
+              <label className="text-sm font-semibold text-[#0f1729]">Email Address</label>
               <input 
                 type="email" 
                 required
-                className="w-full px-5 py-3.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
+                className="w-full px-5 py-3.5 rounded-full border border-slate-200 bg-transparent focus:border-[#0f1729] focus:ring-1 focus:ring-[#0f1729] outline-none transition-all text-[#0f1729] placeholder:text-slate-400"
                 placeholder="name@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-900 dark:text-slate-200">Password</label>
+              <label className="text-sm font-semibold text-[#0f1729]">Password</label>
               <input 
                 type="password" 
                 required
-                className="w-full px-5 py-3.5 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-400 outline-none transition-all text-slate-900 dark:text-white placeholder:text-slate-400"
+                className="w-full px-5 py-3.5 rounded-full border border-slate-200 bg-transparent focus:border-[#0f1729] focus:ring-1 focus:ring-[#0f1729] outline-none transition-all text-[#0f1729] placeholder:text-slate-400"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -237,10 +243,10 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
 
             <div className="flex items-center justify-between text-sm pt-2">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900" />
-                <span className="text-slate-500 dark:text-slate-400">Remember me</span>
+                <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#0f1729] focus:ring-[#0f1729]" />
+                <span className="text-[#0f1729] opacity-70">Remember me</span>
               </label>
-              <a href="#" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 font-medium">Forgot password?</a>
+              <a href="#" className="text-[#3b4fd8] hover:text-[#2a3bb8] font-medium transition-colors">Forgot password?</a>
             </div>
 
             <button 
@@ -249,16 +255,16 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
               ref={buttonRef}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
-              className="w-full bg-[#0f172a] dark:bg-white text-white dark:text-[#0f172a] font-semibold py-4 rounded-full flex items-center justify-center gap-2 btn-hover-effect disabled:opacity-50 mt-4 hover:bg-slate-800 dark:hover:bg-slate-200"
+              className="w-full bg-[#0f1729] text-white font-semibold py-4 rounded-full flex items-center justify-center gap-2 btn-hover-effect disabled:opacity-50 mt-4 hover:bg-[#1a243d] transition-colors"
             >
               {loading ? 'Signing In...' : 'Sign In'}
               {!loading && <span className="arrow-icon">→</span>}
             </button>
           </form>
 
-          <div className="pt-8 text-center">
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Don't have an account? <a href="#" className="text-blue-600 dark:text-blue-400 font-medium">Contact Administrator</a>
+          <div className="pt-8 text-center border-t border-slate-100">
+            <p className="text-sm text-[#0f1729] opacity-60">
+              Don't have an account? <a href="#" className="text-[#3b4fd8] font-medium hover:text-[#2a3bb8] transition-colors">Contact Administrator</a>
             </p>
           </div>
         </div>
