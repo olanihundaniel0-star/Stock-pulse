@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { UserRole } from '../types';
 
@@ -7,41 +7,203 @@ interface LoginPageProps {
   onBack: () => void;
 }
 
+interface FloatingObject {
+  id: string;
+  baseX: number;
+  baseY: number;
+  amplitude: number;
+  duration: number;
+  delay: number;
+  rotateAmount: number;
+  opacityMin: number;
+  opacityMax: number;
+  scatterAngle: number;
+  scatterDistance: number;
+  magneticStrength: number;
+}
+
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [isMagnetic, setIsMagnetic] = useState(false);
+  const [isScattered, setIsScattered] = useState(false);
+  const [isButtonPressed, setIsButtonPressed] = useState(false);
+  const [arrowSweep, setArrowSweep] = useState(false);
+  const [magneticOffset, setMagneticOffset] = useState({ x: 0, y: 0 });
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Check for reduced motion preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  // Floating objects configuration
+  const floatingObjects: FloatingObject[] = [
+    { id: 'triangle', baseX: 32, baseY: 96, amplitude: 12, duration: 4, delay: 0, rotateAmount: 8, opacityMin: 0.12, opacityMax: 0.18, scatterAngle: -45, scatterDistance: 50, magneticStrength: 1.2 },
+    { id: 'dot', baseX: 0, baseY: 128, amplitude: 15, duration: 5, delay: 0.5, rotateAmount: 0, opacityMin: 0.08, opacityMax: 0.14, scatterAngle: 30, scatterDistance: 45, magneticStrength: 1.0 },
+    { id: 'clipboard', baseX: 64, baseY: 0, amplitude: 10, duration: 6, delay: 1, rotateAmount: -6, opacityMin: 0.1, opacityMax: 0.15, scatterAngle: -135, scatterDistance: 55, magneticStrength: 0.8 },
+    { id: 'barcode', baseX: 96, baseY: 96, amplitude: 18, duration: 4.5, delay: 0.8, rotateAmount: 5, opacityMin: 0.08, opacityMax: 0.12, scatterAngle: 60, scatterDistance: 40, magneticStrength: 1.1 },
+  ];
+
+  // Handle magnetic pull on button hover
+  const handleButtonMouseMove = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    if (prefersReducedMotion || !buttonRef.current) return;
+    
+    const rect = buttonRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = (e.clientX - centerX) / rect.width;
+    const deltaY = (e.clientY - centerY) / rect.height;
+    
+    setMagneticOffset({ x: deltaX, y: deltaY });
+    setIsMagnetic(true);
+  }, [prefersReducedMotion]);
+
+  const handleButtonMouseLeave = useCallback(() => {
+    setIsMagnetic(false);
+    setMagneticOffset({ x: 0, y: 0 });
+  }, []);
+
+  // Handle button click scatter effect
+  const handleButtonClick = useCallback(() => {
+    if (prefersReducedMotion) return;
+    
+    setIsButtonPressed(true);
+    setIsScattered(true);
+    setArrowSweep(true);
+    
+    setTimeout(() => setIsButtonPressed(false), 300);
+    setTimeout(() => setArrowSweep(false), 400);
+    setTimeout(() => setIsScattered(false), 600);
+  }, [prefersReducedMotion]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === 'admin@stockpulse.com' && password === 'admin123') {
-      onLogin(UserRole.ADMIN);
-    } else if (email === 'staff@stockpulse.com' && password === 'staff123') {
-      onLogin(UserRole.STAFF);
-    } else {
-      setError('Invalid credentials. Use admin@stockpulse.com / admin123 or staff@stockpulse.com / staff123');
-    }
+    handleButtonClick();
+    
+    setTimeout(() => {
+      if (email === 'admin@stockpulse.com' && password === 'admin123') {
+        onLogin(UserRole.ADMIN);
+      } else if (email === 'staff@stockpulse.com' && password === 'staff123') {
+        onLogin(UserRole.STAFF);
+      } else {
+        setError('Invalid credentials. Use admin@stockpulse.com / admin123 or staff@stockpulse.com / staff123');
+      }
+    }, 300);
   };
+
+  // Calculate floating object styles
+  const getFloatingStyle = (obj: FloatingObject): React.CSSProperties => {
+    if (prefersReducedMotion) {
+      return {
+        opacity: obj.opacityMax,
+        willChange: 'auto',
+      };
+    }
+
+    if (isScattered) {
+      const scatterX = Math.cos(obj.scatterAngle * Math.PI / 180) * obj.scatterDistance;
+      const scatterY = Math.sin(obj.scatterAngle * Math.PI / 180) * obj.scatterDistance;
+      return {
+        transform: `translate(${scatterX}px, ${scatterY}px) rotate(${obj.rotateAmount * 3}deg)`,
+        opacity: 0,
+        transition: 'transform 0.3s ease-out, opacity 0.3s ease-out',
+        willChange: 'transform, opacity',
+      };
+    }
+
+    if (isMagnetic) {
+      const pullX = magneticOffset.x * 20 * obj.magneticStrength;
+      const pullY = magneticOffset.y * 20 * obj.magneticStrength;
+      return {
+        transform: `translate(${pullX}px, ${pullY}px)`,
+        transition: 'transform 0.4s ease-out',
+        animationPlayState: 'paused',
+        willChange: 'transform, opacity',
+      };
+    }
+
+    return {
+      animation: `float-${obj.id} ${obj.duration}s ease-in-out infinite, pulse-${obj.id} ${obj.duration * 1.5}s ease-in-out infinite`,
+      animationDelay: `${obj.delay}s`,
+      willChange: 'transform, opacity',
+    };
+  };
+
+  // Generate keyframes CSS
+  const keyframesCSS = floatingObjects.map(obj => `
+    @keyframes float-${obj.id} {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-${obj.amplitude}px) rotate(${obj.rotateAmount}deg); }
+    }
+    @keyframes pulse-${obj.id} {
+      0%, 100% { opacity: ${obj.opacityMin}; }
+      50% { opacity: ${obj.opacityMax}; }
+    }
+  `).join('\n');
 
   return (
     <div className="min-h-screen bg-[#f8f8f6] font-['Inter'] flex selection:bg-blue-100">
+      {/* Keyframes injection */}
+      <style>{`
+        @media (prefers-reduced-motion: no-preference) {
+          ${keyframesCSS}
+        }
+      `}</style>
+
       {/* Floating Geometric Shapes */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {/* Top left triangle */}
-        <svg className="absolute top-24 left-8 w-6 h-6 opacity-[0.15]" viewBox="0 0 24 24" fill="none" stroke="#0f1729" strokeWidth="1.5">
+        <svg 
+          className="absolute top-24 left-8 w-6 h-6" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="#0f1729" 
+          strokeWidth="1.5"
+          style={getFloatingStyle(floatingObjects[0])}
+        >
           <path d="M12 3L22 21H2L12 3Z" />
         </svg>
+        
         {/* Top right dot */}
-        <div className="absolute top-32 right-16 w-3 h-3 rounded-full bg-[#0f1729] opacity-[0.1]" />
+        <div 
+          className="absolute top-32 right-16 w-3 h-3 rounded-full bg-[#0f1729]" 
+          style={getFloatingStyle(floatingObjects[1])}
+        />
+        
         {/* Bottom left clipboard */}
-        <svg className="absolute bottom-32 left-16 w-8 h-8 opacity-[0.12]" viewBox="0 0 24 24" fill="none" stroke="#0f1729" strokeWidth="1.5" strokeLinecap="round">
+        <svg 
+          className="absolute bottom-32 left-16 w-8 h-8" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="#0f1729" 
+          strokeWidth="1.5" 
+          strokeLinecap="round"
+          style={getFloatingStyle(floatingObjects[2])}
+        >
           <rect x="5" y="4" width="14" height="18" rx="2" />
           <path d="M9 2h6v4H9z" />
           <path d="M9 12h6M9 16h4" />
         </svg>
+        
         {/* Bottom right barcode lines */}
-        <svg className="absolute bottom-24 right-24 w-10 h-6 opacity-[0.1]" viewBox="0 0 40 24" fill="none" stroke="#0f1729" strokeWidth="2">
+        <svg 
+          className="absolute bottom-24 right-24 w-10 h-6" 
+          viewBox="0 0 40 24" 
+          fill="none" 
+          stroke="#0f1729" 
+          strokeWidth="2"
+          style={getFloatingStyle(floatingObjects[3])}
+        >
           <path d="M2 2v20M8 2v20M12 2v20M18 2v14M24 2v20M30 2v20M36 2v16" />
         </svg>
       </div>
@@ -239,11 +401,40 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
             </div>
 
             <button
+              ref={buttonRef}
               type="submit"
-              className="w-full bg-[#0f1729] text-white font-bold py-4 rounded-full shadow-lg hover:bg-[#1a2744] transition-all flex items-center justify-center gap-2 group mt-8"
+              onMouseMove={handleButtonMouseMove}
+              onMouseLeave={handleButtonMouseLeave}
+              className="w-full bg-[#0f1729] text-white font-bold py-4 rounded-full shadow-lg flex items-center justify-center gap-2 group mt-8"
+              style={{
+                transform: isButtonPressed 
+                  ? 'scale(0.96)' 
+                  : 'scale(1)',
+                boxShadow: isMagnetic && !prefersReducedMotion
+                  ? '0 8px 24px rgba(15,23,41,0.35)'
+                  : '0 4px 14px rgba(15,23,41,0.25)',
+                background: isMagnetic && !prefersReducedMotion ? '#1a2744' : '#0f1729',
+                transition: isButtonPressed 
+                  ? 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' 
+                  : 'transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease',
+                willChange: 'transform, box-shadow, background',
+              }}
             >
               Sign In
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight 
+                size={18} 
+                style={{
+                  transform: arrowSweep 
+                    ? 'translateX(12px)' 
+                    : isMagnetic && !prefersReducedMotion 
+                      ? 'translateX(4px)' 
+                      : 'translateX(0)',
+                  transition: arrowSweep 
+                    ? 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' 
+                    : 'transform 0.25s ease',
+                  willChange: 'transform',
+                }}
+              />
             </button>
           </form>
 
