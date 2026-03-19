@@ -34,6 +34,24 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         .dark ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 10px; }
+        
+        /* Global dark mode input styles */
+        .dark input,
+        .dark select,
+        .dark textarea {
+          background-color: rgb(30 41 59) !important; /* slate-800 */
+          color: rgb(248 250 252) !important; /* slate-50 */
+          border-color: rgb(51 65 85) !important; /* slate-700 */
+        }
+        .dark input::placeholder,
+        .dark textarea::placeholder {
+          color: rgb(148 163 184) !important; /* slate-400 */
+        }
+        .dark input:focus,
+        .dark select:focus,
+        .dark textarea:focus {
+          border-color: rgb(59 130 246) !important; /* blue-500 */
+        }
     </style>
 <script type="importmap">
 {
