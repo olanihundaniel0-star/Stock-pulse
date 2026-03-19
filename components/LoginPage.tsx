@@ -33,6 +33,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
   const [arrowSweep, setArrowSweep] = useState(false);
   const [magneticOffset, setMagneticOffset] = useState({ x: 0, y: 0 });
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [isLoginClicked, setIsLoginClicked] = useState(false);
   
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -80,10 +82,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
     setIsButtonPressed(true);
     setIsScattered(true);
     setArrowSweep(true);
+    setIsLoginClicked(true);
     
     setTimeout(() => setIsButtonPressed(false), 300);
     setTimeout(() => setArrowSweep(false), 400);
     setTimeout(() => setIsScattered(false), 600);
+    setTimeout(() => setIsLoginClicked(false), 800);
   }, [prefersReducedMotion]);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -139,7 +143,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
     };
   };
 
-  // Generate keyframes CSS
+  // Generate keyframes CSS for corner floating objects
   const keyframesCSS = floatingObjects.map(obj => `
     @keyframes float-${obj.id} {
       0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -151,12 +155,218 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
     }
   `).join('\n');
 
+  // SVG illustration animation keyframes
+  const svgAnimationsCSS = `
+    /* Warehouse shelf - subtle breathing sway */
+    @keyframes shelf-sway {
+      0%, 100% { transform: rotate(-0.5deg); }
+      50% { transform: rotate(0.5deg); }
+    }
+    
+    /* Monitor/screen - gentle float */
+    @keyframes monitor-float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(-0.5deg); }
+    }
+    
+    /* Dashed connector line - flowing dashes */
+    @keyframes dash-flow {
+      0% { stroke-dashoffset: 16; }
+      100% { stroke-dashoffset: 0; }
+    }
+    
+    /* Small square - slow spin */
+    @keyframes square-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Triangle - bob up and down */
+    @keyframes triangle-bob {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
+    
+    /* Circle - opposite float */
+    @keyframes circle-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+    
+    /* Document icon - tilt */
+    @keyframes document-tilt {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    
+    /* LIST clipboard - float and scale pulse */
+    @keyframes clipboard-pulse {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-8px) scale(1.03); }
+    }
+    
+    /* Input focus drift - elements drift right */
+    @keyframes drift-right {
+      0%, 100% { transform: translateX(0); }
+    }
+    
+    /* Login click effects */
+    @keyframes connector-flash {
+      0%, 33%, 66%, 100% { opacity: 1; }
+      16%, 50%, 83% { opacity: 0; }
+    }
+    
+    @keyframes monitor-shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    
+    @keyframes clipboard-bounce {
+      0% { transform: translateY(0) scale(1); }
+      30% { transform: translateY(-20px) scale(1.05); }
+      60% { transform: translateY(5px) scale(0.98); }
+      100% { transform: translateY(0) scale(1); }
+    }
+    
+    @keyframes spin-out {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    
+    @keyframes shelf-shift {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-1deg); }
+      75% { transform: rotate(1deg); }
+    }
+  `;
+
+  // Get SVG element animation styles based on current state
+  const getSvgElementStyle = (element: string): React.CSSProperties => {
+    if (prefersReducedMotion) {
+      return { willChange: 'auto' };
+    }
+
+    const baseTransition = 'transform 0.6s ease-out';
+    const focusDrift = isInputFocused ? 'translateX(12px)' : 'translateX(0)';
+
+    // Login click animations override everything
+    if (isLoginClicked) {
+      switch (element) {
+        case 'shelf':
+          return {
+            animation: 'shelf-shift 0.8s ease-in-out',
+            willChange: 'transform',
+          };
+        case 'monitor':
+          return {
+            animation: 'monitor-shake 0.4s ease-in-out',
+            willChange: 'transform',
+          };
+        case 'connector':
+          return {
+            animation: 'connector-flash 0.6s ease-in-out',
+            willChange: 'opacity',
+          };
+        case 'clipboard-list':
+          return {
+            animation: 'clipboard-bounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            willChange: 'transform',
+          };
+        case 'triangle':
+        case 'circle':
+          return {
+            animation: 'spin-out 0.8s ease-in-out',
+            willChange: 'transform',
+          };
+        default:
+          return { willChange: 'transform' };
+      }
+    }
+
+    // Normal idle animations with focus drift
+    switch (element) {
+      case 'shelf':
+        return {
+          animation: 'shelf-sway 6s ease-in-out infinite',
+          transform: focusDrift,
+          transition: baseTransition,
+          transformOrigin: 'bottom center',
+          willChange: 'transform',
+        };
+      case 'monitor':
+        return {
+          animation: 'monitor-float 4s ease-in-out infinite',
+          animationDelay: '0.5s',
+          transform: focusDrift,
+          transition: baseTransition,
+          willChange: 'transform',
+        };
+      case 'connector':
+        return {
+          strokeDasharray: '4 4',
+          animation: 'dash-flow 1.5s linear infinite',
+          willChange: 'stroke-dashoffset',
+        };
+      case 'square':
+        return {
+          animation: 'square-spin 8s linear infinite',
+          animationDelay: '1s',
+          transformOrigin: 'center center',
+          willChange: 'transform',
+        };
+      case 'triangle':
+        return {
+          animation: 'triangle-bob 3.5s ease-in-out infinite',
+          animationDelay: '0.3s',
+          transform: focusDrift,
+          transition: baseTransition,
+          willChange: 'transform',
+        };
+      case 'circle':
+        return {
+          animation: 'circle-float 5s ease-in-out infinite',
+          animationDelay: '1.5s',
+          transform: focusDrift,
+          transition: baseTransition,
+          willChange: 'transform',
+        };
+      case 'document':
+        return {
+          animation: 'document-tilt 4.5s ease-in-out infinite',
+          animationDelay: '0.8s',
+          transformOrigin: 'center center',
+          transform: focusDrift,
+          transition: baseTransition,
+          willChange: 'transform',
+        };
+      case 'clipboard-list':
+        return {
+          animation: 'clipboard-pulse 5s ease-in-out infinite',
+          animationDelay: '1.2s',
+          transform: focusDrift,
+          transition: baseTransition,
+          willChange: 'transform',
+        };
+      default:
+        return {
+          transform: focusDrift,
+          transition: baseTransition,
+          willChange: 'transform',
+        };
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f8f6] font-['Inter'] flex selection:bg-blue-100">
       {/* Keyframes injection */}
       <style>{`
         @media (prefers-reduced-motion: no-preference) {
           ${keyframesCSS}
+          ${svgAnimationsCSS}
         }
       `}</style>
 
@@ -220,7 +430,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
         />
         
         <div className="flex flex-col items-center justify-center w-full p-12">
-          {/* Hand-drawn Line Art Illustration */}
+          {/* Hand-drawn Line Art Illustration with Animations */}
           <svg viewBox="0 0 400 350" className="w-full max-w-md h-auto select-none">
             <defs>
               <pattern id="shelfPattern" patternUnits="userSpaceOnUse" width="20" height="20">
@@ -232,61 +442,77 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
             <rect x="50" y="50" width="300" height="250" fill="url(#shelfPattern)" opacity="0.5" />
 
             <g stroke="#0f1729" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {/* Main Warehouse Shelf Structure */}
-              {/* Left shelf unit */}
-              <path d="M60,280 L60,80 L160,80 L160,280" />
-              <path d="M60,120 L160,120" />
-              <path d="M60,170 L160,170" />
-              <path d="M60,220 L160,220" />
-              
-              {/* Shelf supports */}
-              <path d="M80,280 L80,270" strokeWidth="3" />
-              <path d="M140,280 L140,270" strokeWidth="3" />
+              {/* Main Warehouse Shelf Structure - with breathing sway */}
+              <g style={getSvgElementStyle('shelf')}>
+                {/* Left shelf unit */}
+                <path d="M60,280 L60,80 L160,80 L160,280" />
+                <path d="M60,120 L160,120" />
+                <path d="M60,170 L160,170" />
+                <path d="M60,220 L160,220" />
+                
+                {/* Shelf supports */}
+                <path d="M80,280 L80,270" strokeWidth="3" />
+                <path d="M140,280 L140,270" strokeWidth="3" />
 
-              {/* Boxes on shelves - Top shelf */}
-              <rect x="70" y="90" width="30" height="25" rx="2" fill="#ffffff" />
-              <path d="M75,100 L95,100" strokeWidth="1.5" />
-              <rect x="110" y="95" width="40" height="20" rx="2" fill="#ffffff" />
-              <path d="M115,105 L140,105" strokeWidth="1.5" />
+                {/* Boxes on shelves - Top shelf */}
+                <rect x="70" y="90" width="30" height="25" rx="2" fill="#ffffff" />
+                <path d="M75,100 L95,100" strokeWidth="1.5" />
+                <rect x="110" y="95" width="40" height="20" rx="2" fill="#ffffff" />
+                <path d="M115,105 L140,105" strokeWidth="1.5" />
 
-              {/* Boxes on shelves - Middle shelf */}
-              <rect x="75" y="130" width="25" height="35" rx="2" fill="#ffffff" />
-              <circle cx="87" cy="147" r="6" strokeWidth="1.5" />
-              <rect x="110" y="135" width="35" height="30" rx="2" fill="#ffffff" />
-              <path d="M115,150 L140,150 M115,157 L132,157" strokeWidth="1.5" />
+                {/* Boxes on shelves - Middle shelf */}
+                <rect x="75" y="130" width="25" height="35" rx="2" fill="#ffffff" />
+                <circle cx="87" cy="147" r="6" strokeWidth="1.5" />
+                <rect x="110" y="135" width="35" height="30" rx="2" fill="#ffffff" />
+                <path d="M115,150 L140,150 M115,157 L132,157" strokeWidth="1.5" />
 
-              {/* Boxes on shelves - Lower shelf */}
-              <rect x="68" y="178" width="45" height="38" rx="2" fill="#ffffff" />
-              <path d="M73,195 L108,195 M73,203 L98,203" strokeWidth="1.5" />
-              <rect x="120" y="185" width="30" height="30" rx="2" fill="#ffffff" />
-              <path d="M125,195 L145,195 M125,203 L140,203 M125,211 L138,211" strokeWidth="1.5" />
+                {/* Boxes on shelves - Lower shelf */}
+                <rect x="68" y="178" width="45" height="38" rx="2" fill="#ffffff" />
+                <path d="M73,195 L108,195 M73,203 L98,203" strokeWidth="1.5" />
+                <rect x="120" y="185" width="30" height="30" rx="2" fill="#ffffff" />
+                <path d="M125,195 L145,195 M125,203 L140,203 M125,211 L138,211" strokeWidth="1.5" />
+              </g>
 
-              {/* Right side - Barcode Scanner */}
-              <g transform="translate(200, 100)">
+              {/* Right side - Barcode Scanner/Monitor - with gentle float */}
+              <g transform="translate(200, 100)" style={getSvgElementStyle('monitor')}>
                 <rect x="0" y="0" width="80" height="50" rx="8" fill="#ffffff" strokeWidth="2.5" />
                 <rect x="10" y="10" width="40" height="30" rx="4" fill="none" />
                 <path d="M55,15 L70,15 M55,22 L65,22 M55,29 L70,29 M55,36 L62,36" strokeWidth="1.5" />
-                {/* Scanner beam */}
-                <path d="M40,55 L40,90" stroke="#3b4fd8" strokeWidth="2" strokeDasharray="4 4" />
-                <rect x="25" y="92" width="30" height="25" rx="2" fill="#ffffff" />
+                {/* Small square inside monitor - with slow spin */}
+                <g style={getSvgElementStyle('square')}>
+                  <rect x="18" y="18" width="14" height="14" rx="1" fill="none" strokeWidth="1" />
+                </g>
               </g>
+              
+              {/* Scanner beam / Dashed connector line - with flowing dashes */}
+              <path 
+                d="M240,155 L240,190" 
+                stroke="#3b4fd8" 
+                strokeWidth="2" 
+                style={getSvgElementStyle('connector')}
+              />
+              <rect x="225" y="192" width="30" height="25" rx="2" fill="#ffffff" style={getSvgElementStyle('monitor')} />
 
               {/* Floating geometric shapes */}
-              {/* Triangle */}
-              <path d="M320,70 L335,95 L305,95 Z" fill="none" strokeWidth="1.5" />
+              {/* Triangle - bob up and down */}
+              <g style={getSvgElementStyle('triangle')}>
+                <path d="M320,70 L335,95 L305,95 Z" fill="none" strokeWidth="1.5" />
+              </g>
               
-              {/* Circle */}
-              <circle cx="340" cy="150" r="12" fill="none" strokeWidth="1.5" />
+              {/* Circle - opposite float */}
+              <g style={getSvgElementStyle('circle')}>
+                <circle cx="340" cy="150" r="12" fill="none" strokeWidth="1.5" />
+              </g>
               
-              {/* Small document icon */}
-              <g transform="translate(310, 200)">
+              {/* Small document icon - gentle tilt */}
+              <g transform="translate(310, 200)" style={getSvgElementStyle('document')}>
                 <rect x="0" y="0" width="24" height="30" rx="2" fill="#ffffff" />
                 <path d="M4,8 L16,8 M4,14 L20,14 M4,20 L14,20" strokeWidth="1" />
                 <path d="M16,0 L16,8 L24,8" fill="none" strokeWidth="1.5" />
               </g>
 
-              {/* Inventory checklist floating */}
-              <g transform="translate(250, 230)">
+              {/* Inventory checklist floating - LIST clipboard */}
+              <g transform="translate(250, 230)" style={getSvgElementStyle('clipboard-list')}>
                 <rect x="0" y="0" width="50" height="60" rx="4" fill="#ffffff" strokeWidth="2" />
                 <rect x="0" y="0" width="50" height="15" rx="4" fill="#0f1729" />
                 <text x="25" y="11" textAnchor="middle" fill="#ffffff" fontSize="8" fontWeight="bold" stroke="none">LIST</text>
@@ -359,6 +585,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
                 placeholder="name@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
               />
             </div>
 
@@ -373,6 +601,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
               />
             </div>
 
