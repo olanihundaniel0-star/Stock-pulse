@@ -7,7 +7,7 @@ import InputField from '../components/ui/InputField';
 import { useAuth } from '../context/AuthContext';
 
 interface SignUpFormInputs {
-  fullName: string;
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -15,7 +15,7 @@ interface SignUpFormInputs {
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
-  const { register: authRegister, isLoading, error, clearError } = useAuth();
+  const { signup, isLoading, error, clearError } = useAuth();
   const [apiError, setApiError] = useState<string | null>(null);
 
   const {
@@ -26,7 +26,7 @@ const SignUp: React.FC = () => {
   } = useForm<SignUpFormInputs>({
     mode: 'onBlur',
     defaultValues: {
-      fullName: '',
+      name: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -35,7 +35,7 @@ const SignUp: React.FC = () => {
 
   const password = watch('password');
   const confirmPassword = watch('confirmPassword');
-  const fullName = watch('fullName');
+  const name = watch('name');
   const email = watch('email');
 
   const onSubmit = async (data: SignUpFormInputs) => {
@@ -54,7 +54,7 @@ const SignUp: React.FC = () => {
         return;
       }
 
-      await authRegister(data.email, data.password, data.fullName);
+      await signup(data.email, data.password, data.name);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred during sign up';
@@ -66,7 +66,7 @@ const SignUp: React.FC = () => {
   const passwordLongEnough = password.length >= 8;
   const displayError = apiError || error;
   const isFormLoading = isLoading || isSubmitting;
-  const isFormValid = fullName && email && password && confirmPassword && 
+  const isFormValid = name && email && password && confirmPassword && 
                      passwordsMatch && passwordLongEnough;
 
   return (
@@ -88,14 +88,14 @@ const SignUp: React.FC = () => {
           label="Full Name"
           placeholder="John Doe"
           type="text"
-          register={register('fullName', {
+          register={register('name', {
             required: 'Full name is required',
             minLength: {
               value: 2,
               message: 'Full name must be at least 2 characters',
             },
           })}
-          error={errors.fullName}
+          error={errors.name}
           disabled={isFormLoading}
           autoComplete="name"
         />

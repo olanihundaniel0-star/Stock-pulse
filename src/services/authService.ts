@@ -1,18 +1,21 @@
 import axios, { AxiosInstance } from 'axios';
 
 interface LoginResponse {
-  access_token: string;
+  accessToken: string;
   user?: {
     id: string;
+    name: string;
     email: string;
-    fullName?: string;
+    role: string;
+    status: string;
+    lastLogin?: string;
   };
 }
 
-interface RegisterRequest {
+interface SignupRequest {
+  name: string;
   email: string;
   password: string;
-  fullName: string;
 }
 
 interface LoginRequest {
@@ -50,8 +53,8 @@ class AuthService {
         password,
       });
 
-      if (response.data.access_token) {
-        localStorage.setItem(this.tokenKey, response.data.access_token);
+      if (response.data.accessToken) {
+        localStorage.setItem(this.tokenKey, response.data.accessToken);
       }
 
       return response.data;
@@ -65,30 +68,26 @@ class AuthService {
     }
   }
 
-  async register(
-    email: string,
-    password: string,
-    fullName: string
-  ): Promise<LoginResponse> {
+  async signup(name: string, email: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await this.api.post<LoginResponse>('/auth/register', {
+      const response = await this.api.post<LoginResponse>('/auth/signup', {
+        name,
         email,
         password,
-        fullName,
       });
 
-      if (response.data.access_token) {
-        localStorage.setItem(this.tokenKey, response.data.access_token);
+      if (response.data.accessToken) {
+        localStorage.setItem(this.tokenKey, response.data.accessToken);
       }
 
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data) {
         throw new Error(
-          error.response.data.message || 'Registration failed. Please try again.'
+          error.response.data.message || 'signup failed. Please try again.'
         );
       }
-      throw new Error('Registration failed. Please try again.');
+      throw new Error('signup failed. Please try again.');
     }
   }
 

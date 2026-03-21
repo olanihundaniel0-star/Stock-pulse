@@ -4,7 +4,10 @@ import authService from '../services/authService';
 interface User {
   id: string;
   email: string;
-  fullName?: string;
+  name?: string;
+  role?: string;
+  status?: string;
+  lastLogin?: string;
 }
 
 interface AuthContextType {
@@ -12,7 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, fullName: string) => Promise<void>;
+  signup: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
   error: string | null;
   clearError: () => void;
@@ -40,7 +43,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setUser({
               id: decoded.sub || decoded.id || '',
               email: decoded.email || '',
-              fullName: decoded.fullName || '',
+              name: decoded.name || decoded.fullName || '',
             });
           } catch (err) {
             // Invalid token, clear it
@@ -62,7 +65,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const userData: User = {
         id: response.user?.id || '',
         email: response.user?.email || email,
-        fullName: response.user?.fullName || '',
+        name: response.user?.name || '',
+        role: response.user?.role,
+        status: response.user?.status,
+        lastLogin: response.user?.lastLogin,
       };
       setUser(userData);
     } catch (err) {
@@ -74,19 +80,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const register = async (email: string, password: string, fullName: string) => {
+  const signup = async (email: string, password: string, name: string) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await authService.register(email, password, fullName);
+      const response = await authService.signup(name, email, password);
       const userData: User = {
         id: response.user?.id || '',
         email: response.user?.email || email,
-        fullName: response.user?.fullName || fullName,
+        name: response.user?.name || name,
+        role: response.user?.role,
+        status: response.user?.status,
+        lastLogin: response.user?.lastLogin,
       };
       setUser(userData);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed';
+      const errorMessage = err instanceof Error ? err.message : 'signup failed';
       setError(errorMessage);
       throw err;
     } finally {
@@ -106,10 +115,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const value: AuthContextType = {
     user,
-    isAuthenticated: !!user && authService.isAuthenticated(),
+    isAuthenticated: !!user,
     isLoading,
     login,
-    register,
+    signup,
     logout,
     error,
     clearError,
