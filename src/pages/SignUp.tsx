@@ -49,8 +49,8 @@ const SignUp: React.FC = () => {
         return;
       }
 
-      if (data.password.length < 8) {
-        setApiError('Password must be at least 8 characters');
+      if (data.password.length < 6) {
+        setApiError('Password must be at least 6 characters');
         return;
       }
 
@@ -63,7 +63,7 @@ const SignUp: React.FC = () => {
   };
 
   const passwordsMatch = password === confirmPassword && password.length > 0;
-  const passwordLongEnough = password.length >= 8;
+  const passwordLongEnough = password.length >= 6;
   const displayError = apiError || error;
   const isFormLoading = isLoading || isSubmitting;
   const isFormValid = name && email && password && confirmPassword && 
@@ -126,8 +126,8 @@ const SignUp: React.FC = () => {
             register={register('password', {
               required: 'Password is required',
               minLength: {
-                value: 8,
-                message: 'Password must be at least 8 characters',
+                value: 6,
+                message: 'Password must be at least 6 characters',
               },
             })}
             error={errors.password}
