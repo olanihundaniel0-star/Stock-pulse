@@ -12,17 +12,6 @@ interface LoginResponse {
   };
 }
 
-interface SignupRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
 class AuthService {
   private api: AxiosInstance;
   private tokenKey = 'sp_token';
@@ -84,10 +73,10 @@ class AuthService {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data) {
         throw new Error(
-          error.response.data.message || 'signup failed. Please try again.'
+          error.response.data.message || 'Signup failed. Please try again.'
         );
       }
-      throw new Error('signup failed. Please try again.');
+      throw new Error('Signup failed. Please try again.');
     }
   }
 
@@ -101,10 +90,6 @@ class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getToken();
-  }
-
-  clearToken(): void {
-    localStorage.removeItem(this.tokenKey);
   }
 }
 

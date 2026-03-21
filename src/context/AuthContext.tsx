@@ -44,6 +44,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               id: decoded.sub || decoded.id || '',
               email: decoded.email || '',
               name: decoded.name || decoded.fullName || '',
+              role: decoded.role || '',
             });
           } catch (err) {
             // Invalid token, clear it
