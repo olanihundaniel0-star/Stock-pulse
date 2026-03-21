@@ -83,6 +83,8 @@ const MainIllustration = () => (
 );
 
 const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -110,7 +112,7 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
     setIsHovering(false);
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsScattered(true);
     setTimeout(() => setIsScattered(false), 600);
@@ -118,10 +120,15 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
     setLoading(true);
     setError("");
     try {
-      const data = await api.auth.login(email, password);
-      setTimeout(() => onLogin(data.user), 300);
+      if (isSignUp) {
+        const data = await api.auth.signup(name, email, password);
+        setTimeout(() => onLogin(data.user), 300);
+      } else {
+        const data = await api.auth.login(email, password);
+        setTimeout(() => onLogin(data.user), 300);
+      }
     } catch (err) {
-      setError("Invalid credentials. Please check your email and password.");
+      setError(isSignUp ? "Sign up failed. Please try again." : "Invalid credentials. Please check your email and password.");
       setLoading(false);
     }
   };
@@ -206,8 +213,8 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
 
           {/* Headings */}
           <div>
-            <h1 className="text-4xl font-bold text-[#0f1729] tracking-tight">Welcome back</h1>
-            <p className="text-[#0f1729] opacity-60 mt-3 italic font-serif text-lg">Sign in to manage your inventory</p>
+            <h1 className="text-4xl font-bold text-[#0f1729] tracking-tight">{isSignUp ? 'Create an account' : 'Welcome back'}</h1>
+            <p className="text-[#0f1729] opacity-60 mt-3 italic font-serif text-lg">{isSignUp ? 'Sign up to manage your inventory' : 'Sign in to manage your inventory'}</p>
           </div>
 
           {error && (
@@ -217,7 +224,20 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
           )}
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleAuth} className="space-y-6">
+            {isSignUp && (
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-[#0f1729]">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-5 py-3.5 rounded-full border border-slate-200 bg-transparent focus:border-[#0f1729] focus:ring-1 focus:ring-[#0f1729] outline-none transition-all text-[#0f1729] placeholder:text-slate-400"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-[#0f1729]">Email Address</label>
               <input
@@ -241,13 +261,15 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
               />
             </div>
 
-            <div className="flex items-center justify-between text-sm pt-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#0f1729] focus:ring-[#0f1729]" />
-                <span className="text-[#0f1729] opacity-70">Remember me</span>
-              </label>
-              <a href="#" className="text-[#3b4fd8] hover:text-[#2a3bb8] font-medium transition-colors">Forgot password?</a>
-            </div>
+            {!isSignUp && (
+              <div className="flex items-center justify-between text-sm pt-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#0f1729] focus:ring-[#0f1729]" />
+                  <span className="text-[#0f1729] opacity-70">Remember me</span>
+                </label>
+                <a href="#" className="text-[#3b4fd8] hover:text-[#2a3bb8] font-medium transition-colors">Forgot password?</a>
+              </div>
+            )}
 
             <button
               type="submit"
@@ -257,14 +279,21 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
               onMouseLeave={handleMouseLeave}
               className="w-full bg-[#0f1729] text-white font-semibold py-4 rounded-full flex items-center justify-center gap-2 btn-hover-effect disabled:opacity-50 mt-4 hover:bg-[#1a243d] transition-colors"
             >
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? (isSignUp ? 'Signing Up...' : 'Signing In...') : (isSignUp ? 'Sign Up' : 'Sign In')}
               {!loading && <span className="arrow-icon">→</span>}
             </button>
           </form>
 
           <div className="pt-8 text-center border-t border-slate-100">
             <p className="text-sm text-[#0f1729] opacity-60">
-              Don't have an account? <a href="#" className="text-[#3b4fd8] font-medium hover:text-[#2a3bb8] transition-colors">Contact Administrator</a>
+              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+              <button 
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-[#3b4fd8] font-medium hover:text-[#2a3bb8] transition-colors bg-transparent border-none cursor-pointer"
+              >
+                {isSignUp ? "Sign In" : "Create one"}
+              </button>
             </p>
           </div>
         </div>

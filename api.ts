@@ -23,6 +23,17 @@ export const api = {
       localStorage.setItem('stockpulse_token', data.token);
       return data;
     },
+    signup: async (name: string, email: string, password: string) => {
+      const res = await fetch(`${API_BASE}/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+      if (!res.ok) throw new Error('Failed to sign up');
+      const data = await res.json();
+      localStorage.setItem('stockpulse_token', data.token);
+      return data;
+    },
     logout: () => {
       localStorage.removeItem('stockpulse_token');
     }

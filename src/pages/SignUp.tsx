@@ -66,8 +66,8 @@ const SignUp: React.FC = () => {
   const passwordLongEnough = password.length >= 6;
   const displayError = apiError || error;
   const isFormLoading = isLoading || isSubmitting;
-  const isFormValid = name && email && password && confirmPassword && 
-                     passwordsMatch && passwordLongEnough;
+  const isFormValid = name && email && password && confirmPassword &&
+    passwordsMatch && passwordLongEnough;
 
   return (
     <AuthLayout
@@ -170,10 +170,9 @@ const SignUp: React.FC = () => {
           type="submit"
           disabled={isFormLoading || !isFormValid}
           className={`w-full py-2.5 font-semibold rounded-lg transition-all flex items-center justify-center gap-2 mt-6
-            ${
-              isFormLoading || !isFormValid
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800'
+            ${isFormLoading || !isFormValid
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800'
             }
           `}
         >
