@@ -29,26 +29,26 @@ const MainIllustration = () => (
 
     {/* Base Line */}
     <line x1="40" y1="280" x2="360" y2="280" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
-    
+
     {/* Warehouse Shelf */}
     <rect x="60" y="120" width="100" height="160" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <line x1="60" y1="170" x2="160" y2="170" stroke="currentColor" strokeWidth="1.5" />
     <line x1="60" y1="220" x2="160" y2="220" stroke="currentColor" strokeWidth="1.5" />
-    
+
     {/* Boxes on Shelf */}
     <rect x="70" y="130" width="30" height="40" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <line x1="70" y1="145" x2="100" y2="145" stroke="currentColor" strokeWidth="1.5" />
-    
+
     <rect x="110" y="140" width="40" height="30" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <circle cx="130" cy="155" r="4" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
-    
+
     <rect x="65" y="180" width="45" height="40" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <line x1="75" y1="190" x2="95" y2="190" stroke="currentColor" strokeWidth="1.5" />
     <line x1="75" y1="200" x2="90" y2="200" stroke="currentColor" strokeWidth="1.5" />
-    
+
     <rect x="120" y="190" width="30" height="30" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <line x1="125" y1="195" x2="145" y2="215" stroke="currentColor" strokeWidth="1.5" />
-    
+
     <rect x="80" y="240" width="60" height="40" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <rect x="90" y="250" width="40" height="20" stroke="currentColor" strokeWidth="1.5" fill="transparent" strokeDasharray="2 2" />
 
@@ -56,10 +56,10 @@ const MainIllustration = () => (
     <path d="M 220 180 L 240 180 L 250 200 L 250 240 L 220 240 Z" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <rect x="225" y="190" width="20" height="15" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <line x1="235" y1="215" x2="235" y2="230" stroke="currentColor" strokeWidth="1.5" />
-    
+
     {/* Scanner Beam */}
     <path d="M 200 190 L 170 170 L 170 210 Z" fill="currentColor" fillOpacity="0.05" stroke="currentColor" strokeWidth="1" strokeOpacity="0.3" strokeDasharray="4 4" />
-    
+
     {/* Document/Clipboard */}
     <rect x="270" y="100" width="60" height="80" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <line x1="285" y1="100" x2="315" y2="100" stroke="currentColor" strokeWidth="3" />
@@ -67,11 +67,11 @@ const MainIllustration = () => (
     <line x1="285" y1="135" x2="305" y2="135" stroke="currentColor" strokeWidth="1.5" />
     <line x1="285" y1="150" x2="315" y2="150" stroke="currentColor" strokeWidth="1.5" />
     <rect x="285" y="165" width="10" height="10" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
-    
+
     {/* Floating Decorative Elements (Line Art) */}
     <circle cx="200" cy="80" r="12" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
     <polygon points="240,50 255,75 225,75" stroke="currentColor" strokeWidth="1.5" fill="transparent" />
-    
+
     {/* Barcode Motif */}
     <line x1="300" y1="220" x2="300" y2="250" stroke="currentColor" strokeWidth="2" />
     <line x1="306" y1="220" x2="306" y2="250" stroke="currentColor" strokeWidth="1" />
@@ -127,29 +127,29 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
   };
 
   const floatingObjects = [
-    { 
-      id: 1, 
-      content: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12 2 22 20 2 20" /></svg>, 
-      className: 'text-[#0f1729] opacity-20 w-6 h-6', 
-      top: '15%', left: '10%', factor: 0.04, scatterX: -50, scatterY: -60 
+    {
+      id: 1,
+      content: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12 2 22 20 2 20" /></svg>,
+      className: 'text-[#0f1729] opacity-20 w-6 h-6',
+      top: '15%', left: '10%', factor: 0.04, scatterX: -50, scatterY: -60
     },
-    { 
-      id: 2, 
-      content: <div className="w-2 h-2 rounded-full border border-[#0f1729] opacity-30" />, 
-      className: '', 
-      top: '25%', left: '85%', factor: 0.06, scatterX: 60, scatterY: -20 
+    {
+      id: 2,
+      content: <div className="w-2 h-2 rounded-full border border-[#0f1729] opacity-30" />,
+      className: '',
+      top: '25%', left: '85%', factor: 0.06, scatterX: 60, scatterY: -20
     },
-    { 
-      id: 3, 
-      content: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="6" y="2" width="12" height="20" rx="2" ry="2" /><line x1="10" y1="6" x2="14" y2="6" /><line x1="10" y1="10" x2="14" y2="10" /></svg>, 
-      className: 'text-[#0f1729] opacity-20 w-6 h-6', 
-      top: '75%', left: '15%', factor: 0.05, scatterX: -40, scatterY: 50 
+    {
+      id: 3,
+      content: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="6" y="2" width="12" height="20" rx="2" ry="2" /><line x1="10" y1="6" x2="14" y2="6" /><line x1="10" y1="10" x2="14" y2="10" /></svg>,
+      className: 'text-[#0f1729] opacity-20 w-6 h-6',
+      top: '75%', left: '15%', factor: 0.05, scatterX: -40, scatterY: 50
     },
-    { 
-      id: 4, 
-      content: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="6" y1="4" x2="6" y2="20" /><line x1="10" y1="4" x2="10" y2="20" /><line x1="14" y1="4" x2="14" y2="20" /><line x1="18" y1="4" x2="18" y2="20" /></svg>, 
-      className: 'text-[#0f1729] opacity-20 w-6 h-6', 
-      top: '80%', left: '80%', factor: 0.07, scatterX: 50, scatterY: 50 
+    {
+      id: 4,
+      content: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="6" y1="4" x2="6" y2="20" /><line x1="10" y1="4" x2="10" y2="20" /><line x1="14" y1="4" x2="14" y2="20" /><line x1="18" y1="4" x2="18" y2="20" /></svg>,
+      className: 'text-[#0f1729] opacity-20 w-6 h-6',
+      top: '80%', left: '80%', factor: 0.07, scatterX: 50, scatterY: 50
     },
   ];
 
@@ -159,7 +159,7 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
       <div className="hidden lg:flex w-[45%] relative items-center justify-center overflow-hidden">
         {/* Faint grid pattern behind */}
         <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#0f1729 0.5px, transparent 0.5px)', backgroundSize: '24px 24px', opacity: 0.05 }}></div>
-        
+
         {/* Floating Objects */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           {floatingObjects.map((obj, index) => {
@@ -220,8 +220,8 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
               <label className="text-sm font-semibold text-[#0f1729]">Email Address</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 required
                 className="w-full px-5 py-3.5 rounded-full border border-slate-200 bg-transparent focus:border-[#0f1729] focus:ring-1 focus:ring-[#0f1729] outline-none transition-all text-[#0f1729] placeholder:text-slate-400"
                 placeholder="name@company.com"
@@ -231,8 +231,8 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-semibold text-[#0f1729]">Password</label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 required
                 className="w-full px-5 py-3.5 rounded-full border border-slate-200 bg-transparent focus:border-[#0f1729] focus:ring-1 focus:ring-[#0f1729] outline-none transition-all text-[#0f1729] placeholder:text-slate-400"
                 placeholder="Enter your password"
@@ -249,8 +249,8 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
               <a href="#" className="text-[#3b4fd8] hover:text-[#2a3bb8] font-medium transition-colors">Forgot password?</a>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading}
               ref={buttonRef}
               onMouseMove={handleMouseMove}
@@ -452,9 +452,9 @@ const App: React.FC = () => {
         return (
           <UserManagement
             users={state.users}
-            onAddUser={() => {}} // TODO: Implement user management API
-            onUpdateUser={() => {}}
-            onDeleteUser={() => {}}
+            onAddUser={() => { }} // TODO: Implement user management API
+            onUpdateUser={() => { }}
+            onDeleteUser={() => { }}
           />
         );
       case "settings":
@@ -496,11 +496,10 @@ const App: React.FC = () => {
       {/* Toast Notification */}
       {showToast && (
         <div
-          className={`fixed top-6 right-6 z-[60] px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 animate-[slideIn_0.3s_ease-out] ${
-            showToast.type === "success"
-              ? "bg-emerald-600 text-white"
-              : "bg-red-600 text-white"
-          }`}
+          className={`fixed top-6 right-6 z-[60] px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 animate-[slideIn_0.3s_ease-out] ${showToast.type === "success"
+            ? "bg-emerald-600 text-white"
+            : "bg-red-600 text-white"
+            }`}
         >
           <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
             {showToast.type === "success" ? "✓" : "!"}
