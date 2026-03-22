@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { LogIn, AlertCircle } from 'lucide-react';
 import AuthLayout from '../layouts/AuthLayout';
 import InputField from '../components/ui/InputField';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../features/auth/AuthContext';
 
 interface SignInFormInputs {
   email: string;

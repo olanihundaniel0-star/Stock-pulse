@@ -1,6 +1,6 @@
 import { Product, Transaction, User, UserRole } from './types';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 const getHeaders = () => {
   const token = localStorage.getItem('stockpulse_token');
@@ -24,7 +24,7 @@ export const api = {
       return data;
     },
     signup: async (name: string, email: string, password: string) => {
-      const res = await fetch(`${API_BASE}/auth/signup`, {
+      const res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })
@@ -43,7 +43,8 @@ export const api = {
     getAll: async (): Promise<Product[]> => {
       const res = await fetch(`${API_BASE}/products`, { headers: getHeaders() });
       if (!res.ok) throw new Error('Failed to fetch products');
-      return res.json();
+      const data = await res.json();
+      return Array.isArray(data) ? data : (data.items || []);
     },
     create: async (product: Partial<Product>): Promise<Product> => {
       const res = await fetch(`${API_BASE}/products`, {
@@ -72,7 +73,8 @@ export const api = {
   transactions: {
     getAll: async (): Promise<Transaction[]> => {
       const res = await fetch(`${API_BASE}/transactions`, { headers: getHeaders() });
-      return res.json();
+      const data = await res.json();
+      return Array.isArray(data) ? data : (data.items || []);
     },
     create: async (tx: Partial<Transaction>): Promise<Transaction> => {
       const res = await fetch(`${API_BASE}/transactions`, {
@@ -81,6 +83,39 @@ export const api = {
         body: JSON.stringify(tx)
       });
       return res.json();
+    }
+  },
+
+  users: {
+    getAll: async (): Promise<User[]> => {
+      const res = await fetch(`${API_BASE}/users`, { headers: getHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch users');
+      return res.json();
+    },
+    create: async (user: Partial<User>): Promise<User> => {
+      const res = await fetch(`${API_BASE}/users`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(user)
+      });
+      if (!res.ok) throw new Error('Failed to create user');
+      return res.json();
+    },
+    update: async (id: string, user: Partial<User>): Promise<User> => {
+      const res = await fetch(`${API_BASE}/users/${id}`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({ role: user.role, status: user.status })
+      });
+      if (!res.ok) throw new Error('Failed to update user');
+      return res.json();
+    },
+    delete: async (id: string): Promise<void> => {
+      const res = await fetch(`${API_BASE}/users/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders()
+      });
+      if (!res.ok) throw new Error('Failed to delete user');
     }
   },
 

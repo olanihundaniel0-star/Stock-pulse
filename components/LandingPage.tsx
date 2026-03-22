@@ -112,7 +112,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         </div>
         
         <div className="flex items-center gap-6">
-          <button onClick={onLogin} className="text-[14px] font-semibold text-slate-900 hover:text-blue-700 transition-colors">Sign In</button>
           <button onClick={onLogin} className="bg-slate-900 text-white text-[14px] font-semibold px-5 py-2.5 rounded-full hover:bg-slate-800 flex items-center gap-2 group transition-all">
             Log-in <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>

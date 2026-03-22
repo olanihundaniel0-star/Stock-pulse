@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './src/context/AuthContext';
-import ProtectedRoute from './src/components/ProtectedRoute';
-import SignIn from './src/pages/SignIn';
-import SignUp from './src/pages/SignUp';
+import { AuthProvider } from './features/auth/AuthContext';
+import ProtectedRoute from './features/auth/ProtectedRoute';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 
 // Import your existing dashboard/app pages here
 // import Dashboard from './components/Dashboard';

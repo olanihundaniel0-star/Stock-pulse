@@ -23,7 +23,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpd
     e.preventDefault();
     onAddUser({ ...formData, id: `u-${Date.now()}` });
     setShowAddForm(false);
-    setFormData({ name: '', email: '', role: UserRole.STAFF, status: 'Active' });
+    setFormData({ name: '', email: '', password: '', role: UserRole.STAFF, status: 'Active' });
   };
 
   return (
@@ -44,7 +44,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpd
 
       {showAddForm && (
         <div className="bg-white p-6 rounded-xl border-2 border-blue-100 shadow-sm animate-in slide-in-from-top duration-300">
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
             <div className="md:col-span-1">
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Full Name</label>
               <input 
@@ -61,8 +61,19 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpd
                 required
                 type="email" 
                 className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-900"
-                value={formData.email}
+                value={formData.email || ''}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
+              />
+            </div>
+            <div className="md:col-span-1">
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pass</label>
+              <input 
+                required
+                type="password" 
+                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-900"
+                value={formData.password || ''}
+                onChange={e => setFormData({ ...formData, password: e.target.value })}
+                placeholder="≥6 chars"
               />
             </div>
             <div>
