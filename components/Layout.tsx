@@ -44,10 +44,10 @@ const Layout: React.FC<LayoutProps> = ({
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(window.innerWidth >= 768);
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: [UserRole.ADMIN, UserRole.STAFF] },
-    { id: 'inventory', label: 'Inventory', icon: Package, roles: [UserRole.ADMIN, UserRole.STAFF] },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: [UserRole.ADMIN, UserRole.USER] },
+    { id: 'inventory', label: 'Inventory', icon: Package, roles: [UserRole.ADMIN, UserRole.USER] },
     { id: 'stock-in', label: 'Stock In', icon: ArrowDownLeft, roles: [UserRole.ADMIN] },
-    { id: 'stock-out', label: 'Stock Out', icon: ArrowUpRight, roles: [UserRole.ADMIN, UserRole.STAFF] },
+    { id: 'stock-out', label: 'Stock Out', icon: ArrowUpRight, roles: [UserRole.ADMIN, UserRole.USER] },
     { id: 'reports', label: 'Reports', icon: BarChart3, roles: [UserRole.ADMIN] },
     { id: 'users', label: 'Users', icon: Users, roles: [UserRole.ADMIN] },
     { id: 'settings', label: 'Settings', icon: Settings, roles: [UserRole.ADMIN] },

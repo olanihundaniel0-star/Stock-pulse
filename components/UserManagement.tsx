@@ -15,15 +15,15 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpd
   const [formData, setFormData] = useState<Partial<User>>({
     name: '',
     email: '',
-    role: UserRole.STAFF,
+    role: UserRole.USER,
     status: 'Active'
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAddUser({ ...formData, id: `u-${Date.now()}` });
+    onAddUser({ ...formData });
     setShowAddForm(false);
-    setFormData({ name: '', email: '', password: '', role: UserRole.STAFF, status: 'Active' });
+    setFormData({ name: '', email: '', password: '', role: UserRole.USER, status: 'Active' });
   };
 
   return (
@@ -84,7 +84,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpd
                 onChange={e => setFormData({ ...formData, role: e.target.value as UserRole })}
               >
                 <option value={UserRole.ADMIN}>Administrator</option>
-                <option value={UserRole.STAFF}>Staff / Clerk</option>
+                <option value={UserRole.USER}>Staff / Clerk</option>
               </select>
             </div>
             <div className="flex gap-2">

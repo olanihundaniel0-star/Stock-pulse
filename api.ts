@@ -1,47 +1,23 @@
-import { Product, Transaction, User, UserRole } from './types';
+import { supabase } from './lib/supabase';
+import { Product, Transaction, User, DashboardStats } from './types';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
-const getHeaders = () => {
-  const token = localStorage.getItem('stockpulse_token');
-  return {
-    'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-  };
+const getHeaders = async () => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (session?.access_token) {
+    headers['Authorization'] = `Bearer ${session.access_token}`;
+  }
+  return headers;
 };
 
 export const api = {
-  auth: {
-    login: async (email: string, password: string) => {
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      if (!res.ok) throw new Error('Invalid credentials');
-      const data = await res.json();
-      localStorage.setItem('stockpulse_token', data.token);
-      return data;
-    },
-    signup: async (name: string, email: string, password: string) => {
-      const res = await fetch(`${API_BASE}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
-      });
-      if (!res.ok) throw new Error('Failed to sign up');
-      const data = await res.json();
-      localStorage.setItem('stockpulse_token', data.token);
-      return data;
-    },
-    logout: () => {
-      localStorage.removeItem('stockpulse_token');
-    }
-  },
-
   products: {
     getAll: async (): Promise<Product[]> => {
-      const res = await fetch(`${API_BASE}/products`, { headers: getHeaders() });
+      const res = await fetch(`${API_BASE}/products`, { headers: await getHeaders() });
       if (!res.ok) throw new Error('Failed to fetch products');
       const data = await res.json();
       return Array.isArray(data) ? data : (data.items || []);
@@ -49,54 +25,55 @@ export const api = {
     create: async (product: Partial<Product>): Promise<Product> => {
       const res = await fetch(`${API_BASE}/products`, {
         method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(product)
+        headers: await getHeaders(),
+        body: JSON.stringify(product),
       });
       return res.json();
     },
     update: async (id: string, product: Partial<Product>): Promise<Product> => {
       const res = await fetch(`${API_BASE}/products/${id}`, {
-        method: 'PUT',
-        headers: getHeaders(),
-        body: JSON.stringify(product)
+        method: 'PATCH',
+        headers: await getHeaders(),
+        body: JSON.stringify(product),
       });
       return res.json();
     },
     delete: async (id: string): Promise<void> => {
       await fetch(`${API_BASE}/products/${id}`, {
         method: 'DELETE',
-        headers: getHeaders()
+        headers: await getHeaders(),
       });
-    }
+    },
   },
 
   transactions: {
     getAll: async (): Promise<Transaction[]> => {
-      const res = await fetch(`${API_BASE}/transactions`, { headers: getHeaders() });
+      const res = await fetch(`${API_BASE}/transactions`, { headers: await getHeaders() });
       const data = await res.json();
       return Array.isArray(data) ? data : (data.items || []);
     },
     create: async (tx: Partial<Transaction>): Promise<Transaction> => {
       const res = await fetch(`${API_BASE}/transactions`, {
         method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(tx)
+        headers: await getHeaders(),
+        body: JSON.stringify(tx),
       });
       return res.json();
-    }
+    },
   },
 
   users: {
     getAll: async (): Promise<User[]> => {
-      const res = await fetch(`${API_BASE}/users`, { headers: getHeaders() });
+      const res = await fetch(`${API_BASE}/users`, { headers: await getHeaders() });
       if (!res.ok) throw new Error('Failed to fetch users');
       return res.json();
     },
-    create: async (user: Partial<User>): Promise<User> => {
+    create: async (user: Partial<User> & { password?: string }): Promise<User> => {
+      const { password, ...rest } = user;
       const res = await fetch(`${API_BASE}/users`, {
         method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(user)
+        headers: await getHeaders(),
+        body: JSON.stringify({ ...rest, password }),
       });
       if (!res.ok) throw new Error('Failed to create user');
       return res.json();
@@ -104,8 +81,8 @@ export const api = {
     update: async (id: string, user: Partial<User>): Promise<User> => {
       const res = await fetch(`${API_BASE}/users/${id}`, {
         method: 'PATCH',
-        headers: getHeaders(),
-        body: JSON.stringify({ role: user.role, status: user.status })
+        headers: await getHeaders(),
+        body: JSON.stringify({ role: user.role, status: user.status, name: user.name }),
       });
       if (!res.ok) throw new Error('Failed to update user');
       return res.json();
@@ -113,16 +90,17 @@ export const api = {
     delete: async (id: string): Promise<void> => {
       const res = await fetch(`${API_BASE}/users/${id}`, {
         method: 'DELETE',
-        headers: getHeaders()
+        headers: await getHeaders(),
       });
       if (!res.ok) throw new Error('Failed to delete user');
-    }
+    },
   },
 
   stats: {
-    getDashboard: async () => {
-      const res = await fetch(`${API_BASE}/stats`, { headers: getHeaders() });
+    getDashboard: async (): Promise<DashboardStats> => {
+      const res = await fetch(`${API_BASE}/stats`, { headers: await getHeaders() });
+      if (!res.ok) throw new Error('Failed to fetch dashboard stats');
       return res.json();
-    }
-  }
+    },
+  },
 };

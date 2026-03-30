@@ -8,6 +8,8 @@ import {
   User,
 } from "./types";
 import { api } from "./api";
+import { supabase } from "./lib/supabase";
+import { useSession } from "./features/auth/SessionProvider";
 import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
 import Inventory from "./components/Inventory";
@@ -105,7 +107,7 @@ const MainIllustration = () => (
   </svg>
 );
 
-const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
+const Login: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -135,6 +137,19 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
     setIsHovering(false);
   };
 
+  const handleGoogle = async () => {
+    setError("");
+    setLoading(true);
+    const { error: oauthErr } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/` },
+    });
+    if (oauthErr) {
+      setError(oauthErr.message || "Google sign-in failed.");
+      setLoading(false);
+    }
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsScattered(true);
@@ -144,14 +159,36 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
     setError("");
     try {
       if (isSignUp) {
-        const data = await api.auth.signup(name, email, password);
-        setTimeout(() => onLogin(data.user), 300);
+        const { error: signUpErr } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: name, name } },
+        });
+        if (signUpErr) throw signUpErr;
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session) {
+          setError(
+            "Check your email to confirm your account, then sign in.",
+          );
+        }
       } else {
-        const data = await api.auth.login(email, password);
-        setTimeout(() => onLogin(data.user), 300);
+        const { error: signInErr } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (signInErr) throw signInErr;
       }
-    } catch (err) {
-      setError(isSignUp ? "Sign up failed. Please try again." : "Invalid credentials. Please check your email and password.");
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : isSignUp
+            ? "Sign up failed. Please try again."
+            : "Invalid credentials. Please check your email and password.";
+      setError(msg);
+    } finally {
       setLoading(false);
     }
   };
@@ -359,6 +396,15 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
             </button>
           </form>
 
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => void handleGoogle()}
+            className="w-full mt-4 py-3.5 rounded-full border-2 border-slate-200 text-[#0f1729] font-semibold hover:bg-slate-50 transition-colors disabled:opacity-50"
+          >
+            Continue with Google
+          </button>
+
           <div className="pt-8 text-center border-t border-slate-100">
             <p className="text-sm text-[#0f1729] opacity-60">
               {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
@@ -377,7 +423,10 @@ const Login: React.FC<{ onLogin: (user: User) => void }> = ({ onLogin }) => {
   );
 };
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+
 const App: React.FC = () => {
+  const { isReady: authReady, accessToken } = useSession();
   const [state, setState] = useState<AppState>({
     currentUser: null,
     products: [],
@@ -399,10 +448,37 @@ const App: React.FC = () => {
     );
   });
 
+  const syncUserFromApi = useCallback(async (accessToken: string | undefined) => {
+    if (!accessToken) {
+      setState((prev) => ({ ...prev, currentUser: null }));
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/users/me`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!res.ok) {
+        setState((prev) => ({ ...prev, currentUser: null }));
+        return;
+      }
+      const body = await res.json();
+      const user = body.user as User;
+      setState((prev) => ({ ...prev, currentUser: user }));
+      setActivePage((p) => (p === "landing" || p === "login" ? "dashboard" : p));
+    } catch {
+      setState((prev) => ({ ...prev, currentUser: null }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!authReady) return;
+    void syncUserFromApi(accessToken);
+  }, [authReady, accessToken, syncUserFromApi]);
+
   const fetchData = useCallback(async () => {
     if (!state.currentUser) return;
     try {
-      const promises: any[] = [
+      const promises: Promise<unknown>[] = [
         api.products.getAll(),
         api.transactions.getAll(),
       ];
@@ -410,11 +486,11 @@ const App: React.FC = () => {
         promises.push(api.users.getAll());
       }
       const data = await Promise.all(promises);
-      setState((prev) => ({ 
-        ...prev, 
-        products: data[0], 
-        transactions: data[1],
-        ...(data[2] && { users: data[2] })
+      setState((prev) => ({
+        ...prev,
+        products: data[0] as Product[],
+        transactions: data[1] as Transaction[],
+        ...(data[2] && { users: data[2] as User[] }),
       }));
     } catch (err) {
       console.error("Failed to fetch data", err);
@@ -448,13 +524,8 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const handleLogin = (user: User) => {
-    setState((prev) => ({ ...prev, currentUser: user }));
-    setActivePage("dashboard");
-  };
-
-  const handleLogout = () => {
-    api.auth.logout();
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setState((prev) => ({ ...prev, currentUser: null }));
     setActivePage("landing");
   };
@@ -497,10 +568,17 @@ const App: React.FC = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
+  if (!authReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f8f8f6] text-[#0f1729]">
+        <p className="font-medium">Loading…</p>
+      </div>
+    );
+  }
   if (activePage === "landing")
     return <LandingPage onLogin={() => setActivePage("login")} />;
-  if (activePage === "login") return <Login onLogin={handleLogin} />;
-  if (!state.currentUser) return <Login onLogin={handleLogin} />;
+  if (activePage === "login") return <Login />;
+  if (!state.currentUser) return <Login />;
 
   const renderPage = () => {
     switch (activePage) {
@@ -525,7 +603,7 @@ const App: React.FC = () => {
                 try {
                   await api.products.delete(id);
                   await fetchData();
-                  notify("Product deleted", "error");
+                  notify("Product deleted");
                 } catch (err) {
                   notify("Failed to delete product", "error");
                 }
@@ -588,7 +666,7 @@ const App: React.FC = () => {
                 try {
                   await api.users.delete(id);
                   await fetchData();
-                  notify("User deleted", "error");
+                  notify("User deleted");
                 } catch (err) {
                   notify("Failed to delete user", "error");
                 }

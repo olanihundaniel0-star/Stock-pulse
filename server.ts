@@ -1,3 +1,9 @@
+/**
+ * Legacy Express + SQLite + JWT dev server (not wired to the Nest + Supabase API).
+ * - Binds port 3000 by default (same as Nest), so it conflicts if both run unchanged.
+ * - `npm run dev` is Vite-only; this file is excluded from `tsc` and its npm dependencies
+ *   were removed. Restore express, better-sqlite3, bcryptjs, jsonwebtoken, etc., if you still need this stack.
+ */
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';

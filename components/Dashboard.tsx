@@ -1,14 +1,16 @@
-
-import React from 'react';
-import { 
-  Package, 
-  DollarSign, 
-  AlertTriangle, 
-  ShoppingCart, 
+import React, { useEffect, useState } from 'react';
+import {
+  Package,
+  DollarSign,
+  AlertTriangle,
+  ShoppingCart,
   TrendingUp,
   History,
-  ArrowRight
+  ArrowRight,
+  ArrowDownLeft,
+  ArrowUpRight,
 } from 'lucide-react';
+import { api } from '../api';
 import { 
   XAxis, 
   YAxis, 
@@ -18,7 +20,7 @@ import {
   AreaChart,
   Area
 } from 'recharts';
-import { Product, Transaction, UserRole, TransactionType } from '../types';
+import { Product, Transaction, UserRole, TransactionType, DashboardStats } from '../types';
 
 interface DashboardProps {
   products: Product[];
@@ -29,48 +31,79 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUser, onFilterLowStock }) => {
   const isAdmin = currentUser.role === UserRole.ADMIN;
-  
-  // Calculate metrics
-  const totalItems = products.length;
-  const lowStockItems = products.filter(p => p.quantity < p.reorderLevel).length;
-  
-  const inventoryValue = products.reduce((acc, p) => {
-    const price = isAdmin ? p.costPrice : p.sellingPrice;
-    return acc + (price * p.quantity);
-  }, 0);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [statsError, setStatsError] = useState<string | null>(null);
 
-  const today = new Date().toISOString().split('T')[0];
-  const todaySalesCount = transactions.filter(t => 
-    t.date.split('T')[0] === today && t.type === TransactionType.STOCK_OUT
-  ).length;
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const data = await api.stats.getDashboard();
+        if (!cancelled) {
+          setStats(data);
+          setStatsError(null);
+        }
+      } catch {
+        if (!cancelled) {
+          setStats(null);
+          setStatsError('Could not load dashboard metrics.');
+        }
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [products, transactions]);
 
-  const todaySalesValue = transactions
-    .filter(t => t.date.split('T')[0] === today && t.type === TransactionType.STOCK_OUT)
-    .reduce((acc, t) => acc + (t.unitPrice || 0) * t.quantity, 0);
+  const todayUtc = new Date().toISOString().split('T')[0];
+  const fallbackTodayOut = transactions.filter(
+    (t) => t.date.split('T')[0] === todayUtc && t.type === TransactionType.STOCK_OUT,
+  );
 
-  // Chart data (last 30 days)
-  const chartData = React.useMemo(() => {
-    const data = [];
+  const totalItems = stats?.totalItems ?? products.length;
+  const lowStockItems = stats?.lowStockItems ?? products.filter((p) => p.quantity < p.reorderLevel).length;
+  const inventoryValue = isAdmin
+    ? (stats?.inventoryValueCost ??
+      products.reduce((acc, p) => acc + p.costPrice * p.quantity, 0))
+    : (stats?.inventoryValueRetail ??
+      products.reduce((acc, p) => acc + p.sellingPrice * p.quantity, 0));
+
+  const todaySalesCount =
+    stats?.todaySalesCount ?? fallbackTodayOut.reduce((acc, t) => acc + t.quantity, 0);
+  const todaySalesValue =
+    stats?.todaySalesValue ??
+    fallbackTodayOut.reduce((acc, t) => acc + (t.unitPrice || 0) * t.quantity, 0);
+
+  const fallbackChart = React.useMemo(() => {
+    const data: { name: string; sales: number }[] = [];
     for (let i = 29; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
-      
-      const dayTransactions = transactions.filter(t => t.date.split('T')[0] === dateStr);
-      const stockIn = dayTransactions.filter(t => t.type === TransactionType.STOCK_IN).reduce((acc, t) => acc + t.quantity, 0);
-      const stockOut = dayTransactions.filter(t => t.type === TransactionType.STOCK_OUT).reduce((acc, t) => acc + t.quantity, 0);
-      
+      const dayTransactions = transactions.filter((t) => t.date.split('T')[0] === dateStr);
       data.push({
         name: date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-        stock: 500 + (stockIn - stockOut), // Mock relative total
-        sales: dayTransactions.filter(t => t.type === TransactionType.STOCK_OUT).reduce((acc, t) => acc + (t.unitPrice || 0) * t.quantity, 0)
+        sales: dayTransactions
+          .filter((t) => t.type === TransactionType.STOCK_OUT)
+          .reduce((acc, t) => acc + (t.unitPrice || 0) * t.quantity, 0),
       });
     }
     return data;
   }, [transactions]);
 
+  const chartData =
+    stats?.chart && stats.chart.length > 0
+      ? stats.chart.map((p) => ({ name: p.label, sales: p.sales }))
+      : fallbackChart;
+
   return (
     <div className="space-y-6">
+      {statsError && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
+          {statsError} Showing figures from cached inventory where possible.
+        </div>
+      )}
       {/* Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
@@ -210,17 +243,3 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
 };
 
 export default Dashboard;
-
-// Helper icons missing in Dashboard
-const ArrowDownLeft = ({ size, className }: any) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <line x1="17" y1="7" x2="7" y2="17"></line>
-    <polyline points="17 17 7 17 7 7"></polyline>
-  </svg>
-);
-const ArrowUpRight = ({ size, className }: any) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <line x1="7" y1="17" x2="17" y2="7"></line>
-    <polyline points="7 7 17 7 17 17"></polyline>
-  </svg>
-);

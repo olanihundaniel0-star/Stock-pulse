@@ -1,7 +1,7 @@
 
 export enum UserRole {
-  ADMIN = 'ADMIN',
-  STAFF = 'STAFF'
+  ADMIN = 'admin',
+  USER = 'user',
 }
 
 export enum TransactionType {
@@ -68,4 +68,22 @@ export interface AppState {
   transactions: Transaction[];
   users: User[];
   isOffline: boolean;
+}
+
+export interface DashboardChartPoint {
+  date: string;
+  label: string;
+  sales: number;
+  stockIn: number;
+  stockOut: number;
+}
+
+export interface DashboardStats {
+  totalItems: number;
+  lowStockItems: number;
+  inventoryValueCost: number;
+  inventoryValueRetail: number;
+  todaySalesCount: number;
+  todaySalesValue: number;
+  chart: DashboardChartPoint[];
 }
