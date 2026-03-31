@@ -448,6 +448,34 @@ const App: React.FC = () => {
     );
   });
 
+  useEffect(() => {
+    let active = true;
+
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (active && session) {
+        setActivePage("dashboard");
+      }
+    };
+
+    void checkSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") {
+        setActivePage("dashboard");
+      }
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
   const syncUserFromApi = useCallback(async (accessToken: string | undefined) => {
     if (!accessToken) {
       setState((prev) => ({ ...prev, currentUser: null }));

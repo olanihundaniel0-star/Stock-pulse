@@ -13,7 +13,13 @@ if (!url || !anon) {
   );
 }
 
-export const supabase = createClient(url ?? '', anon ?? '');
+export const supabase = createClient(url ?? '', anon ?? '', {
+  auth: {
+    detectSessionInUrl: true,
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
 
 export type AuthStateCallback = (
   event: AuthChangeEvent,
