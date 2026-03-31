@@ -496,7 +496,7 @@ const App: React.FC = () => {
       const body = await res.json();
       const user = body.user as User;
       setState((prev) => ({ ...prev, currentUser: user }));
-      setActivePage((p) => (p === "landing" || p === "login" ? "dashboard" : p));
+      setActivePage("dashboard");
     } catch {
       return;
     }
