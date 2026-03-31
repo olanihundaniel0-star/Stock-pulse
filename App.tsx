@@ -426,6 +426,8 @@ const Login: React.FC = () => {
 
 const App: React.FC = () => {
   const { isReady: authReady, accessToken } = useSession();
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [hasSession, setHasSession] = useState(false);
   const [state, setState] = useState<AppState>({
     currentUser: null,
     products: [],
@@ -454,18 +456,24 @@ const App: React.FC = () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      if (active && session) {
-        setActivePage("dashboard");
-      }
+      if (!active) return;
+      setHasSession(Boolean(session));
+      if (session) setActivePage("dashboard");
     };
 
     void checkSession();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setHasSession(Boolean(session));
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        setAuthError(null);
         setActivePage("dashboard");
+      }
+      if (event === "SIGNED_OUT") {
+        setState((prev) => ({ ...prev, currentUser: null }));
+        setAuthError(null);
       }
     });
 
@@ -478,24 +486,59 @@ const App: React.FC = () => {
   const syncUserFromApi = useCallback(async (accessToken: string | undefined) => {
     if (!accessToken) {
       setState((prev) => ({ ...prev, currentUser: null }));
+      setHasSession(false);
+      setAuthError(null);
       return;
     }
+    setHasSession(true);
+    setAuthError(null);
+
     try {
       const res = await fetch(`${API_BASE}/users/me`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      if (res.status === 401 || res.status === 403) {
-        await supabase.auth.signOut();
+
+      if (!res.ok) {
+        const rawResponse = await res.text();
+        let details = rawResponse.trim();
+        if (details) {
+          try {
+            const parsed = JSON.parse(details) as { message?: unknown; error?: unknown };
+            if (typeof parsed.message === "string" && parsed.message.trim()) {
+              details = parsed.message;
+            } else if (typeof parsed.error === "string" && parsed.error.trim()) {
+              details = parsed.error;
+            }
+          } catch {
+            // Keep raw text if response is not JSON.
+          }
+        }
+        if (!details) details = `${res.status} ${res.statusText}`.trim();
+
+        setAuthError(`GET ${API_BASE}/users/me failed (${res.status}): ${details}`);
         setState((prev) => ({ ...prev, currentUser: null }));
-        setActivePage("login");
+        if (res.status === 401 || res.status === 403) {
+          await supabase.auth.signOut();
+          setHasSession(false);
+          setActivePage("login");
+        }
         return;
       }
-      if (!res.ok) return;
+
       const body = await res.json();
-      const user = body.user as User;
+      const user = body.user as User | undefined;
+      if (!user) {
+        setAuthError("GET /users/me succeeded but response is missing `user`.");
+        setState((prev) => ({ ...prev, currentUser: null }));
+        return;
+      }
       setState((prev) => ({ ...prev, currentUser: user }));
+      setAuthError(null);
       setActivePage("dashboard");
-    } catch {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setAuthError(message);
+      setState((prev) => ({ ...prev, currentUser: null }));
       return;
     }
   }, []);
@@ -504,6 +547,11 @@ const App: React.FC = () => {
     if (!authReady) return;
     void syncUserFromApi(accessToken);
   }, [authReady, accessToken, syncUserFromApi]);
+
+  useEffect(() => {
+    if (!authReady) return;
+    setHasSession(Boolean(accessToken));
+  }, [authReady, accessToken]);
 
   const fetchData = useCallback(async () => {
     if (!state.currentUser) return;
@@ -556,8 +604,15 @@ const App: React.FC = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setHasSession(false);
+    setAuthError(null);
     setState((prev) => ({ ...prev, currentUser: null }));
     setActivePage("landing");
+  };
+
+  const handleRetryAuthSync = async () => {
+    setAuthError(null);
+    await syncUserFromApi(accessToken);
   };
 
   const notify = (message: string, type: "success" | "error" = "success") => {
@@ -609,10 +664,50 @@ const App: React.FC = () => {
       </div>
     );
   }
-  if (activePage === "landing")
-    return <LandingPage onLogin={() => setActivePage("login")} />;
-  if (activePage === "login") return <Login />;
-  if (!state.currentUser) return <Login />;
+  if (authError) {
+    return (
+      <div className="min-h-screen bg-red-900 text-red-100 flex items-center justify-center p-6">
+        <div className="w-full max-w-3xl rounded-2xl border border-red-300/30 bg-red-950 p-6 sm:p-8 shadow-2xl">
+          <h1 className="text-2xl font-bold mb-4">Authentication Sync Error</h1>
+          <p className="text-red-200 mb-3">User sync failed after login. Error details:</p>
+          <pre className="whitespace-pre-wrap break-words rounded-lg bg-red-900/60 p-4 text-sm leading-6 text-red-100">
+            {authError}
+          </pre>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => void handleRetryAuthSync()}
+              className="px-4 py-2 rounded-lg bg-red-100 text-red-900 font-semibold hover:bg-white transition-colors"
+            >
+              Retry
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleLogout()}
+              className="px-4 py-2 rounded-lg border border-red-200 text-red-100 font-semibold hover:bg-red-900/60 transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasSession) {
+    if (activePage === "landing") {
+      return <LandingPage onLogin={() => setActivePage("login")} />;
+    }
+    return <Login />;
+  }
+
+  if (!state.currentUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f8f8f6] text-[#0f1729]">
+        <p className="font-medium">Syncing your account...</p>
+      </div>
+    );
+  }
 
   const renderPage = () => {
     switch (activePage) {
