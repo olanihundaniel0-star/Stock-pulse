@@ -425,6 +425,7 @@ const Login: React.FC = () => {
 };
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+console.log("API_BASE:", API_BASE);
 
 const App: React.FC = () => {
   const { isReady: authReady, accessToken } = useSession();
