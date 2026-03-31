@@ -1,10 +1,9 @@
 import { supabase } from './lib/supabase';
 import { Product, Transaction, User, DashboardStats } from './types';
 
-const API_ROOT = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000')
+export const API_BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api')
   .toString()
   .replace(/\/+$/, '');
-const API_BASE = `${API_ROOT}/api`;
 
 const getHeaders = async () => {
   const {

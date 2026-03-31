@@ -7,7 +7,7 @@ import {
   Transaction,
   User,
 } from "./types";
-import { api } from "./api";
+import { api, API_BASE } from "./api";
 import { supabase } from "./lib/supabase";
 import { useSession } from "./features/auth/SessionProvider";
 import Layout from "./components/Layout";
@@ -423,9 +423,6 @@ const Login: React.FC = () => {
     </div>
   );
 };
-
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-console.log("API_BASE:", API_BASE);
 
 const App: React.FC = () => {
   const { isReady: authReady, accessToken } = useSession();
