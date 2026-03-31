@@ -486,16 +486,19 @@ const App: React.FC = () => {
       const res = await fetch(`${API_BASE}/users/me`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        await supabase.auth.signOut();
         setState((prev) => ({ ...prev, currentUser: null }));
+        setActivePage("login");
         return;
       }
+      if (!res.ok) return;
       const body = await res.json();
       const user = body.user as User;
       setState((prev) => ({ ...prev, currentUser: user }));
       setActivePage((p) => (p === "landing" || p === "login" ? "dashboard" : p));
     } catch {
-      setState((prev) => ({ ...prev, currentUser: null }));
+      return;
     }
   }, []);
 
