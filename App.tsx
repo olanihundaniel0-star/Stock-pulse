@@ -19,6 +19,7 @@ import ProductForm from "./components/ProductForm";
 import Reports from "./components/Reports";
 import UserManagement from "./components/UserManagement";
 import Settings from "./components/Settings";
+import AuthCallback from "./AuthCallback";
 
 // Simple Auth Screen
 const MainIllustration = () => (
@@ -142,7 +143,7 @@ const Login: React.FC = () => {
     setLoading(true);
     const { error: oauthErr } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     if (oauthErr) {
       setError(oauthErr.message || "Google sign-in failed.");
@@ -595,6 +596,10 @@ const App: React.FC = () => {
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
+
+  if (window.location.pathname === "/auth/callback") {
+    return <AuthCallback />;
+  }
 
   if (!authReady) {
     return (
