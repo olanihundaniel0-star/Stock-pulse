@@ -8,7 +8,7 @@ const Settings: React.FC = () => {
     email: 'contact@stockpulse.com',
     phone: '+1 (555) 000-1234',
     address: '123 Warehouse St, Inventory City',
-    currency: 'USD',
+    currency: 'NGN',
     taxRate: 7.5,
     lowStockThreshold: 10,
     emailAlerts: true

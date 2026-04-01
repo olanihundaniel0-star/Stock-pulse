@@ -209,11 +209,11 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="text-sm font-semibold text-slate-800 dark:text-white">${p.sellingPrice.toFixed(2)}</p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">₦{p.sellingPrice.toFixed(2)}</p>
                   </td>
                   {isAdmin && (
                     <td className="px-6 py-4">
-                      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">${p.costPrice.toFixed(2)}</p>
+                      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">₦{p.costPrice.toFixed(2)}</p>
                     </td>
                   )}
                   <td className="px-6 py-4">

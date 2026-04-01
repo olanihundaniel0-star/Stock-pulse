@@ -112,7 +112,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
             <p className="text-slate-500 dark:text-slate-400 text-sm">Total Inventory Worth</p>
-            <h4 className="text-2xl font-bold mt-1 text-slate-800 dark:text-white">${totalWorth.toLocaleString()}</h4>
+            <h4 className="text-2xl font-bold mt-1 text-slate-800 dark:text-white">₦{totalWorth.toLocaleString()}</h4>
             <div className="mt-4 flex items-center text-xs text-emerald-600 dark:text-emerald-400 gap-1 font-semibold">
               <TrendingUp size={12} /> +2.4% from last month
             </div>
@@ -156,8 +156,8 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                     <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">{p.name}</td>
                     <td className="px-6 py-4 mono text-xs text-slate-500 dark:text-slate-400">{p.sku}</td>
                     <td className="px-6 py-4 dark:text-slate-300">{p.quantity}</td>
-                    <td className="px-6 py-4 dark:text-slate-300">${p.sellingPrice.toFixed(2)}</td>
-                    {isAdmin && <td className="px-6 py-4 font-medium dark:text-slate-200">${(p.costPrice * p.quantity).toLocaleString()}</td>}
+                    <td className="px-6 py-4 dark:text-slate-300">₦{p.sellingPrice.toFixed(2)}</td>
+                    {isAdmin && <td className="px-6 py-4 font-medium dark:text-slate-200">₦{(p.costPrice * p.quantity).toLocaleString()}</td>}
                     <td className="px-6 py-4">
                       {p.quantity === 0 ? (
                         <span className="text-red-600 dark:text-red-400 font-bold">Out of Stock</span>
@@ -262,15 +262,15 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-center transition-colors">
              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase mb-1">Total Revenue</p>
-             <h4 className="text-2xl font-black text-blue-900 dark:text-blue-400">${totalRevenue.toLocaleString()}</h4>
+             <h4 className="text-2xl font-black text-blue-900 dark:text-blue-400">₦{totalRevenue.toLocaleString()}</h4>
           </div>
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-center transition-colors">
              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase mb-1">Cost of Goods</p>
-             <h4 className="text-2xl font-black text-slate-800 dark:text-white">${totalCost.toLocaleString()}</h4>
+             <h4 className="text-2xl font-black text-slate-800 dark:text-white">₦{totalCost.toLocaleString()}</h4>
           </div>
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-center border-b-4 border-emerald-500 transition-colors">
              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase mb-1">Estimated Profit</p>
-             <h4 className="text-2xl font-black text-emerald-600 dark:text-emerald-400">${profit.toLocaleString()}</h4>
+             <h4 className="text-2xl font-black text-emerald-600 dark:text-emerald-400">₦{profit.toLocaleString()}</h4>
           </div>
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-center transition-colors">
              <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase mb-1">Profit Margin</p>
@@ -291,7 +291,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                   <div key={p.id} className="space-y-1">
                     <div className="flex justify-between text-sm">
                       <span className="font-semibold dark:text-slate-200">{p.name}</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">${pProfit.toFixed(2)} / unit</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold">₦{pProfit.toFixed(2)} / unit</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                       <div className="bg-blue-900 dark:bg-blue-600 h-full" style={{ width: `${(pProfit / p.sellingPrice) * 100}%` }}></div>
@@ -433,7 +433,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                     {generatedReport.type === 'Valuation' && (
                       <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800 col-span-2">
                         <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">Total Net Valuation</p>
-                        <p className="text-lg font-bold text-blue-900 dark:text-blue-400">${generatedReport.total.toLocaleString()}</p>
+                        <p className="text-lg font-bold text-blue-900 dark:text-blue-400">₦{generatedReport.total.toLocaleString()}</p>
                       </div>
                     )}
                   </div>
@@ -456,7 +456,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                                 style={{ width: `${(item.value / generatedReport.total) * 100}%` }}
                               ></div>
                               <div className="absolute inset-0 px-3 flex items-center justify-end text-[10px] font-black text-slate-700 dark:text-slate-300">
-                                ${(item.value / 1000).toFixed(1)}K
+                                ₦{(item.value / 1000).toFixed(1)}K
                               </div>
                             </div>
                           </div>

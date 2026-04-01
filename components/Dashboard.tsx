@@ -123,7 +123,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
           <div className="flex justify-between items-start">
             <div>
               <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Inventory Value</p>
-              <h3 className="text-2xl font-bold mt-1 dark:text-white">${inventoryValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h3>
+              <h3 className="text-2xl font-bold mt-1 dark:text-white">₦{inventoryValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h3>
               <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 italic">{isAdmin ? 'Current Stock Worth (Cost)' : 'Potential Revenue'}</p>
             </div>
             <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-lg">
@@ -152,7 +152,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
           <div className="flex justify-between items-start">
             <div>
               <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Today's Sales</p>
-              <h3 className="text-2xl font-bold mt-1 dark:text-white">${todaySalesValue.toLocaleString()}</h3>
+              <h3 className="text-2xl font-bold mt-1 dark:text-white">₦{todaySalesValue.toLocaleString()}</h3>
               <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 italic">{todaySalesCount} units sold</p>
             </div>
             <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg">

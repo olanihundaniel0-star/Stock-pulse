@@ -136,7 +136,7 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Unit Cost ($)</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Unit Cost (₦)</label>
                 <div className="relative">
                   <FileText className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
                   <input 

@@ -230,7 +230,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {isAdmin && (
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Cost Price ($)*</label>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Cost Price (₦)*</label>
                   <input
                     type="number"
                     step="0.01"
@@ -243,7 +243,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
                 </div>
               )}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Selling Price ($)*</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Selling Price (₦)*</label>
                 <input
                   type="number"
                   step="0.01"
