@@ -31,6 +31,30 @@ const readErrorMessage = async (res: Response, fallback: string): Promise<string
   return `${fallback} (${res.status})`;
 };
 
+const reasonToBackend: Record<string, string> = {
+  Sale: 'Sale',
+  Damaged: 'Damaged',
+  Expired: 'Expired',
+  'Theft/Loss': 'Theft_Loss',
+  'Sample/Giveaway': 'Sample_Giveaway',
+  'Internal Use': 'Internal_Use',
+};
+
+const reasonFromBackend: Record<string, string> = {
+  Sale: 'Sale',
+  Damaged: 'Damaged',
+  Expired: 'Expired',
+  Theft_Loss: 'Theft/Loss',
+  Sample_Giveaway: 'Sample/Giveaway',
+  Internal_Use: 'Internal Use',
+};
+
+const normalizeReasonFromBackend = (reason: unknown): Transaction['reason'] | undefined => {
+  if (typeof reason !== 'string') return undefined;
+  const mapped = reasonFromBackend[reason] ?? reason;
+  return mapped as Transaction['reason'];
+};
+
 export const api = {
   products: {
     getAll: async (): Promise<Product[]> => {
@@ -70,18 +94,42 @@ export const api = {
         throw new Error(await readErrorMessage(res, 'Failed to fetch transactions'));
       }
       const data = await res.json();
-      return Array.isArray(data) ? data : (data.items || []);
+      const items = Array.isArray(data) ? data : (data.items || []);
+      return items.map((tx: Transaction) => ({
+        ...tx,
+        reason: normalizeReasonFromBackend(tx.reason),
+      }));
     },
     create: async (tx: Partial<Transaction>): Promise<Transaction> => {
+      const payload = {
+        productId: tx.productId != null ? String(tx.productId) : undefined,
+        type: tx.type,
+        quantity: tx.quantity != null ? Number(tx.quantity) : undefined,
+        reason: tx.reason ? (reasonToBackend[String(tx.reason)] ?? String(tx.reason)) : undefined,
+        unitPrice: tx.unitPrice != null ? Number(tx.unitPrice) : undefined,
+        unitCost: tx.unitCost != null ? Number(tx.unitCost) : undefined,
+        customer: tx.customer,
+        supplier: tx.supplier,
+        notes: tx.notes,
+        date: tx.date,
+      };
+      const sanitizedPayload = Object.fromEntries(
+        Object.entries(payload).filter(([, value]) => value !== undefined && value !== null && value !== ''),
+      );
+
       const res = await fetch(`${API_BASE}/transactions`, {
         method: 'POST',
         headers: await getHeaders(),
-        body: JSON.stringify(tx),
+        body: JSON.stringify(sanitizedPayload),
       });
       if (!res.ok) {
         throw new Error(await readErrorMessage(res, 'Failed to create transaction'));
       }
-      return res.json();
+      const created = await res.json();
+      return {
+        ...created,
+        reason: normalizeReasonFromBackend(created.reason),
+      };
     },
   },
 
