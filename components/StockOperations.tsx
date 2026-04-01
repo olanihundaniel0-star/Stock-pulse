@@ -157,7 +157,7 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                   value={reason}
                   onChange={(e) => setReason(e.target.value as StockOutReason)}
-                  disabled={!isAdmin && reason !== StockOutReason.SALE}
+                  disabled={!isAdmin}
                 >
                   <option value={StockOutReason.SALE}>Sale</option>
                   <option value={StockOutReason.DAMAGED}>Damaged</option>
@@ -182,6 +182,20 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                     </div>
                   </>
                 )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Unit Price (₦)</label>
+                <div className="relative">
+                  <FileText className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
+                    value={unitPrice}
+                    onChange={(e) => setUnitPrice(parseFloat(e.target.value))}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Auto-filled from product. Editable if needed.</p>
               </div>
             </>
           )}

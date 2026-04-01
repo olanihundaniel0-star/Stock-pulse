@@ -340,6 +340,13 @@ const Login: React.FC = () => {
   );
 };
 
+type NotificationItem = {
+  id: string;
+  message: string;
+  read: boolean;
+  type: "warning" | "info" | "success";
+};
+
 const App: React.FC = () => {
   const { isReady: authReady, accessToken } = useSession();
   const [authError, setAuthError] = useState<string | null>(null);
@@ -356,6 +363,7 @@ const App: React.FC = () => {
     message: string;
     type: "success" | "error";
   } | null>(null);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [editingProduct, setEditingProduct] = useState<
     Product | null | undefined
   >(undefined);
@@ -480,12 +488,32 @@ const App: React.FC = () => {
         promises.push(api.users.getAll());
       }
       const data = await Promise.all(promises);
+      const productsData = data[0] as Product[];
+      const transactionsData = data[1] as Transaction[];
+      const usersData = data[2] as User[] | undefined;
+
       setState((prev) => ({
         ...prev,
-        products: data[0] as Product[],
-        transactions: data[1] as Transaction[],
-        ...(data[2] && { users: data[2] as User[] }),
+        products: productsData,
+        transactions: transactionsData,
+        ...(usersData && { users: usersData }),
       }));
+
+      setNotifications((prev) => {
+        const existingIds = new Set(prev.map((n) => n.id));
+        const lowStockNotifications = productsData
+          .filter((p) => p.quantity < p.reorderLevel)
+          .filter((p) => !existingIds.has(p.id))
+          .map((p) => ({
+            id: p.id,
+            message: `${p.name} is running low (${p.quantity} left)`,
+            read: false,
+            type: "warning" as const,
+          }));
+
+        if (lowStockNotifications.length === 0) return prev;
+        return [...prev, ...lowStockNotifications];
+      });
     } catch (err) {
       console.error("Failed to fetch data", err);
     }
@@ -534,6 +562,10 @@ const App: React.FC = () => {
   const notify = (message: string, type: "success" | "error" = "success") => {
     setShowToast({ message, type });
     setTimeout(() => setShowToast(null), 3000);
+  };
+
+  const markAllRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
   const handleAddTransaction = async (tx: Partial<Transaction>) => {
@@ -742,6 +774,8 @@ const App: React.FC = () => {
       isOffline={state.isOffline}
       theme={theme}
       toggleTheme={toggleTheme}
+      notifications={notifications}
+      markAllRead={markAllRead}
     >
       {renderPage()}
 

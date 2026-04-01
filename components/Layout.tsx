@@ -19,6 +19,13 @@ import {
   Moon
 } from 'lucide-react';
 
+interface NotificationItem {
+  id: string;
+  message: string;
+  read: boolean;
+  type: 'warning' | 'info' | 'success';
+}
+
 interface LayoutProps {
   children: React.ReactNode;
   activePage: string;
@@ -28,6 +35,8 @@ interface LayoutProps {
   isOffline: boolean;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
+  notifications: NotificationItem[];
+  markAllRead: () => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({ 
@@ -38,12 +47,17 @@ const Layout: React.FC<LayoutProps> = ({
   onLogout, 
   isOffline,
   theme,
-  toggleTheme
+  toggleTheme,
+  notifications,
+  markAllRead
 }) => {
   // Sidebar defaults to open on desktop, but we handle mobile overlay logic carefully.
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(window.innerWidth >= 768);
   const [profileOpen, setProfileOpen] = React.useState(false);
+  const [notifOpen, setNotifOpen] = React.useState(false);
   const profileRef = React.useRef<HTMLDivElement>(null);
+  const notifRef = React.useRef<HTMLDivElement>(null);
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: [UserRole.ADMIN, UserRole.USER] },
@@ -66,8 +80,12 @@ const Layout: React.FC<LayoutProps> = ({
 
   React.useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
-      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (profileRef.current && !profileRef.current.contains(target)) {
         setProfileOpen(false);
+      }
+      if (notifRef.current && !notifRef.current.contains(target)) {
+        setNotifOpen(false);
       }
     };
 
@@ -175,10 +193,57 @@ const Layout: React.FC<LayoutProps> = ({
               </div>
             )}
             
-            <button className="p-2 text-slate-400 dark:text-slate-400 hover:text-blue-900 dark:hover:text-blue-400 transition-colors relative">
-              <Bell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
-            </button>
+            <div ref={notifRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setNotifOpen((prev) => !prev)}
+                className="p-2 text-slate-400 dark:text-slate-400 hover:text-blue-900 dark:hover:text-blue-400 transition-colors relative"
+                aria-haspopup="menu"
+                aria-expanded={notifOpen}
+              >
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center leading-none">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {notifOpen && (
+                <div className="absolute right-0 top-full mt-2 z-50 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl">
+                  <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-slate-800 dark:text-white">Notifications</h3>
+                    <button
+                      type="button"
+                      onClick={markAllRead}
+                      className="text-xs font-semibold text-blue-900 dark:text-blue-400 hover:underline"
+                    >
+                      Mark all read
+                    </button>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto p-2 space-y-2">
+                    {notifications.length === 0 ? (
+                      <p className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">No notifications</p>
+                    ) : (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className={`rounded-lg border-l-4 px-3 py-2 ${
+                            notification.type === 'warning'
+                              ? 'border-amber-500'
+                              : notification.type === 'info'
+                                ? 'border-blue-500'
+                                : 'border-emerald-500'
+                          } ${notification.read ? '' : 'bg-amber-50 dark:bg-amber-900/10'}`}
+                        >
+                          <p className="text-sm text-slate-700 dark:text-slate-300">{notification.message}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div ref={profileRef} className="relative pl-4 border-l border-slate-200 dark:border-slate-800">
               <button

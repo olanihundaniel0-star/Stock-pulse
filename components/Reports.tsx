@@ -18,7 +18,8 @@ import {
   Clock,
   CheckCircle2,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  RefreshCw
 } from 'lucide-react';
 
 interface ReportsProps {
@@ -46,6 +47,37 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
     const matchesType = movementType === 'All' || t.type === movementType;
     return matchesSearch && matchesType;
   });
+
+  const getProductStatus = (product: Product): string => {
+    if (product.quantity === 0) return 'Out of Stock';
+    if (product.quantity < product.reorderLevel) return 'Low Stock';
+    return 'Healthy';
+  };
+
+  const exportInventoryStatusCSV = () => {
+    const headers = ['Name', 'SKU', 'Category', 'Quantity', 'Reorder Level', 'Selling Price', 'Status'];
+    const escapeCSV = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
+    const rows = products.map((product) => [
+      product.name,
+      product.sku,
+      product.category,
+      product.quantity,
+      product.reorderLevel,
+      product.sellingPrice.toFixed(2),
+      getProductStatus(product),
+    ]);
+
+    const csv = [headers, ...rows].map((row) => row.map(escapeCSV).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `inventory-status-report-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const generateReport = () => {
     setIsGenerating(true);
@@ -134,7 +166,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm transition-colors">
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <h3 className="font-bold text-slate-800 dark:text-white">Status Summary</h3>
-            <button className="text-sm font-semibold text-blue-900 dark:text-blue-400 flex items-center gap-1 hover:underline">
+            <button onClick={exportInventoryStatusCSV} className="text-sm font-semibold text-blue-900 dark:text-blue-400 flex items-center gap-1 hover:underline">
               <Download size={14} /> Export Table
             </button>
           </div>
@@ -570,12 +602,3 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
 };
 
 export default Reports;
-
-// Missing icon used in generator
-const RefreshCw = ({ size, className }: any) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M23 4v6h-6"></path>
-    <path d="M1 20v-6h6"></path>
-    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-  </svg>
-);
