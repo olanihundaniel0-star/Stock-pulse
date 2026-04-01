@@ -576,8 +576,9 @@ const App: React.FC = () => {
         `${tx.type === TransactionType.STOCK_IN ? "Added" : "Removed"} ${tx.quantity} units of ${tx.productName}`,
       );
       setActivePage("dashboard");
-    } catch (err) {
-      notify("Failed to process transaction", "error");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to process transaction";
+      notify(message, "error");
     }
   };
 
@@ -666,6 +667,7 @@ const App: React.FC = () => {
             transactions={state.transactions}
             currentUser={state.currentUser}
             onFilterLowStock={() => setActivePage("inventory")}
+            onViewTransactions={() => setActivePage("reports")}
           />
         );
       case "inventory":
@@ -760,6 +762,7 @@ const App: React.FC = () => {
             transactions={state.transactions}
             currentUser={state.currentUser}
             onFilterLowStock={() => setActivePage("inventory")}
+            onViewTransactions={() => setActivePage("reports")}
           />
         );
     }

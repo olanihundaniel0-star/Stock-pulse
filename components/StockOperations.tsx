@@ -24,6 +24,7 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
   const [unitCost, setUnitCost] = React.useState(0);
   const [unitPrice, setUnitPrice] = React.useState(0);
   const [date, setDate] = React.useState(new Date().toISOString().split('T')[0]);
+  const [formError, setFormError] = React.useState<string | null>(null);
 
   const selectedProduct = products.find(p => p.id === selectedProductId);
 
@@ -35,18 +36,46 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
     }
   }, [selectedProductId, selectedProduct, isStockIn]);
 
+  React.useEffect(() => {
+    setFormError(null);
+  }, [selectedProductId, quantity, reason, unitPrice, date, type]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProductId) return;
+    if (!selectedProductId) {
+      setFormError('Please select a product before submitting.');
+      return;
+    }
+    if (!Number.isFinite(quantity) || quantity < 1) {
+      setFormError('Quantity must be at least 1.');
+      return;
+    }
+    if (!isStockIn) {
+      if (!selectedProduct) {
+        setFormError('Selected product could not be found.');
+        return;
+      }
+      if (quantity > selectedProduct.quantity) {
+        setFormError(`Cannot stock out ${quantity} units. Only ${selectedProduct.quantity} available.`);
+        return;
+      }
+      if (reason === StockOutReason.SALE && (!Number.isFinite(unitPrice) || unitPrice <= 0)) {
+        setFormError('Unit price must be greater than 0 for sales.');
+        return;
+      }
+    }
+
+    setFormError(null);
+    const effectiveReason = !isStockIn ? (isAdmin ? reason : StockOutReason.SALE) : undefined;
 
     onSubmit({
       productId: selectedProductId,
       productName: selectedProduct?.name,
       type,
       quantity,
-      reason: !isStockIn ? reason : undefined,
+      reason: effectiveReason,
       notes,
-      customer: !isStockIn && reason === StockOutReason.SALE ? customer : undefined,
+      customer: !isStockIn && effectiveReason === StockOutReason.SALE ? customer : undefined,
       supplier: isStockIn ? supplier : undefined,
       unitCost: isStockIn ? unitCost : undefined,
       unitPrice: !isStockIn ? unitPrice : undefined,
@@ -67,6 +96,11 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
           <p className="text-slate-500 dark:text-slate-400">{isStockIn ? 'Add items arriving from suppliers' : 'Record sales or damaged goods'}</p>
         </div>
       </div>
+      {formError && (
+        <div className="mb-6 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-900/10 px-4 py-3 text-sm text-red-700 dark:text-red-400">
+          {formError}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -99,11 +133,17 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                 max={!isStockIn ? selectedProduct?.quantity : undefined}
                 className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                 value={quantity}
-                onChange={(e) => setQuantity(parseInt(e.target.value))}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value, 10);
+                  setQuantity(Number.isNaN(value) ? 0 : value);
+                }}
               />
             </div>
             {!isStockIn && selectedProduct && (
               <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Available: {selectedProduct.quantity}</p>
+            )}
+            {!isStockIn && selectedProduct && quantity > 0 && quantity <= selectedProduct.quantity && (
+              <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">After this transaction: {selectedProduct.quantity - quantity} left</p>
             )}
           </div>
 
@@ -144,7 +184,10 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                     step="0.01"
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                     value={unitCost}
-                    onChange={(e) => setUnitCost(parseFloat(e.target.value))}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value);
+                      setUnitCost(Number.isNaN(value) ? 0 : value);
+                    }}
                   />
                 </div>
               </div>
@@ -159,11 +202,17 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                   onChange={(e) => setReason(e.target.value as StockOutReason)}
                   disabled={!isAdmin}
                 >
-                  <option value={StockOutReason.SALE}>Sale</option>
-                  <option value={StockOutReason.DAMAGED}>Damaged</option>
-                  <option value={StockOutReason.EXPIRED}>Expired</option>
-                  <option value={StockOutReason.THEFT}>Theft/Loss</option>
-                  <option value={StockOutReason.SAMPLE}>Sample/Giveaway</option>
+                  {isAdmin ? (
+                    <>
+                      <option value={StockOutReason.SALE}>Sale</option>
+                      <option value={StockOutReason.DAMAGED}>Damaged</option>
+                      <option value={StockOutReason.EXPIRED}>Expired</option>
+                      <option value={StockOutReason.THEFT}>Theft/Loss</option>
+                      <option value={StockOutReason.SAMPLE}>Sample/Giveaway</option>
+                    </>
+                  ) : (
+                    <option value={StockOutReason.SALE}>Sale</option>
+                  )}
                 </select>
               </div>
               <div>
@@ -192,7 +241,10 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                     step="0.01"
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
                     value={unitPrice}
-                    onChange={(e) => setUnitPrice(parseFloat(e.target.value))}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value);
+                      setUnitPrice(Number.isNaN(value) ? 0 : value);
+                    }}
                   />
                 </div>
                 <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Auto-filled from product. Editable if needed.</p>

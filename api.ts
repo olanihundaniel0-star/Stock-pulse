@@ -16,6 +16,21 @@ const getHeaders = async () => {
   return headers;
 };
 
+const readErrorMessage = async (res: Response, fallback: string): Promise<string> => {
+  try {
+    const payload = await res.json();
+    if (payload && typeof payload.message === 'string' && payload.message.trim()) {
+      return payload.message;
+    }
+    if (payload && typeof payload.error === 'string' && payload.error.trim()) {
+      return payload.error;
+    }
+  } catch {
+    // Ignore JSON parse errors and use fallback.
+  }
+  return `${fallback} (${res.status})`;
+};
+
 export const api = {
   products: {
     getAll: async (): Promise<Product[]> => {
@@ -51,6 +66,9 @@ export const api = {
   transactions: {
     getAll: async (): Promise<Transaction[]> => {
       const res = await fetch(`${API_BASE}/transactions`, { headers: await getHeaders() });
+      if (!res.ok) {
+        throw new Error(await readErrorMessage(res, 'Failed to fetch transactions'));
+      }
       const data = await res.json();
       return Array.isArray(data) ? data : (data.items || []);
     },
@@ -60,6 +78,9 @@ export const api = {
         headers: await getHeaders(),
         body: JSON.stringify(tx),
       });
+      if (!res.ok) {
+        throw new Error(await readErrorMessage(res, 'Failed to create transaction'));
+      }
       return res.json();
     },
   },

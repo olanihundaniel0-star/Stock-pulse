@@ -64,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({
     { id: 'inventory', label: 'Inventory', icon: Package, roles: [UserRole.ADMIN, UserRole.USER] },
     { id: 'stock-in', label: 'Stock In', icon: ArrowDownLeft, roles: [UserRole.ADMIN] },
     { id: 'stock-out', label: 'Stock Out', icon: ArrowUpRight, roles: [UserRole.ADMIN, UserRole.USER] },
-    { id: 'reports', label: 'Reports', icon: BarChart3, roles: [UserRole.ADMIN] },
+    { id: 'reports', label: 'Reports', icon: BarChart3, roles: [UserRole.ADMIN, UserRole.USER] },
     { id: 'users', label: 'Users', icon: Users, roles: [UserRole.ADMIN] },
     { id: 'settings', label: 'Settings', icon: Settings, roles: [UserRole.ADMIN] },
   ];

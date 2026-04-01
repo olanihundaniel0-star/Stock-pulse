@@ -29,7 +29,9 @@ interface ReportsProps {
 }
 
 const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }) => {
-  const [activeTab, setActiveTab] = useState<'status' | 'movement' | 'profit' | 'generator'>('status');
+  const [activeTab, setActiveTab] = useState<'status' | 'movement' | 'profit' | 'generator'>(
+    () => (currentUser.role === UserRole.ADMIN ? 'status' : 'movement'),
+  );
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [generatedReport, setGeneratedReport] = useState<any>(null);
@@ -73,6 +75,32 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
     const link = document.createElement('a');
     link.href = url;
     link.download = `inventory-status-report-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportMovementHistoryCSV = () => {
+    const headers = ['Date & Time', 'Product', 'Type', 'Quantity', 'Unit Price', 'User', 'Reason / Source', 'Notes'];
+    const escapeCSV = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
+    const rows = filteredMovement.map((transaction) => [
+      new Date(transaction.date).toLocaleString(),
+      transaction.productName,
+      transaction.type.replace('_', ' '),
+      transaction.quantity,
+      transaction.unitPrice ?? '',
+      transaction.userName,
+      transaction.type === TransactionType.STOCK_IN ? transaction.supplier || 'Restock' : transaction.reason || 'Sale',
+      transaction.notes || '',
+    ]);
+
+    const csv = [headers, ...rows].map((row) => row.map(escapeCSV).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `transaction-history-${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -222,15 +250,24 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
             onChange={e => setMovementSearch(e.target.value)}
           />
         </div>
-        <select 
-          className="px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg outline-none text-slate-900 dark:text-white transition-colors"
-          value={movementType}
-          onChange={e => setMovementType(e.target.value)}
-        >
-          <option value="All">All Transactions</option>
-          <option value={TransactionType.STOCK_IN}>Stock In Only</option>
-          <option value={TransactionType.STOCK_OUT}>Stock Out Only</option>
-        </select>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <select 
+            className="px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg outline-none text-slate-900 dark:text-white transition-colors"
+            value={movementType}
+            onChange={e => setMovementType(e.target.value)}
+          >
+            <option value="All">All Transactions</option>
+            <option value={TransactionType.STOCK_IN}>Stock In Only</option>
+            <option value={TransactionType.STOCK_OUT}>Stock Out Only</option>
+          </select>
+          <button
+            onClick={exportMovementHistoryCSV}
+            className="px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 text-sm font-semibold"
+          >
+            <Download size={16} />
+            Export History
+          </button>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm transition-colors">
@@ -247,26 +284,34 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {filteredMovement.map(t => (
-                <tr key={t.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                  <td className="px-6 py-4 text-slate-500 dark:text-slate-400">{new Date(t.date).toLocaleString()}</td>
-                  <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">{t.productName}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
-                      t.type === TransactionType.STOCK_IN ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                    }`}>
-                      {t.type.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className={`px-6 py-4 font-bold ${t.type === TransactionType.STOCK_IN ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                    {t.type === TransactionType.STOCK_IN ? '+' : '-'}{t.quantity}
-                  </td>
-                  <td className="px-6 py-4 dark:text-slate-300">{t.userName}</td>
-                  <td className="px-6 py-4 text-slate-500 dark:text-slate-400 truncate max-w-xs">
-                    {t.type === TransactionType.STOCK_IN ? t.supplier || 'Restock' : t.reason || 'Sale'}
+              {filteredMovement.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500 dark:text-slate-400">
+                    No transactions found for the current filters.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredMovement.map(t => (
+                  <tr key={t.id} className="text-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400">{new Date(t.date).toLocaleString()}</td>
+                    <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">{t.productName}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
+                        t.type === TransactionType.STOCK_IN ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                      }`}>
+                        {t.type.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td className={`px-6 py-4 font-bold ${t.type === TransactionType.STOCK_IN ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {t.type === TransactionType.STOCK_IN ? '+' : '-'}{t.quantity}
+                    </td>
+                    <td className="px-6 py-4 dark:text-slate-300">{t.userName}</td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 truncate max-w-xs">
+                      {t.type === TransactionType.STOCK_IN ? t.supplier || 'Restock' : t.reason || 'Sale'}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

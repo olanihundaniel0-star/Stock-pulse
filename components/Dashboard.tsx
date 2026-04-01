@@ -27,9 +27,10 @@ interface DashboardProps {
   transactions: Transaction[];
   currentUser: any;
   onFilterLowStock: () => void;
+  onViewTransactions: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUser, onFilterLowStock }) => {
+const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUser, onFilterLowStock, onViewTransactions }) => {
   const isAdmin = currentUser.role === UserRole.ADMIN;
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [statsError, setStatsError] = useState<string | null>(null);
@@ -233,7 +234,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
               </div>
             ))}
           </div>
-          <button className="mt-6 text-sm font-semibold text-blue-900 dark:text-blue-400 flex items-center gap-2 hover:gap-3 transition-all">
+          <button onClick={onViewTransactions} className="mt-6 text-sm font-semibold text-blue-900 dark:text-blue-400 flex items-center gap-2 hover:gap-3 transition-all">
             View all transactions <ArrowRight size={16} />
           </button>
         </div>
