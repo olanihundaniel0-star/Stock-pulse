@@ -3,8 +3,7 @@
 A full-stack inventory management system for retailers and wholesalers.
 Built to handle real business operations — stock tracking, role-based
 access, and transaction history — with a clean, responsive interface.
-
-**Live:** https://stock-pulse-ptt.vercel.app  
+ 
 **Backend:** https://github.com/olanihundaniel0-star/Stock-pulse-backend
 
 ## Tech Stack
