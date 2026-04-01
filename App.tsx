@@ -21,93 +21,6 @@ import UserManagement from "./components/UserManagement";
 import Settings from "./components/Settings";
 import AuthCallback from "./AuthCallback";
 
-// Simple Auth Screen
-const MainIllustration = () => (
-  <svg width="400" height="320" viewBox="0 0 400 360" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white w-full h-auto opacity-90 drop-shadow-2xl">
-    <g stroke="currentColor" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round">
-      {/* Floating Elements (Boxes & Tags) */}
-      <g strokeWidth="4">
-        {/* Floating Box 1 */}
-        <path d="M 280 40 L 300 35 L 310 45 L 290 50 Z" fill="white" />
-        <path d="M 280 40 L 285 30 L 305 25 L 300 35" fill="white" />
-        <path d="M 305 25 L 315 35 L 310 45 L 300 35 Z" fill="white" />
-        
-        {/* Floating Tag 1 */}
-        <path d="M 360 130 L 375 115 L 385 125 L 370 140 Z" fill="white" />
-        <path d="M 365 125 L 375 120" strokeWidth="2.5" />
-        <circle cx="370" cy="120" r="1.5" fill="#1e3a8a" stroke="none" />
-        
-        {/* Floating Tag 2 */}
-        <path d="M 50 110 L 70 100 L 80 115 L 60 125 Z" fill="white" />
-        <path d="M 55 115 L 65 110" strokeWidth="2.5" />
-      </g>
-
-      {/* Warehouse Manager Character */}
-      {/* Back arm sleeve (Solid depth fill) */}
-      <path d="M 90 200 C 60 210, 50 260, 80 290" fill="transparent" />
-      <path d="M 85 240 C 120 255, 140 230, 160 180 Z" fill="currentColor" />
-      
-      {/* Torso/Apron Outline */}
-      <path d="M 120 140 C 80 150, 90 220, 110 290 L 220 290 C 235 220, 230 160, 180 140" fill="#1e3a8a" stroke="none" />
-      <path d="M 120 140 C 80 150, 90 220, 110 290 L 220 290 C 235 220, 230 160, 180 140 Z" fill="transparent" />
-
-      {/* Collar lines */}
-      <path d="M 120 140 C 140 155, 165 150, 180 140" fill="transparent" />
-      <path d="M 145 150 L 140 180 M 150 170 L 160 175" strokeWidth="3" fill="transparent" />
-
-      {/* Squiggly fabric fold lines */}
-      <path d="M 115 180 C 130 185, 140 175, 145 185" strokeWidth="4" fill="transparent" />
-      <path d="M 195 210 C 180 220, 185 230, 175 235" strokeWidth="4" fill="transparent" />
-
-      {/* Head and Hat */}
-      <path d="M 135 145 C 130 110, 160 100, 180 120 C 170 145, 150 148, 135 145 Z" fill="#1e3a8a" />
-      <path d="M 140 145 C 130 110, 160 100, 180 120" />
-      <path d="M 110 90 C 140 75, 170 70, 200 80" fill="#1e3a8a" />
-      <path d="M 110 90 C 140 75, 170 70, 200 80" />
-      {/* Hat top (Solid Fill) */}
-      <path d="M 130 85 C 130 55, 170 50, 180 75 Z" fill="currentColor" stroke="none" />
-      <path d="M 130 85 C 130 55, 170 50, 180 75" />
-
-      {/* Face Features */}
-      {/* Nose */}
-      <path d="M 175 100 C 182 100, 185 105, 178 110" strokeWidth="4" fill="transparent" />
-      {/* Eye dot */}
-      <circle cx="160" cy="95" r="4" fill="currentColor" stroke="none" />
-      {/* Mustache (Solid Fill) */}
-      <path d="M 165 110 C 180 105, 195 112, 195 120 C 180 122, 170 120, 165 115 Z" fill="currentColor" stroke="none" />
-
-      {/* Hand 1 (Holding Clipboard) */}
-      <path d="M 160 180 C 190 210, 220 180, 235 160" fill="currentColor" strokeLinejoin="round" />
-      <path d="M 230 165 C 245 160, 255 170, 245 180 C 235 185, 230 180, 225 170" fill="#1e3a8a" />
-
-      {/* Clipboard */}
-      <path d="M 230 170 L 265 95 L 325 120 L 290 195 Z" fill="#1e3a8a" strokeLinejoin="miter" />
-      <path d="M 235 170 L 270 100 L 315 120" />
-      <path d="M 270 95 C 280 90, 290 95, 285 105" fill="currentColor" strokeLinejoin="round" />
-      {/* Clipboard Notes (loose squiggles) */}
-      <path d="M 265 125 L 290 135 M 260 140 L 285 150 M 275 150 L 280 160 M 255 155 L 270 160" strokeWidth="3.5" fill="transparent" />
-
-      {/* Arm 2 (Front Arm across) */}
-      <path d="M 205 230 C 240 250, 270 240, 290 200" fill="currentColor" />
-      <path d="M 280 210 C 295 210, 310 190, 295 185 C 285 185, 275 195, 285 205" fill="#1e3a8a" />
-
-      {/* Foreground Box/Shelf */}
-      {/* Front Face (Solid bright white fill to match the dark box in the reference) */}
-      <path d="M 120 290 L 310 290 L 310 360 L 120 360 Z" fill="currentColor" />
-      
-      {/* Woodgrain details inside the pure white box - drawn in background navy blue */}
-      <path d="M 120 305 C 180 295, 230 335, 310 305 M 120 350 C 200 365, 260 325, 310 340" stroke="#1e3a8a" strokeWidth="4.5" fill="transparent" />
-      <path d="M 200 320 C 230 315, 250 335, 280 315" stroke="#1e3a8a" strokeWidth="4.5" fill="transparent" />
-
-      {/* Secondary Shelf Element / Rack */}
-      <path d="M 310 290 L 380 290 L 380 360 L 310 360 Z" fill="#1e3a8a" strokeLinejoin="miter" />
-      {/* Handle cutout */}
-      <path d="M 330 300 L 360 300 M 330 320 L 360 320 M 345 300 L 345 320" strokeWidth="3.5" fill="transparent" />
-      <path d="M 335 340 C 335 355, 355 355, 355 340 Z" fill="currentColor" stroke="none" />
-    </g>
-  </svg>
-);
-
 const Login: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [name, setName] = useState("");
@@ -224,92 +137,95 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen flex bg-[#f8f8f6] transition-colors duration-300">
       {/* Left Pane - Illustration */}
-      <div className="hidden lg:flex w-[45%] bg-white relative items-center justify-center overflow-hidden p-8">
-        {/* Image wrapper to contain the illustration and absolute overlay boxes */}
+      <div className="hidden lg:flex w-[45%] bg-[#0f1729] relative items-center justify-center overflow-hidden p-8">
         <div className="relative w-full max-w-[500px] flex flex-col items-center">
-          <div className="relative w-full">
-            <img 
-              src="/theme-illustration.jpg" 
-              alt="Inventory Manager" 
-              className="w-full h-auto object-contain"
-            />
-            
-            {/* Box 1: Small package icon (Top Left) */}
-            <div 
-              className="absolute pointer-events-none" 
-              style={{ top: '13%', left: '15.5%', width: '12%', height: '12%', animation: 'float 3s ease-in-out infinite' }}
-            >
-              {/* Opaque SVG to hide the underlying box */}
-              <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g stroke="#1e40af" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="white">
-                  <path d="M 50 15 L 85 30 L 50 45 L 15 30 Z" />
-                  <path d="M 15 30 L 15 65 L 50 80 L 50 45" />
-                  <path d="M 85 30 L 85 65 L 50 80 L 50 45" />
-                  <path d="M 33 22 L 67 37 M 15 30 L 50 45 L 85 30" strokeWidth="3" />
-                  <path d="M 65 60 C 70 65, 75 60, 70 55" strokeWidth="3" fill="transparent" />{/* Mock Arrow */}
-                </g>
-              </svg>
-            </div>
-
-            {/* Box 2: Package icon (Mid Left) */}
-            <div 
-              className="absolute pointer-events-none" 
-              style={{ top: '30%', left: '8%', width: '13%', height: '13%', animation: 'float 4s ease-in-out infinite 0.5s' }}
-            >
-              <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g stroke="#1e40af" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="white">
-                  <path d="M 50 20 L 80 32 L 50 45 L 20 32 Z" />
-                  <path d="M 20 32 L 20 65 L 50 78 L 50 45" />
-                  <path d="M 80 32 L 80 65 L 50 78 L 50 45" />
-                  <path d="M 35 26 L 65 39 M 20 32 L 50 45 L 80 32" strokeWidth="3" />
-                  {/* Mock Label */}
-                  <path d="M 60 50 L 70 55 L 70 65 L 60 60 Z" fill="transparent" />
-                  <line x1="62" y1="54" x2="68" y2="57" strokeWidth="2" />
-                  <line x1="62" y1="58" x2="68" y2="61" strokeWidth="2" />
-                </g>
-              </svg>
-            </div>
-
-            {/* Box 3: Up Arrow Box Icon (Bottom Left) */}
-            <div 
-              className="absolute pointer-events-none" 
-              style={{ top: '76%', left: '2%', width: '14%', height: '14%', animation: 'float 5s ease-in-out infinite 1s' }}
-            >
-              <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g stroke="#1e40af" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="white">
-                  <rect x="20" y="20" width="60" height="60" rx="4" transform="rotate(-15 50 50)" />
-                  <g transform="rotate(-15 50 50)">
-                    <path d="M 40 60 L 40 40 M 35 45 L 40 40 L 45 45" strokeWidth="4" />
-                    <path d="M 60 60 L 60 40 M 55 45 L 60 40 L 65 45" strokeWidth="4" />
-                  </g>
-                </g>
-              </svg>
-            </div>
-            
-            {/* Box 4: Barcode Tag (Top Middle) */}
-            <div 
-              className="absolute pointer-events-none" 
-              style={{ top: '7.5%', left: '42%', width: '18%', height: '18%', animation: 'float 6s ease-in-out infinite 0.2s' }}
-            >
-              <svg width="100%" height="100%" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g stroke="#1e40af" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="white">
-                  {/* String */}
-                  <path d="M 38 38 C 30 20, 10 10, 15 30 C 20 50, 40 60, 40 40" strokeWidth="3" fill="transparent" />
-                  {/* Tag Body */}
-                  <path d="M 45 25 L 75 55 L 55 75 L 25 45 L 30 30 Z" />
-                  {/* Hole */}
-                  <circle cx="35" cy="40" r="3" fill="#1e40af" stroke="none" />
-                  {/* Barcode lines */}
-                  <path d="M 45 40 L 60 55" strokeWidth="3" fill="transparent"/>
-                  <path d="M 50 37 L 65 52" strokeWidth="4" fill="transparent"/>
-                  <path d="M 55 34 L 70 49" strokeWidth="2" fill="transparent"/>
-                  <path d="M 60 31 L 75 46" strokeWidth="3" fill="transparent"/>
-                </g>
-              </svg>
-            </div>
-          </div>
           
-          <p className="mt-8 text-[#0f1729] font-serif italic text-xl tracking-wide font-medium opacity-90 drop-shadow-sm">
+          <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto max-w-[450px]">
+            <g stroke="currentColor" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+              
+              {/* Background elements / Shelves */}
+              <path d="M 40 380 L 460 380" strokeWidth="12" />
+              
+              {/* Shelf Left */}
+              <path d="M 60 180 L 140 180 M 60 280 L 140 280 M 80 180 L 80 380 M 120 180 L 120 380" />
+              {/* Items on shelf */}
+              <rect x="70" y="240" width="40" height="40" rx="6" fill="#0f1729" />
+              <rect x="85" y="150" width="45" height="30" rx="4" fill="#0f1729" />
+
+              {/* Floating Element 1: Barcode Tag (Top Left) */}
+              <g transform="translate(80, 80) rotate(-15)">
+                <g style={{ animation: 'float 4s ease-in-out infinite' }}>
+                  <path d="M 0 20 L 20 0 L 80 0 L 80 80 L 0 80 Z" fill="#0f1729" />
+                  <circle cx="20" cy="25" r="6" fill="#0f1729" />
+                  <path d="M 40 25 L 60 25 M 25 45 L 60 45 M 25 60 L 50 60" strokeWidth="6" />
+                </g>
+              </g>
+
+              {/* Floating Element 2: 3D Box (Top Right) */}
+              <g transform="translate(330, 80) rotate(15)">
+                <g style={{ animation: 'float 5s ease-in-out infinite 0.5s' }}>
+                  <path d="M 0 30 L 40 0 L 80 30 L 80 70 L 40 100 L 0 70 Z" fill="#0f1729" />
+                  <path d="M 0 30 L 40 60 L 80 30" />
+                  <path d="M 40 60 L 40 100" />
+                </g>
+              </g>
+
+              {/* Floating Element 3: Clipboard/Scanner (Right) */}
+              <g transform="translate(360, 240) rotate(-10)">
+                <g style={{ animation: 'float 6s ease-in-out infinite 1s' }}>
+                  <rect x="0" y="0" width="60" height="90" rx="8" fill="#0f1729" />
+                  <path d="M 15 25 L 45 25 M 15 45 L 45 45 M 15 65 L 35 65" strokeWidth="6" />
+                  <path d="M 20 0 L 40 0" strokeWidth="10" />
+                </g>
+              </g>
+
+              {/* Main Character */}
+              <g transform="translate(250, 380)">
+                {/* Legs */}
+                <path d="M -30 0 L -40 -100 M 30 0 L 40 -100" />
+                {/* Shoes */}
+                <path d="M -50 0 L -10 0 M 10 0 L 50 0" strokeWidth="12" />
+
+                {/* Body/Torso */}
+                <path d="M -60 -100 C -70 -220, 70 -220, 60 -100 Z" fill="#0f1729" />
+                
+                {/* Apron/Vest Details */}
+                <path d="M -40 -200 L -40 -100 M 40 -200 L 40 -100" strokeWidth="6" strokeDasharray="12 12" />
+
+                {/* Head */}
+                <circle cx="0" cy="-260" r="45" fill="#0f1729" />
+                
+                {/* Face (Friendly, dynamic) */}
+                <path d="M -15 -270 Q -10 -280 -5 -270 M 15 -270 Q 10 -280 5 -270" strokeWidth="6" strokeLinecap="round" />
+                <path d="M -15 -245 Q 0 -225 15 -245" strokeWidth="6" strokeLinecap="round" />
+                
+                {/* Cap */}
+                <path d="M -45 -270 C -45 -320, 45 -320, 45 -270 Z" fill="#0f1729" />
+                <path d="M 30 -275 L 70 -265" strokeWidth="10" />
+
+                {/* Main Box being held */}
+                <g transform="translate(-50, -180)">
+                  <rect x="0" y="0" width="100" height="90" rx="10" fill="#0f1729" />
+                  <path d="M 0 45 L 100 45" strokeWidth="6" strokeDasharray="15 10" />
+                  <path d="M 30 15 L 70 15 M 30 75 L 50 75" strokeWidth="6" />
+                  <rect x="70" y="60" width="20" height="20" rx="4" fill="white" stroke="none" />
+                </g>
+
+                {/* Arms overlapping the box */}
+                <path d="M -55 -200 C -90 -160, -80 -110, -30 -110" fill="none" />
+                <path d="M 55 -200 C 90 -160, 80 -110, 30 -110" fill="none" />
+                
+                {/* Hands */}
+                <circle cx="-30" cy="-110" r="12" fill="#0f1729" />
+                <circle cx="30" cy="-110" r="12" fill="#0f1729" />
+              </g>
+              
+              {/* Action marks */}
+              <path d="M 100 120 L 130 140 M 400 140 L 370 120 M 160 70 L 170 40 M 340 40 L 350 70" strokeWidth="6" strokeLinecap="round" />
+            </g>
+          </svg>
+          
+          <p className="mt-8 text-white font-serif italic text-xl tracking-wide font-medium opacity-90 drop-shadow-sm text-center">
             Every item. Every count. In control.
           </p>
         </div>
