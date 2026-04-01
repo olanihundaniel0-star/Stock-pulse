@@ -57,26 +57,26 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 rounded-2xl border border-slate-200 shadow-xl">
+    <div className="max-w-2xl mx-auto bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl">
       <div className="flex items-center gap-4 mb-8">
         <div className={`p-4 rounded-xl ${isStockIn ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
           {isStockIn ? <Package size={32} /> : <ShoppingCartIcon size={32} />}
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-slate-800">{isStockIn ? 'Restock Inventory' : 'Process Stock Out'}</h2>
-          <p className="text-slate-500">{isStockIn ? 'Add items arriving from suppliers' : 'Record sales or damaged goods'}</p>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{isStockIn ? 'Restock Inventory' : 'Process Stock Out'}</h2>
+          <p className="text-slate-500 dark:text-slate-400">{isStockIn ? 'Add items arriving from suppliers' : 'Record sales or damaged goods'}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="col-span-full">
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Select Product *</label>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Select Product *</label>
             <div className="relative">
-              <Package className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <Package className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
               <select 
                 required
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                 value={selectedProductId}
                 onChange={(e) => setSelectedProductId(e.target.value)}
               >
@@ -89,32 +89,32 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Quantity *</label>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Quantity *</label>
             <div className="relative">
-              <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <Hash className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
               <input 
                 type="number" 
                 required
                 min="1"
                 max={!isStockIn ? selectedProduct?.quantity : undefined}
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                 value={quantity}
                 onChange={(e) => setQuantity(parseInt(e.target.value))}
               />
             </div>
             {!isStockIn && selectedProduct && (
-              <p className="mt-1 text-xs text-slate-400">Available: {selectedProduct.quantity}</p>
+              <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Available: {selectedProduct.quantity}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Date *</label>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Date *</label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
               <input 
                 type="date" 
                 required
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
               />
@@ -124,25 +124,25 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
           {isStockIn ? (
             <>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Supplier</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Supplier</label>
                 <div className="relative">
-                  <Truck className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <Truck className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
                   <input 
                     type="text" 
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                     value={supplier}
                     onChange={(e) => setSupplier(e.target.value)}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Unit Cost ($)</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Unit Cost ($)</label>
                 <div className="relative">
-                  <FileText className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <FileText className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
                   <input 
                     type="number" 
                     step="0.01"
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                     value={unitCost}
                     onChange={(e) => setUnitCost(parseFloat(e.target.value))}
                   />
@@ -152,9 +152,9 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
           ) : (
             <>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Reason</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Reason</label>
                 <select 
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                   value={reason}
                   onChange={(e) => setReason(e.target.value as StockOutReason)}
                   disabled={!isAdmin && reason !== StockOutReason.SALE}
@@ -169,12 +169,12 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
               <div>
                 {reason === StockOutReason.SALE && (
                   <>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Customer Name</label>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Customer Name</label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" size={18} />
                       <input 
                         type="text" 
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
                         value={customer}
                         placeholder="John Doe"
                         onChange={(e) => setCustomer(e.target.value)}
@@ -187,10 +187,10 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
           )}
 
           <div className="col-span-full">
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Notes</label>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Notes</label>
             <textarea 
               rows={3}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none resize-none"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none resize-none text-slate-900 dark:text-white"
               placeholder="Any additional details..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -202,7 +202,7 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
           <button 
             type="button"
             onClick={onCancel}
-            className="flex-1 px-6 py-3 border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-colors"
+            className="flex-1 px-6 py-3 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             Cancel
           </button>
