@@ -169,7 +169,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
                     className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 outline-none text-slate-900 dark:text-white transition-colors ${
                       errors.name ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
                     }`}
-                    placeholder="e.g. Premium Basmati Rice"
+                    placeholder="Input product name"
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                   />
