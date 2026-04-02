@@ -19,6 +19,7 @@ import ProductForm from "./components/ProductForm";
 import Reports from "./components/Reports";
 import UserManagement from "./components/UserManagement";
 import Settings from "./components/Settings";
+import CompanyOnboarding from "./components/CompanyOnboarding";
 import AuthCallback from "./AuthCallback";
 
 const Login: React.FC = () => {
@@ -382,7 +383,6 @@ const App: React.FC = () => {
       } = await supabase.auth.getSession();
       if (!active) return;
       setHasSession(Boolean(session));
-      if (session) setActivePage("dashboard");
     };
 
     void checkSession();
@@ -393,7 +393,6 @@ const App: React.FC = () => {
       setHasSession(Boolean(session));
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
         setAuthError(null);
-        setActivePage("dashboard");
       }
       if (event === "SIGNED_OUT") {
         setState((prev) => ({ ...prev, currentUser: null }));
@@ -458,7 +457,7 @@ const App: React.FC = () => {
       }
       setState((prev) => ({ ...prev, currentUser: user }));
       setAuthError(null);
-      setActivePage("dashboard");
+      setActivePage(user.companyId ? "dashboard" : "onboarding");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       setAuthError(message);
@@ -478,7 +477,7 @@ const App: React.FC = () => {
   }, [authReady, accessToken]);
 
   const fetchData = useCallback(async () => {
-    if (!state.currentUser) return;
+    if (!state.currentUser || !state.currentUser.companyId) return;
     try {
       const promises: Promise<unknown>[] = [
         api.products.getAll(),
@@ -755,6 +754,17 @@ const App: React.FC = () => {
         );
       case "settings":
         return <Settings />;
+      case "onboarding":
+        return (
+          <CompanyOnboarding
+            currentUser={state.currentUser}
+            onComplete={async (company) => {
+              await api.companies.create(company);
+              await syncUserFromApi(accessToken);
+              setActivePage("dashboard");
+            }}
+          />
+        );
       default:
         return (
           <Dashboard
@@ -767,6 +777,10 @@ const App: React.FC = () => {
         );
     }
   };
+
+  if (activePage === "onboarding") {
+    return renderPage();
+  }
 
   return (
     <Layout

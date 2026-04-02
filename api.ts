@@ -1,5 +1,5 @@
 import { supabase } from './lib/supabase';
-import { Product, Transaction, User, DashboardStats } from './types';
+import { Company, Product, Transaction, User, DashboardStats } from './types';
 
 export const API_BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api')
   .toString()
@@ -164,6 +164,23 @@ export const api = {
         headers: await getHeaders(),
       });
       if (!res.ok) throw new Error('Failed to delete user');
+    },
+  },
+
+  companies: {
+    create: async (data: { name: string; industry?: string; logoUrl?: string }): Promise<Company> => {
+      const res = await fetch(`${API_BASE}/companies`, {
+        method: 'POST',
+        headers: await getHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to create company'));
+      return res.json();
+    },
+    getMine: async (): Promise<Company | null> => {
+      const res = await fetch(`${API_BASE}/companies/mine`, { headers: await getHeaders() });
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to fetch company'));
+      return res.json();
     },
   },
 

@@ -25,6 +25,14 @@ export interface User {
   role: UserRole;
   status: 'Active' | 'Inactive';
   lastLogin?: string;
+  companyId: string | null;
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  industry?: string;
+  logoUrl?: string;
 }
 
 export interface Product {
