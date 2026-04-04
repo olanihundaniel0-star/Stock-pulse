@@ -135,7 +135,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
 
         <button 
           onClick={onFilterLowStock}
-          className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all text-left group"
+          className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all text-left group hover:scale-[1.03] active:scale-95"
         >
           <div className="flex justify-between items-start">
             <div>
@@ -234,7 +234,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
               </div>
             ))}
           </div>
-          <button onClick={onViewTransactions} className="mt-6 text-sm font-semibold text-blue-900 dark:text-blue-400 flex items-center gap-2 hover:gap-3 transition-all">
+          <button onClick={onViewTransactions} className="mt-6 text-sm font-semibold text-blue-900 dark:text-blue-400 flex items-center gap-2 hover:gap-3 transition-all hover:scale-[1.03] active:scale-95">
             View all transactions <ArrowRight size={16} />
           </button>
         </div>

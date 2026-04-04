@@ -35,7 +35,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpd
         </div>
         <button 
           onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors shadow-lg"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-all shadow-lg hover:scale-[1.03] active:scale-95"
         >
           <UserPlus size={18} />
           Add New User
@@ -88,8 +88,8 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpd
               </select>
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="flex-1 bg-blue-900 text-white py-2 rounded-lg font-bold">Save</button>
-              <button type="button" onClick={() => setShowAddForm(false)} className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 py-2 rounded-lg font-bold">Cancel</button>
+              <button type="submit" className="flex-1 bg-blue-900 text-white py-2 rounded-lg font-bold transition-all hover:scale-[1.03] active:scale-95">Save</button>
+              <button type="button" onClick={() => setShowAddForm(false)} className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 py-2 rounded-lg font-bold transition-all hover:scale-[1.03] active:scale-95">Cancel</button>
             </div>
           </form>
         </div>
@@ -145,14 +145,14 @@ const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpd
                   <div className="flex items-center justify-end gap-2">
                     <button 
                       onClick={() => onUpdateUser({ ...u, status: u.status === 'Active' ? 'Inactive' : 'Active' })}
-                      className="p-2 text-slate-400 dark:text-slate-500 hover:text-blue-900 dark:hover:text-blue-400 transition-colors"
+                      className="p-2 text-slate-400 dark:text-slate-500 hover:text-blue-900 dark:hover:text-blue-400 transition-all hover:scale-[1.03] active:scale-95"
                       title="Toggle Status"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button 
                       onClick={() => onDeleteUser(u.id)}
-                      className="p-2 text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                      className="p-2 text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-all hover:scale-[1.03] active:scale-95"
                       title="Delete User"
                     >
                       <Trash2 size={16} />

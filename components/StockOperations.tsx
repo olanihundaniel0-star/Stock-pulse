@@ -268,13 +268,13 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
           <button 
             type="button"
             onClick={onCancel}
-            className="flex-1 px-6 py-3 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            className="flex-1 px-6 py-3 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95"
           >
             Cancel
           </button>
           <button 
             type="submit"
-            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white rounded-xl font-semibold shadow-lg transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white rounded-xl font-semibold shadow-lg transition-all hover:scale-[1.03] active:scale-95 ${
               isStockIn ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'
             }`}
           >

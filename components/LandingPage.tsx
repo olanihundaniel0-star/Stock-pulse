@@ -37,7 +37,7 @@ const BlurText = ({ text = '', delay = 200, className = '', animateBy = 'words',
           key={index}
           initial={from}
           animate={inView ? buildKeyframes(from, to) : from}
-          transition={{ duration: stepDuration * 2, times, delay: (index * delay) / 1000 }}
+          transition={{ duration: stepDuration * 2, ...(inView ? { times } : {}), delay: (index * delay) / 1000 }}
         >
           {segment === ' ' ? '\u00A0' : segment}
           {animateBy === 'words' && index < elements.length - 1 && '\u00A0'}
@@ -413,9 +413,21 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         </div>
         
         <div className="flex items-center gap-6">
-          <button onClick={onLogin} className="bg-slate-900 text-white text-[14px] font-semibold px-5 py-2.5 rounded-full hover:bg-slate-800 flex items-center gap-2 group transition-all">
-            Log-in <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+          <BorderGlow
+            borderRadius={999}
+            backgroundColor="#0f172a"
+            colors={['#7c3aed', '#4f46e5', '#2563eb']}
+            glowColor="250 80 70"
+            glowRadius={25}
+            glowIntensity={0.9}
+            coneSpread={30}
+            animated={false}
+            className="rounded-full"
+          >
+            <button onClick={onLogin} className="bg-slate-900 text-white text-[14px] font-semibold px-5 py-2.5 rounded-full hover:bg-slate-800 flex items-center gap-2 group transition-all active:scale-95">
+              Log-in <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </BorderGlow>
         </div>
       </nav>
 
@@ -424,40 +436,78 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           <div className="pt-12 space-y-10">
             <div className="space-y-6">
-              <h1 className="text-[72px] font-bold text-slate-900 leading-[1.1] tracking-tight">
-                Ditch the Paper, <br />
-                <span className="italic font-serif font-medium text-slate-800">Master Inventory.</span>
-              </h1>
-              <p className="text-[17px] text-slate-500 leading-relaxed max-w-lg font-medium">
-                StockPulse is the all-in-one digital system for retailers and wholesalers. 
-                Stop manual counting and start gaining accurate, real-time insights into 
-                your stock levels and valuation in one powerful space.
-              </p>
+              <BlurText
+                text="Ditch the Paper, Master Inventory."
+                delay={120}
+                animateBy="words"
+                direction="top"
+                stepDuration={0.4}
+                className="text-[72px] font-bold text-slate-900 leading-[1.1] tracking-tight"
+              />
+              <BlurText
+                text="StockPulse is the all-in-one digital system for retailers and wholesalers. Stop manual counting and start gaining accurate, real-time insights into your stock levels and valuation in one powerful space."
+                delay={30}
+                animateBy="words"
+                direction="top"
+                stepDuration={0.3}
+                className="text-[17px] text-slate-500 leading-relaxed max-w-lg font-medium"
+              />
             </div>
 
-            <div className="flex items-center gap-4">
-              <button onClick={onLogin} className="bg-slate-900 text-white font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-800 transition-all flex items-center gap-2 shadow-xl shadow-slate-200">
-                Get Started <ArrowRight size={18} />
-              </button>
-              <button onClick={() => setShowAbout(true)} className="bg-white border border-slate-200 text-slate-600 font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-50 transition-colors">
-                Learn About Us
-              </button>
-            </div>
-
-            <div className="pt-8 space-y-3 border-t border-slate-100 max-w-sm">
-              <div className="flex items-center gap-1 text-yellow-400">
-                <Star size={16} fill="currentColor" stroke="none" />
-                <Star size={16} fill="currentColor" stroke="none" />
-                <Star size={16} fill="currentColor" stroke="none" />
-                <Star size={16} fill="currentColor" stroke="none" />
-                <Star size={16} fill="currentColor" stroke="none" />
-                <span className="ml-2 text-slate-900 font-bold text-sm">4.9/5</span>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.6 }}
+              className="flex flex-col gap-10"
+            >
+              <div className="flex items-center gap-4">
+                <BorderGlow
+                  borderRadius={999}
+                  backgroundColor="#0f172a"
+                  colors={['#7c3aed', '#4f46e5', '#2563eb']}
+                  glowColor="250 80 70"
+                  glowRadius={30}
+                  glowIntensity={1.0}
+                  coneSpread={30}
+                  animated={true}
+                  className="rounded-full"
+                >
+                  <button onClick={onLogin} className="bg-slate-900 text-white font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-800 transition-all flex items-center gap-2 shadow-xl shadow-slate-200 active:scale-95">
+                    Get Started <ArrowRight size={18} />
+                  </button>
+                </BorderGlow>
+                <BorderGlow
+                  borderRadius={999}
+                  backgroundColor="#ffffff"
+                  colors={['#7c3aed', '#4f46e5', '#2563eb']}
+                  glowColor="250 80 70"
+                  glowRadius={25}
+                  glowIntensity={0.8}
+                  coneSpread={30}
+                  animated={true}
+                  className="rounded-full"
+                >
+                  <button onClick={() => setShowAbout(true)} className="bg-white border border-slate-200 text-slate-600 font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-50 transition-colors active:scale-95">
+                    Learn About Us
+                  </button>
+                </BorderGlow>
               </div>
-              <p className="text-slate-400 text-[13px] font-medium">on Product Hunt, G2, and Capterra</p>
-              <p className="text-slate-500 text-[13px] leading-relaxed">
-                Trusted by 12,000+ creators, developers, and startups in over 40 countries. <a href="#" onClick={(e) => {e.preventDefault(); setShowAbout(true)}} className="text-slate-900 underline underline-offset-4 decoration-slate-300 font-bold">See Stories →</a>
-              </p>
-            </div>
+
+              <div className="pt-8 space-y-3 border-t border-slate-100 max-w-sm">
+                <div className="flex items-center gap-1 text-yellow-400">
+                  <Star size={16} fill="currentColor" stroke="none" />
+                  <Star size={16} fill="currentColor" stroke="none" />
+                  <Star size={16} fill="currentColor" stroke="none" />
+                  <Star size={16} fill="currentColor" stroke="none" />
+                  <Star size={16} fill="currentColor" stroke="none" />
+                  <span className="ml-2 text-slate-900 font-bold text-sm">4.9/5</span>
+                </div>
+                <p className="text-slate-400 text-[13px] font-medium">on Product Hunt, G2, and Capterra</p>
+                <p className="text-slate-500 text-[13px] leading-relaxed">
+                  Trusted by 12,000+ creators, developers, and startups in over 40 countries. <a href="#" onClick={(e) => {e.preventDefault(); setShowAbout(true)}} className="text-slate-900 underline underline-offset-4 decoration-slate-300 font-bold">See Stories →</a>
+                </p>
+              </div>
+            </motion.div>
           </div>
 
           {/* Interactive Hand-drawn Sketch Style Illustration */}
@@ -502,25 +552,31 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                 
                 {/* ANIMATED PACKAGES: Moving into the computer */}
                 {/* Package Group 1 */}
-                <g className="animate-entry-machine" style={{ animationDelay: '0s' }}>
-                  <rect x="200" y="275" width="40" height="45" rx="2" fill="white" className="animate-bob" />
-                  <path d="M210,285 L230,285 M210,295 L225,295" strokeWidth="1.5" />
-                  <circle cx="220" cy="245" r="8" fill="#1e3a8a" stroke="none" />
+                <g className="animate-entry-machine" style={{ animationDelay: '0s', transformOrigin: 'center', transformBox: 'fill-box' }}>
+                  <g className="animate-bob">
+                    <rect x="200" y="275" width="40" height="45" rx="2" fill="white" />
+                    <path d="M210,285 L230,285 M210,295 L225,295" strokeWidth="1.5" />
+                    <circle cx="220" cy="245" r="8" fill="#1e3a8a" stroke="none" />
+                  </g>
                 </g>
 
                 {/* Package Group 2 */}
-                <g className="animate-entry-machine" style={{ animationDelay: '1.3s' }}>
-                  <rect x="280" y="265" width="50" height="55" rx="2" fill="white" className="animate-bob" style={{ animationDelay: '0.5s' }} />
-                  <circle cx="305" cy="292" r="10" stroke="#1e3a8a" />
-                  <path d="M300,292 L303,295 L310,288" strokeWidth="2" stroke="#1e3a8a" />
-                  <rect x="295" y="235" width="20" height="15" rx="2" fill="#e2e8f0" stroke="none" />
+                <g className="animate-entry-machine" style={{ animationDelay: '1.3s', transformOrigin: 'center', transformBox: 'fill-box' }}>
+                  <g className="animate-bob" style={{ animationDelay: '0.5s' }}>
+                    <rect x="280" y="265" width="50" height="55" rx="2" fill="white" />
+                    <circle cx="305" cy="292" r="10" stroke="#1e3a8a" />
+                    <path d="M300,292 L303,295 L310,288" strokeWidth="2" stroke="#1e3a8a" />
+                    <rect x="295" y="235" width="20" height="15" rx="2" fill="#e2e8f0" stroke="none" />
+                  </g>
                 </g>
 
                 {/* Package Group 3 */}
-                <g className="animate-entry-machine" style={{ animationDelay: '2.6s' }}>
-                  <rect x="360" y="280" width="35" height="40" rx="2" fill="white" className="animate-bob" style={{ animationDelay: '1s' }} />
-                  <path d="M365,290 L390,290 M365,300 L385,300" strokeWidth="1.5" />
-                  <path d="M365,245 L390,245 L377,225 Z" fill="#1e3a8a" stroke="none" />
+                <g className="animate-entry-machine" style={{ animationDelay: '2.6s', transformOrigin: 'center', transformBox: 'fill-box' }}>
+                  <g className="animate-bob" style={{ animationDelay: '1s' }}>
+                    <rect x="360" y="280" width="35" height="40" rx="2" fill="white" />
+                    <path d="M365,290 L390,290 M365,300 L385,300" strokeWidth="1.5" />
+                    <path d="M365,245 L390,245 L377,225 Z" fill="#1e3a8a" stroke="none" />
+                  </g>
                 </g>
 
                 {/* The Monitor Interface */}

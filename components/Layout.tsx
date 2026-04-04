@@ -116,7 +116,7 @@ const Layout: React.FC<LayoutProps> = ({
             </div>
             <span className="whitespace-nowrap">StockPulse</span>
           </div>
-          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-blue-100 hover:text-white">
+          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden text-blue-100 hover:text-white transition-all hover:scale-[1.03] active:scale-95">
             <X size={24} />
           </button>
         </div>
@@ -160,7 +160,7 @@ const Layout: React.FC<LayoutProps> = ({
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md text-slate-600 dark:text-slate-400 transition-colors"
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md text-slate-600 dark:text-slate-400 transition-all hover:scale-[1.03] active:scale-95"
               aria-label="Toggle Sidebar"
             >
               <Menu size={20} />
@@ -174,7 +174,7 @@ const Layout: React.FC<LayoutProps> = ({
             {/* Theme Toggle */}
             <button 
               onClick={toggleTheme}
-              className="p-2 text-slate-400 dark:text-slate-400 hover:text-blue-900 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors"
+              className="p-2 text-slate-400 dark:text-slate-400 hover:text-blue-900 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-all hover:scale-[1.03] active:scale-95"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
@@ -197,7 +197,7 @@ const Layout: React.FC<LayoutProps> = ({
               <button
                 type="button"
                 onClick={() => setNotifOpen((prev) => !prev)}
-                className="p-2 text-slate-400 dark:text-slate-400 hover:text-blue-900 dark:hover:text-blue-400 transition-colors relative"
+                className="p-2 text-slate-400 dark:text-slate-400 hover:text-blue-900 dark:hover:text-blue-400 transition-all relative hover:scale-[1.03] active:scale-95"
                 aria-haspopup="menu"
                 aria-expanded={notifOpen}
               >
@@ -216,7 +216,7 @@ const Layout: React.FC<LayoutProps> = ({
                     <button
                       type="button"
                       onClick={markAllRead}
-                      className="text-xs font-semibold text-blue-900 dark:text-blue-400 hover:underline"
+                      className="text-xs font-semibold text-blue-900 dark:text-blue-400 hover:underline transition-all hover:scale-[1.03] active:scale-95"
                     >
                       Mark all read
                     </button>
@@ -249,7 +249,7 @@ const Layout: React.FC<LayoutProps> = ({
               <button
                 type="button"
                 onClick={() => setProfileOpen((prev) => !prev)}
-                className="flex items-center gap-3 p-1 -m-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-3 p-1 -m-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95"
                 aria-haspopup="menu"
                 aria-expanded={profileOpen}
               >
@@ -272,14 +272,14 @@ const Layout: React.FC<LayoutProps> = ({
                     <button
                       type="button"
                       onClick={() => console.log('My Profile clicked')}
-                      className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                      className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95"
                     >
                       My Profile
                     </button>
                     <button
                       type="button"
                       onClick={onLogout}
-                      className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all hover:scale-[1.03] active:scale-95"
                     >
                       Logout
                     </button>

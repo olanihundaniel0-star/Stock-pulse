@@ -194,7 +194,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm transition-colors">
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
             <h3 className="font-bold text-slate-800 dark:text-white">Status Summary</h3>
-            <button onClick={exportInventoryStatusCSV} className="text-sm font-semibold text-blue-900 dark:text-blue-400 flex items-center gap-1 hover:underline">
+            <button onClick={exportInventoryStatusCSV} className="text-sm font-semibold text-blue-900 dark:text-blue-400 flex items-center gap-1 hover:underline transition-all hover:scale-[1.03] active:scale-95">
               <Download size={14} /> Export Table
             </button>
           </div>
@@ -262,7 +262,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
           </select>
           <button
             onClick={exportMovementHistoryCSV}
-            className="px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 text-sm font-semibold"
+            className="px-4 py-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.03] active:scale-95"
           >
             <Download size={16} />
             Export History
@@ -418,8 +418,8 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                 <div>
                   <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Analysis Depth</label>
                   <div className="grid grid-cols-2 gap-2">
-                    <button className="p-2 border border-blue-900 dark:border-blue-500 text-blue-900 dark:text-blue-400 rounded-lg text-xs font-bold bg-blue-50 dark:bg-blue-900/20">Summary</button>
-                    <button className="p-2 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-lg text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Deep Audit</button>
+                    <button className="p-2 border border-blue-900 dark:border-blue-500 text-blue-900 dark:text-blue-400 rounded-lg text-xs font-bold bg-blue-50 dark:bg-blue-900/20 transition-all hover:scale-[1.03] active:scale-95">Summary</button>
+                    <button className="p-2 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-lg text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95">Deep Audit</button>
                   </div>
                 </div>
 
@@ -427,7 +427,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                   <button 
                     onClick={generateReport}
                     disabled={isGenerating}
-                    className="w-full bg-blue-900 dark:bg-blue-600 text-white font-bold py-3 rounded-xl shadow-xl shadow-blue-900/20 hover:bg-blue-800 dark:hover:bg-blue-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+                    className="w-full bg-blue-900 dark:bg-blue-600 text-white font-bold py-3 rounded-xl shadow-xl shadow-blue-900/20 hover:bg-blue-800 dark:hover:bg-blue-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group hover:scale-[1.03] active:scale-95"
                   >
                     {isGenerating ? (
                       <>
@@ -490,7 +490,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                     </h3>
                     <p className="text-slate-400 text-xs mt-1">Generated on {generatedReport.timestamp}</p>
                   </div>
-                  <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
+                  <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all hover:scale-[1.03] active:scale-95">
                     <Download size={16} /> Export PDF
                   </button>
                 </div>
@@ -596,7 +596,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
       <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 transition-colors">
         <button 
           onClick={() => setActiveTab('status')}
-          className={`px-6 py-4 text-sm font-bold flex items-center gap-2 transition-all border-b-2 ${
+          className={`px-6 py-4 text-sm font-bold flex items-center gap-2 transition-all border-b-2 hover:scale-[1.03] active:scale-95 ${
             activeTab === 'status' ? 'border-blue-900 dark:border-blue-500 text-blue-900 dark:text-blue-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
           }`}
         >
@@ -605,7 +605,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
         </button>
         <button 
           onClick={() => setActiveTab('movement')}
-          className={`px-6 py-4 text-sm font-bold flex items-center gap-2 transition-all border-b-2 ${
+          className={`px-6 py-4 text-sm font-bold flex items-center gap-2 transition-all border-b-2 hover:scale-[1.03] active:scale-95 ${
             activeTab === 'movement' ? 'border-blue-900 dark:border-blue-500 text-blue-900 dark:text-blue-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
           }`}
         >
@@ -616,7 +616,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
           <>
             <button 
               onClick={() => setActiveTab('profit')}
-              className={`px-6 py-4 text-sm font-bold flex items-center gap-2 transition-all border-b-2 ${
+              className={`px-6 py-4 text-sm font-bold flex items-center gap-2 transition-all border-b-2 hover:scale-[1.03] active:scale-95 ${
                 activeTab === 'profit' ? 'border-blue-900 dark:border-blue-500 text-blue-900 dark:text-blue-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
               }`}
             >
@@ -625,7 +625,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
             </button>
             <button 
               onClick={() => setActiveTab('generator')}
-              className={`px-6 py-4 text-sm font-bold flex items-center gap-2 transition-all border-b-2 ${
+              className={`px-6 py-4 text-sm font-bold flex items-center gap-2 transition-all border-b-2 hover:scale-[1.03] active:scale-95 ${
                 activeTab === 'generator' ? 'border-blue-900 dark:border-blue-500 text-blue-900 dark:text-blue-500' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
               }`}
             >

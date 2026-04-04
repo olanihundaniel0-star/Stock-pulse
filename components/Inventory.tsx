@@ -118,7 +118,7 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
           />
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95">
             <Download size={18} />
             <span>Export</span>
           </button>
@@ -159,7 +159,7 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
         {searchTerm && (
            <button 
             onClick={() => setSearchTerm('')}
-            className="text-xs font-bold text-blue-900 dark:text-blue-400 hover:underline px-2"
+            className="text-xs font-bold text-blue-900 dark:text-blue-400 hover:underline px-2 transition-all hover:scale-[1.03] active:scale-95"
           >
             Clear Search
           </button>
@@ -223,14 +223,14 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
                     <div className="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         onClick={() => onEditProduct(p)}
-                        className="p-2 text-slate-400 hover:text-blue-900 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        className="p-2 text-slate-400 hover:text-blue-900 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all hover:scale-[1.03] active:scale-95"
                       >
                         <Edit2 size={16} />
                       </button>
                       {isAdmin && (
                         <button 
                           onClick={() => onDeleteProduct(p.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all hover:scale-[1.03] active:scale-95"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -252,7 +252,7 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
                       </div>
                       <button 
                         onClick={() => { setSearchTerm(''); setCategoryFilter('All'); setStatusFilter('All'); }}
-                        className="text-sm font-bold text-blue-900 dark:text-blue-400 hover:underline"
+                        className="text-sm font-bold text-blue-900 dark:text-blue-400 hover:underline transition-all hover:scale-[1.03] active:scale-95"
                       >
                         Reset all filters
                       </button>
@@ -273,7 +273,7 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
             <button 
               disabled={page === 1}
               onClick={() => setPage(p => p - 1)}
-              className="p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-white dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 dark:text-slate-400 transition-colors"
+              className="p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-white dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 dark:text-slate-400 transition-all hover:scale-[1.03] active:scale-95"
             >
               <ChevronLeft size={18} />
             </button>
@@ -293,7 +293,7 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
             <button 
               disabled={page === totalPages || totalPages === 0}
               onClick={() => setPage(p => p + 1)}
-              className="p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-white dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 dark:text-slate-400 transition-colors"
+              className="p-1.5 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-white dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 dark:text-slate-400 transition-all hover:scale-[1.03] active:scale-95"
             >
               <ChevronRight size={18} />
             </button>
