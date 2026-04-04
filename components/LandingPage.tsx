@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, type ReactNode } from 'react';
 import { motion } from 'motion/react';
-import { Star, ArrowRight, Package, ShieldCheck, Zap, BarChart3, Users, Globe } from 'lucide-react';
+import { Star, ArrowRight, ShieldCheck, Zap, BarChart3, Globe } from 'lucide-react';
+import Changelog from './Changelog';
+import Pricing from './Pricing';
+import Status from './Status';
 
 const buildKeyframes = (from: any, steps: any[]) => {
   const keys = new Set([...Object.keys(from), ...steps.flatMap((s: any) => Object.keys(s))]);
@@ -180,7 +183,6 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
     const angleEnd = 465;
     setSweepActive(true);
     setCursorAngle(angleStart);
-
     animateValue({ duration: 500, onUpdate: v => setEdgeProximity(v / 100) });
     animateValue({ ease: easeInCubic, duration: 1500, end: 50, onUpdate: v => {
       setCursorAngle((angleEnd - angleStart) * (v / 100) + angleStart);
@@ -237,7 +239,6 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
           transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
         }}
       />
-
       <div
         className="absolute inset-0 rounded-[inherit] -z-[1]"
         style={{
@@ -268,7 +269,6 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
           transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
         } as React.CSSProperties}
       />
-
       <span
         className="absolute pointer-events-none z-[1] rounded-[inherit]"
         style={{
@@ -288,7 +288,6 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
           }}
         />
       </span>
-
       <div className="flex flex-col relative z-[1]">
         {children}
       </div>
@@ -301,7 +300,14 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
-  const [showAbout, setShowAbout] = useState(false);
+  const [subPage, setSubPage] = useState<'about' | 'changelog' | 'pricing' | 'status' | null>(null);
+
+  if (subPage === 'changelog') return <Changelog onBack={() => setSubPage(null)} />;
+  if (subPage === 'pricing') return <Pricing onBack={() => setSubPage(null)} onLogin={onLogin} />;
+  if (subPage === 'status') return <Status onBack={() => setSubPage(null)} />;
+
+  const showAbout = subPage === 'about';
+  const setShowAbout = (v: boolean) => setSubPage(v ? 'about' : null);
 
   if (showAbout) {
     return (
@@ -313,7 +319,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             </div>
             <span className="tracking-tight">StockPulse</span>
           </div>
-          <button onClick={() => setShowAbout(false)} className="text-[14px] font-semibold text-slate-900 hover:text-blue-700 transition-colors flex items-center gap-2">
+          <button onClick={() => setShowAbout(false)} className="text-[14px] font-semibold text-slate-900 hover:text-blue-700 transition-colors flex items-center gap-2 hover:scale-[1.03] active:scale-95">
             ← Back to Home
           </button>
         </nav>
@@ -406,10 +412,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         </div>
         
         <div className="hidden lg:flex items-center gap-10 text-[14px] text-slate-500 font-medium">
-          <a href="#" className="hover:text-slate-900 transition-colors" onClick={(e) => {e.preventDefault(); setShowAbout(true)}}>Features</a>
-          <a href="#" className="hover:text-slate-900 transition-colors">Enterprise</a>
-          <a href="#" className="hover:text-slate-900 transition-colors">Pricing</a>
-          <a href="#" className="hover:text-slate-900 transition-colors">Download</a>
+          <a href="#" className="hover:text-slate-900 transition-colors" onClick={(e) => { e.preventDefault(); setSubPage('about'); }}>Features</a>
+          <a href="#" className="hover:text-slate-900 transition-colors" onClick={(e) => { e.preventDefault(); setSubPage('changelog'); }}>Changelog</a>
+          <a href="#" className="hover:text-slate-900 transition-colors" onClick={(e) => { e.preventDefault(); setSubPage('pricing'); }}>Pricing</a>
+          <a href="#" className="hover:text-slate-900 transition-colors" onClick={(e) => { e.preventDefault(); setSubPage('status'); }}>Status</a>
         </div>
         
         <div className="flex items-center gap-6">
@@ -504,13 +510,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                 </div>
                 <p className="text-slate-400 text-[13px] font-medium">on Product Hunt, G2, and Capterra</p>
                 <p className="text-slate-500 text-[13px] leading-relaxed">
-                  Trusted by 12,000+ creators, developers, and startups in over 40 countries. <a href="#" onClick={(e) => {e.preventDefault(); setShowAbout(true)}} className="text-slate-900 underline underline-offset-4 decoration-slate-300 font-bold">See Stories →</a>
+                  Trusted by 12,000+ creators, developers, and startups in over 40 countries. <a href="#" onClick={(e) => { e.preventDefault(); setShowAbout(true); }} className="text-slate-900 underline underline-offset-4 decoration-slate-300 font-bold">See Stories →</a>
                 </p>
               </div>
             </motion.div>
           </div>
 
-          {/* Interactive Hand-drawn Sketch Style Illustration */}
+          {/* Illustration */}
           <div className="relative lg:pt-20">
             <svg viewBox="0 0 600 500" className="w-full h-auto drop-shadow-sm select-none">
               <ellipse cx="300" cy="420" rx="250" ry="40" fill="url(#grad1)" opacity="0.1" />
@@ -520,38 +526,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   <stop offset="100%" style={{stopColor:'rgb(255,255,255)', stopOpacity:0}} />
                 </radialGradient>
               </defs>
-
               <g stroke="#1a1a1a" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                {/* Main Machine Body */}
                 <path d="M430,300 L560,300 L560,430 L430,430 Z" fill="#ffffff" />
                 <path d="M560,300 L580,285 L580,415 L560,430" fill="#fcfcfc" />
                 <path d="M430,300 L450,285 L580,285" />
-                
-                {/* Details on Machine */}
                 <circle cx="455" cy="325" r="10" className="animate-pulse" />
                 <path d="M455,320 L455,325 L460,325" />
                 <rect x="475" y="320" width="30" height="4" rx="2" />
                 <rect x="475" y="330" width="20" height="4" rx="2" />
-                
-                {/* The "Brain" or Processor */}
                 <rect x="525" y="315" width="20" height="20" rx="4" fill="#1e3a8a" />
                 <text x="531" y="330" fill="white" stroke="none" fontSize="12" fontWeight="bold" className="animate-pulse">S</text>
-                
-                {/* Dashboard Screen Area */}
                 <rect x="490" y="360" width="45" height="45" rx="4" fill="#f8f8f8" />
                 <path d="M495,370 L530,370 M495,380 L520,380 M495,390 L525,390" strokeWidth="1.5" className="animate-pulse" />
-                
-                {/* Exhaust/Outputs */}
                 <path d="M580,350 L600,350 L600,390 L590,390" />
                 <rect x="585" y="390" width="10" height="25" rx="2" className="animate-bounce" />
-
-                {/* The Conveyor Belt Structure */}
                 <path d="M160,320 L430,320 M160,345 L430,345" />
                 <path d="M160,320 L160,360 L430,360" />
                 <path d="M180,360 L180,390 M280,360 L280,390 M380,360 L380,395" />
-                
-                {/* ANIMATED PACKAGES: Moving into the computer */}
-                {/* Package Group 1 */}
                 <g className="animate-entry-machine" style={{ animationDelay: '0s', transformOrigin: 'center', transformBox: 'fill-box' }}>
                   <g className="animate-bob">
                     <rect x="200" y="275" width="40" height="45" rx="2" fill="white" />
@@ -559,8 +550,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                     <circle cx="220" cy="245" r="8" fill="#1e3a8a" stroke="none" />
                   </g>
                 </g>
-
-                {/* Package Group 2 */}
                 <g className="animate-entry-machine" style={{ animationDelay: '1.3s', transformOrigin: 'center', transformBox: 'fill-box' }}>
                   <g className="animate-bob" style={{ animationDelay: '0.5s' }}>
                     <rect x="280" y="265" width="50" height="55" rx="2" fill="white" />
@@ -569,8 +558,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                     <rect x="295" y="235" width="20" height="15" rx="2" fill="#e2e8f0" stroke="none" />
                   </g>
                 </g>
-
-                {/* Package Group 3 */}
                 <g className="animate-entry-machine" style={{ animationDelay: '2.6s', transformOrigin: 'center', transformBox: 'fill-box' }}>
                   <g className="animate-bob" style={{ animationDelay: '1s' }}>
                     <rect x="360" y="280" width="35" height="40" rx="2" fill="white" />
@@ -578,13 +565,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                     <path d="M365,245 L390,245 L377,225 Z" fill="#1e3a8a" stroke="none" />
                   </g>
                 </g>
-
-                {/* The Monitor Interface */}
                 <rect x="450" y="215" width="85" height="65" rx="6" fill="white" strokeWidth="3" className="animate-bob" />
                 <path d="M460,260 L475,235 L490,250 L515,225 L525,240" stroke="#1e3a8a" strokeWidth="4" className="animate-pulse" />
                 <path d="M485,280 L480,300 M505,280 L510,300" strokeWidth="2" />
-                
-                {/* Excitement Action Lines */}
                 <g className="animate-pulse">
                   <path d="M440,220 L425,210" strokeWidth="1" />
                   <path d="M445,200 L435,185" strokeWidth="1" />
