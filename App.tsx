@@ -341,6 +341,130 @@ const Login: React.FC = () => {
   );
 };
 
+const StockPulseLoader: React.FC = () => {
+  const phrasesRef = React.useRef(['Syncing your inventory...','Connecting to your workspace...','Loading your dashboard...','Almost there...']);
+  const tagRef = React.useRef<HTMLDivElement>(null);
+  const piRef = React.useRef(0);
+
+  React.useEffect(() => {
+    const tel = tagRef.current;
+    if (!tel) return;
+    const interval = setInterval(() => {
+      tel.style.opacity = '0';
+      tel.style.transform = 'translateY(-6px)';
+      setTimeout(() => {
+        piRef.current = (piRef.current + 1) % phrasesRef.current.length;
+        if (!tel) return;
+        tel.textContent = phrasesRef.current[piRef.current];
+        tel.style.transition = 'none';
+        tel.style.transform = 'translateY(6px)';
+        tel.style.opacity = '0';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          tel.style.transition = 'opacity 0.38s ease,transform 0.38s ease';
+          tel.style.opacity = '1';
+          tel.style.transform = 'translateY(0)';
+        }));
+      }, 380);
+    }, 2900);
+    return () => clearInterval(interval);
+  }, []);
+
+  const lFRef = React.useRef<SVGPathElement>(null);
+  const lBRef = React.useRef<SVGPathElement>(null);
+  const bGRef = React.useRef<SVGGElement>(null);
+  const rafRef = React.useRef<number>(0);
+
+  React.useEffect(() => {
+    const HX=20,HY=34,TL=13,CL=11,FL=4.5,MX=26,CMS=980;
+    function getLeg(phase: number) {
+      const a = Math.sin(phase * Math.PI * 2);
+      const tDeg = a * MX;
+      const lift = Math.max(0, Math.cos(phase * Math.PI * 2)) * 15;
+      const cDeg = tDeg * 0.62 - 5 - lift;
+      const tR = tDeg * Math.PI / 180, cR = cDeg * Math.PI / 180;
+      const kx = HX + Math.sin(tR) * TL, ky = HY + Math.cos(tR) * TL;
+      const fx = kx + Math.sin(cR) * CL, fy = ky + Math.cos(cR) * CL;
+      const fex = fx + FL, fey = fy + 1;
+      return { kx, ky, fx, fy, fex, fey };
+    }
+    function mkP(l: ReturnType<typeof getLeg>) {
+      return `M${HX} ${HY} L${l.kx.toFixed(1)} ${l.ky.toFixed(1)} L${l.fx.toFixed(1)} ${l.fy.toFixed(1)} L${l.fex.toFixed(1)} ${l.fey.toFixed(1)}`;
+    }
+    let t0: number | null = null;
+    function frame(ts: number) {
+      if (!t0) t0 = ts;
+      const ph = ((ts - t0) % CMS) / CMS;
+      const lA = getLeg(ph), lBl = getLeg((ph + 0.5) % 1);
+      if (lFRef.current) lFRef.current.setAttribute('d', mkP(lA));
+      if (lBRef.current) lBRef.current.setAttribute('d', mkP(lBl));
+      if (bGRef.current) bGRef.current.style.transform = `translateY(${(-Math.cos(ph * Math.PI * 4) * 1.8).toFixed(2)}px)`;
+      rafRef.current = requestAnimationFrame(frame);
+    }
+    rafRef.current = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  return (
+    <div style={{ minHeight:'100vh', background:'#0b1323', display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden', padding:'2.5rem 1.5rem' }}>
+      <div style={{ position:'absolute', width:340, height:340, borderRadius:'50%', background:'rgba(99,102,241,0.1)', filter:'blur(80px)', top:-80, left:-60, pointerEvents:'none' }} />
+      <div style={{ position:'absolute', width:280, height:280, borderRadius:'50%', background:'rgba(59,130,246,0.07)', filter:'blur(70px)', bottom:-50, right:-30, pointerEvents:'none' }} />
+
+      <div style={{ position:'relative', zIndex:1, width:'100%', maxWidth:540, background:'rgba(255,255,255,0.035)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:28, padding:'3rem 2.5rem 2.5rem', display:'flex', flexDirection:'column', alignItems:'center', gap:'1.6rem' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, color:'#f1f5f9', fontSize:26, fontWeight:700, letterSpacing:'-0.4px' }}>
+          <div style={{ width:34, height:34, background:'#f1f5f9', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', color:'#0b1323', fontWeight:900, fontStyle:'italic', fontSize:17 }}>S</div>
+          StockPulse
+        </div>
+
+        <div ref={tagRef} style={{ fontSize:15, color:'rgba(148,163,184,0.85)', minHeight:22, transition:'opacity 0.35s ease,transform 0.35s ease' }}>
+          Syncing your inventory...
+        </div>
+
+        <div style={{ width:'78%', position:'relative', paddingTop:84 }}>
+          <div style={{ position:'absolute', top:0, left:0, right:0, height:78, overflow:'visible' }}>
+            <div style={{ position:'absolute', top:0, width:96, height:78, animation:'spM 9s cubic-bezier(0.2,0,0.8,1) infinite' }}>
+              <svg viewBox="0 0 96 74" width="96" height="74" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path ref={lBRef} stroke="rgba(130,150,180,0.5)" strokeWidth="1.65" fill="none"/>
+                <g stroke="rgba(148,163,184,0.72)" strokeWidth="1.6">
+                  <rect x="42" y="24" width="38" height="20" rx="2"/>
+                  <rect x="48" y="12" width="26" height="13" rx="1.5"/>
+                  <line x1="48" y1="18.5" x2="74" y2="18.5" strokeWidth="1"/>
+                  <circle cx="50" cy="46" r="4"/>
+                  <circle cx="72" cy="46" r="4"/>
+                  <path d="M42 30 C37 30 34 32 31 33" fill="none"/>
+                </g>
+                <g ref={bGRef} stroke="rgba(226,232,240,0.92)" strokeWidth="1.8">
+                  <circle cx="20" cy="9" r="5.5"/>
+                  <path d="M14 7.5 L26 7.5" strokeWidth="1.5"/>
+                  <path d="M15.5 7.5 L17 3 L23 3 L24.5 7.5"/>
+                  <line x1="20" y1="15" x2="21" y2="34"/>
+                  <path d="M20 22 L31 30" fill="none"/>
+                  <path d="M20 26 L31 33" fill="none"/>
+                </g>
+                <path ref={lFRef} stroke="rgba(226,232,240,0.9)" strokeWidth="1.8" fill="none"/>
+              </svg>
+            </div>
+          </div>
+          <div style={{ height:10, width:'100%', background:'rgba(15,23,42,0.9)', borderRadius:99, border:'1px solid rgba(255,255,255,0.07)', overflow:'hidden' }}>
+            <div style={{ height:'100%', background:'linear-gradient(90deg,#4f46e5,#818cf8)', borderRadius:99, boxShadow:'0 0 18px rgba(99,102,241,0.65)', animation:'spF 9s cubic-bezier(0.2,0,0.8,1) infinite' }} />
+          </div>
+        </div>
+
+        <div style={{ display:'flex', gap:6 }}>
+          {[0, 0.23, 0.46].map((delay, i) => (
+            <div key={i} style={{ width:6, height:6, borderRadius:'50%', background:'rgba(99,102,241,0.4)', animation:`spD 1.4s ease-in-out ${delay}s infinite` }} />
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes spM { 0%{left:0} 74%{left:calc(100% - 96px)} 100%{left:calc(100% - 96px)} }
+        @keyframes spF { 0%{width:0} 74%{width:100%} 100%{width:100%} }
+        @keyframes spD { 0%,100%{background:rgba(99,102,241,0.28);transform:scale(1)} 50%{background:rgba(99,102,241,0.9);transform:scale(1.32)} }
+      `}</style>
+    </div>
+  );
+};
+
 type NotificationItem = {
   id: string;
   message: string;
@@ -606,11 +730,7 @@ const App: React.FC = () => {
   }
 
   if (!authReady) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f8f6] text-[#0f1729]">
-        <p className="font-medium">Loading…</p>
-      </div>
-    );
+    return <StockPulseLoader />;
   }
   if (authError) {
     return (
@@ -650,11 +770,7 @@ const App: React.FC = () => {
   }
 
   if (!state.currentUser) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f8f6] text-[#0f1729]">
-        <p className="font-medium">Syncing your account...</p>
-      </div>
-    );
+    return <StockPulseLoader />;
   }
 
   const renderPage = () => {
