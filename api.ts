@@ -69,6 +69,7 @@ export const api = {
         headers: await getHeaders(),
         body: JSON.stringify(product),
       });
+      if (!res.ok) throw new Error('Failed to create product');
       return res.json();
     },
     update: async (id: string, product: Partial<Product>): Promise<Product> => {
@@ -77,13 +78,15 @@ export const api = {
         headers: await getHeaders(),
         body: JSON.stringify(product),
       });
+      if (!res.ok) throw new Error('Failed to update product');
       return res.json();
     },
     delete: async (id: string): Promise<void> => {
-      await fetch(`${API_BASE}/products/${id}`, {
+      const res = await fetch(`${API_BASE}/products/${id}`, {
         method: 'DELETE',
         headers: await getHeaders(),
       });
+      if (!res.ok) throw new Error('Failed to delete product');
     },
   },
 
