@@ -271,7 +271,10 @@ const Layout: React.FC<LayoutProps> = ({
                   <div className="p-2 space-y-1">
                     <button
                       type="button"
-                      onClick={() => console.log('My Profile clicked')}
+                      onClick={() => {
+                        setActivePage('profile');
+                        setProfileOpen(false);
+                      }}
                       className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95"
                     >
                       My Profile

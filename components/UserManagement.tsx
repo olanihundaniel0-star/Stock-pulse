@@ -3,18 +3,27 @@ import React, { useState } from 'react';
 import { User, UserRole } from '../types';
 import { UserPlus, Edit2, Trash2, Mail, Shield, CheckCircle, XCircle } from 'lucide-react';
 
+interface CreateUserFormData {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  status: 'Active' | 'Inactive';
+}
+
 interface UserManagementProps {
   users: User[];
-  onAddUser: (user: Partial<User>) => void;
+  onAddUser: (user: CreateUserFormData) => void;
   onUpdateUser: (user: User) => void;
   onDeleteUser: (id: string) => void;
 }
 
 const UserManagement: React.FC<UserManagementProps> = ({ users, onAddUser, onUpdateUser, onDeleteUser }) => {
   const [showAddForm, setShowAddForm] = useState(false);
-  const [formData, setFormData] = useState<Partial<User>>({
+  const [formData, setFormData] = useState<CreateUserFormData>({
     name: '',
     email: '',
+    password: '',
     role: UserRole.USER,
     status: 'Active'
   });

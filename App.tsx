@@ -19,6 +19,7 @@ import ProductForm from "./components/ProductForm";
 import Reports from "./components/Reports";
 import UserManagement from "./components/UserManagement";
 import Settings from "./components/Settings";
+import Profile from "./components/Profile";
 import CompanyOnboarding from "./components/CompanyOnboarding";
 import AuthCallback from "./AuthCallback";
 
@@ -869,7 +870,14 @@ const App: React.FC = () => {
           />
         );
       case "settings":
-        return <Settings />;
+        return <Settings currentUser={state.currentUser} />;
+      case "profile":
+        return (
+          <Profile
+            currentUser={state.currentUser}
+            onOpenSettings={() => setActivePage("settings")}
+          />
+        );
       case "onboarding":
         return (
           <CompanyOnboarding

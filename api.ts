@@ -182,6 +182,15 @@ export const api = {
       if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to fetch company'));
       return res.json();
     },
+    updateMine: async (data: Partial<Pick<Company, 'name' | 'industry' | 'logoUrl'>>): Promise<Company> => {
+      const res = await fetch(`${API_BASE}/companies/mine`, {
+        method: 'PATCH',
+        headers: await getHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to update company'));
+      return res.json();
+    },
   },
 
   stats: {
