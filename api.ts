@@ -158,6 +158,23 @@ export const api = {
       if (!res.ok) throw new Error('Failed to update user');
       return res.json();
     },
+    updateAvatar: async (avatarUrl: string): Promise<User> => {
+      const res = await fetch(`${API_BASE}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: await getHeaders(),
+        body: JSON.stringify({ avatarUrl }),
+      });
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to update avatar'));
+      return res.json();
+    },
+    removeAvatar: async (): Promise<User> => {
+      const res = await fetch(`${API_BASE}/users/me/avatar`, {
+        method: 'DELETE',
+        headers: await getHeaders(),
+      });
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to remove avatar'));
+      return res.json();
+    },
     delete: async (id: string): Promise<void> => {
       const res = await fetch(`${API_BASE}/users/${id}`, {
         method: 'DELETE',

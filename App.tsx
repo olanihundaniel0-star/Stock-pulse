@@ -876,6 +876,14 @@ const App: React.FC = () => {
           <Profile
             currentUser={state.currentUser}
             onOpenSettings={() => setActivePage("settings")}
+            onAvatarUpdate={(avatarUrl) =>
+              setState((prev) => ({
+                ...prev,
+                currentUser: prev.currentUser
+                  ? { ...prev.currentUser, avatarUrl }
+                  : null,
+              }))
+            }
           />
         );
       case "onboarding":
