@@ -1,20 +1,50 @@
-import React from 'react';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ArrowLeft, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { API_BASE } from '../api';
 
 interface StatusProps {
   onBack: () => void;
 }
 
-const services = [
-  { name: 'API', description: 'Core backend API & data endpoints' },
-  { name: 'Database', description: 'PostgreSQL via Supabase' },
-  { name: 'Authentication', description: 'Supabase Auth & Google OAuth' },
+type ApiState = 'checking' | 'up' | 'down';
+
+const clientServices = [
   { name: 'Dashboard', description: 'Real-time metrics and charts' },
   { name: 'Stock Operations', description: 'Stock In and Stock Out processing' },
   { name: 'Reports', description: 'Analytics and report generation' },
 ];
 
 const Status: React.FC<StatusProps> = ({ onBack }) => {
+  const [apiState, setApiState] = useState<ApiState>('checking');
+  const [checkedAt, setCheckedAt] = useState<Date | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/health`, { signal: ctrl.signal });
+        if (!cancelled) {
+          setApiState(res.ok ? 'up' : 'down');
+          setCheckedAt(new Date());
+        }
+      } catch {
+        if (!cancelled) {
+          setApiState('down');
+          setCheckedAt(new Date());
+        }
+      } finally {
+        clearTimeout(timer);
+      }
+    })();
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      ctrl.abort();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-white font-['Inter'] selection:bg-blue-100 animate-in fade-in duration-500">
       <nav className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between">
@@ -34,19 +64,53 @@ const Status: React.FC<StatusProps> = ({ onBack }) => {
         <div className="space-y-4">
           <p className="text-xs font-bold tracking-widest text-indigo-500 uppercase">System Status</p>
           <div className="flex items-center gap-4 flex-wrap">
-            <h1 className="text-5xl font-extrabold text-slate-900 tracking-tight">All Systems</h1>
-            <span className="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold rounded-full text-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Operational
-            </span>
+            <h1 className="text-5xl font-extrabold text-slate-900 tracking-tight">System Status</h1>
+            {apiState === 'checking' ? (
+              <span className="flex items-center gap-2 px-4 py-2 bg-slate-100 border border-slate-200 text-slate-600 font-bold rounded-full text-sm">
+                <Loader2 size={14} className="animate-spin" />
+                Checking…
+              </span>
+            ) : apiState === 'up' ? (
+              <span className="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold rounded-full text-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                API Reachable
+              </span>
+            ) : (
+              <span className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 text-red-700 font-bold rounded-full text-sm">
+                <AlertCircle size={14} />
+                API Unreachable
+              </span>
+            )}
           </div>
           <p className="text-slate-400 text-sm">
-            Last checked: {new Date().toLocaleString()}
+            {checkedAt ? `Last checked: ${checkedAt.toLocaleString()}` : 'Contacting API…'}
           </p>
         </div>
 
         <div className="space-y-3">
-          {services.map((service) => (
+          <div className="flex items-center justify-between p-5 rounded-2xl border border-slate-100 bg-slate-50/50">
+            <div className="space-y-0.5">
+              <p className="font-bold text-slate-900">API</p>
+              <p className="text-sm text-slate-500">Core backend API & data endpoints (live check above)</p>
+            </div>
+            {apiState === 'checking' ? (
+              <div className="flex items-center gap-2 text-slate-500 font-semibold text-sm flex-shrink-0">
+                <Loader2 size={18} className="animate-spin" />
+                Checking…
+              </div>
+            ) : apiState === 'up' ? (
+              <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm flex-shrink-0">
+                <CheckCircle size={18} />
+                Reachable
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-red-600 font-semibold text-sm flex-shrink-0">
+                <AlertCircle size={18} />
+                Unreachable
+              </div>
+            )}
+          </div>
+          {clientServices.map((service) => (
             <div
               key={service.name}
               className="flex items-center justify-between p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors"
@@ -55,26 +119,17 @@ const Status: React.FC<StatusProps> = ({ onBack }) => {
                 <p className="font-bold text-slate-900">{service.name}</p>
                 <p className="text-sm text-slate-500">{service.description}</p>
               </div>
-              <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm flex-shrink-0">
+              <div className="flex items-center gap-2 text-slate-500 font-semibold text-sm flex-shrink-0">
                 <CheckCircle size={18} />
-                Operational
+                Included in this build
               </div>
             </div>
           ))}
         </div>
 
         <div className="rounded-2xl border border-slate-100 bg-slate-50 p-6 space-y-2">
-          <p className="font-bold text-slate-900">Uptime — last 30 days</p>
-          <div className="flex gap-0.5">
-            {Array.from({ length: 30 }).map((_, i) => (
-              <div
-                key={i}
-                className="flex-1 h-8 rounded-sm bg-emerald-400"
-                title="100% uptime"
-              />
-            ))}
-          </div>
-          <p className="text-sm text-slate-500">100% uptime across all services</p>
+          <p className="font-bold text-slate-900">Uptime history</p>
+          <p className="text-sm text-slate-500">Uptime tracking is not enabled yet. This page reports a live reachability check only.</p>
         </div>
       </section>
     </div>

@@ -101,8 +101,9 @@ const Pricing: React.FC<PricingProps> = ({ onBack, onLogin }) => {
           </div>
         </div>
 
-        <div className="text-center text-slate-500 text-sm">
-          All plans include a 14-day free trial. No credit card required.
+        <div className="text-center text-slate-500 text-sm space-y-1">
+          <p>Free beta. Both buttons currently create a free account. No payment or checkout is wired up yet.</p>
+          <p>Plan limits (users, products, locations) are not enforced by the backend yet.</p>
         </div>
       </section>
     </div>

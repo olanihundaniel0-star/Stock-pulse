@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, type ReactNode } from 'react';
 import { motion } from 'motion/react';
-import { Star, ArrowRight, ShieldCheck, Zap, BarChart3, Globe } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Zap, BarChart3, Globe, Package, Users, FileText, ChevronDown } from 'lucide-react';
 import Changelog from './Changelog';
 import Pricing from './Pricing';
 import Status from './Status';
@@ -301,6 +301,34 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   const [subPage, setSubPage] = useState<'about' | 'changelog' | 'pricing' | 'status' | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const faqs = [
+    {
+      q: 'What does StockPulse actually do?',
+      a: 'It tracks products (SKU, category, cost and selling price, quantities, reorder levels), records every stock-in and stock-out with who did it and why, and shows real-time dashboard metrics, movement history, and profit reports.',
+    },
+    {
+      q: 'Do I need a credit card or a paid plan?',
+      a: 'No. This is a free beta. Signing in creates a free account and every button on the pricing page leads to the same free sign in. No checkout is wired up and plan limits are not enforced yet.',
+    },
+    {
+      q: 'Who can see costs and margins?',
+      a: 'Admins see cost prices, inventory valuation at cost, and profit analysis. Staff see selling prices and stock levels. Enforce this in your own access reviews too. The backend is the source of truth for roles.',
+    },
+    {
+      q: 'What happens when stock runs low?',
+      a: 'Products below their reorder level are flagged as low stock (zero quantity is flagged as out of stock), surfaced on the dashboard, in notifications, and in reports so you can restock before you run out.',
+    },
+    {
+      q: 'Can I correct mistakes or audit history?',
+      a: 'Yes. Every stock in and stock out is a permanent transaction with product, quantity, reason, customer or supplier, notes, date, and user attribution. Exportable to CSV from inventory and movement views.',
+    },
+    {
+      q: 'Does it work offline or on mobile?',
+      a: 'The app detects offline status and supports dark mode with a responsive layout, but recording transactions requires a connection so counts stay accurate. For outages, check the Status page for live API reachability.',
+    },
+  ];
 
   if (subPage === 'changelog') return <Changelog onBack={() => setSubPage(null)} />;
   if (subPage === 'pricing') return <Pricing onBack={() => setSubPage(null)} onLogin={onLogin} />;
@@ -510,17 +538,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
               </div>
 
               <div className="pt-8 space-y-3 border-t border-slate-100 max-w-sm">
-                <div className="flex items-center gap-1 text-yellow-400">
-                  <Star size={16} fill="currentColor" stroke="none" />
-                  <Star size={16} fill="currentColor" stroke="none" />
-                  <Star size={16} fill="currentColor" stroke="none" />
-                  <Star size={16} fill="currentColor" stroke="none" />
-                  <Star size={16} fill="currentColor" stroke="none" />
-                  <span className="ml-2 text-slate-900 font-bold text-sm">4.9/5</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  {['Free to start', 'No credit card required', 'Real time sync'].map((pill) => (
+                    <span key={pill} className="inline-flex items-center gap-2 text-[13px] font-semibold text-slate-900 bg-white border border-slate-200 rounded-full px-4 py-2 shadow-sm">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+                      {pill}
+                    </span>
+                  ))}
                 </div>
-                <p className="text-slate-400 text-[13px] font-medium">on Product Hunt, G2, and Capterra</p>
                 <p className="text-slate-500 text-[13px] leading-relaxed">
-                  Trusted by 12,000+ creators, developers, and startups in over 40 countries. <a href="#" onClick={(e) => { e.preventDefault(); setShowAbout(true); }} className="text-slate-900 underline underline-offset-4 decoration-slate-300 font-bold">See Stories →</a>
+                  Built for retailers and wholesalers who want accurate stock levels, valuations, and audit trails in one place. <a href="#" onClick={(e) => { e.preventDefault(); setShowAbout(true); }} className="text-slate-900 underline underline-offset-4 decoration-slate-300 font-bold">How it works →</a>
                 </p>
               </div>
             </motion.div>
@@ -590,16 +617,153 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         </div>
       </section>
 
-      {/* Trust Section */}
-      <footer className="mt-auto w-full border-t border-slate-100/80 bg-white/60 backdrop-blur-sm py-16">
-        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
-          <div className="text-[14px] font-bold tracking-widest text-slate-400">TRUSTED BY</div>
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
-            <div className="text-xl font-black text-slate-800 tracking-tighter italic">LogisticsCo</div>
-            <div className="text-xl font-bold text-slate-800">FreshDaily</div>
-            <div className="text-xl font-serif text-slate-800">WAREHOUSE.OS</div>
-            <div className="text-xl font-mono font-black text-slate-800">SHIPIT</div>
-            <div className="text-xl font-bold italic text-slate-800">R•Supply</div>
+      {/* Audience strip */}
+      <section className="w-full border-t border-slate-100/80 bg-white/60 backdrop-blur-sm py-12">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-[13px] font-bold tracking-widest text-slate-400">BUILT FOR RETAIL & WHOLESALE TEAMS</div>
+          <div className="flex flex-wrap justify-center items-center gap-2">
+            {['SKU tracking', 'Stock in and out', 'Low stock alerts', 'Profit reports', 'Role based access', 'CSV export'].map((pill) => (
+              <span key={pill} className="inline-flex items-center gap-2 text-[13px] font-semibold text-slate-900 bg-white border border-slate-200 rounded-full px-4 py-2 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+                {pill}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div className="max-w-2xl space-y-4 mb-12">
+          <p className="text-xs font-bold tracking-widest text-indigo-500 uppercase">Features</p>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Everything you need to stay in control</h2>
+          <p className="text-slate-500 text-[15px] leading-relaxed">One system for counts, costs, and history. No spreadsheets, no paper, no guesswork.</p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            { icon: <Package size={22} />, title: 'Inventory with SKU tracking', body: 'Products, categories, suppliers, reorder levels, and draft or published status. Searchable and filterable in one table.' },
+            { icon: <Zap size={22} />, title: 'Stock In & Out in seconds', body: 'Restock with unit cost and supplier, or sell and consume with reason, customer, and price. Quantities update instantly.' },
+            { icon: <ShieldCheck size={22} />, title: 'Role based access', body: 'Admins manage users, costs, and settings. Staff handle daily stock operations. Every action is attributed.' },
+            { icon: <BarChart3 size={22} />, title: 'Dashboard and low stock alerts', body: 'Live totals, inventory valuation, today\u2019s sales, 30-day movement charts, and automatic low-stock notifications.' },
+            { icon: <FileText size={22} />, title: 'Reports and audit trail', body: 'Movement history, profit analysis, and one-click CSV exports. Every transaction keeps its who, what, and why.' },
+            { icon: <Users size={22} />, title: 'Teams and companies', body: 'Onboard your company, invite users, manage roles and statuses, and keep each workspace\u2019s data isolated.' },
+          ].map((f) => (
+            <div key={f.title} className="space-y-4 p-8 bg-white rounded-3xl border border-slate-100 shadow-sm">
+              <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center mb-2">
+                {f.icon}
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">{f.title}</h3>
+              <p className="text-slate-500 text-[14px] leading-relaxed">{f.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="w-full bg-slate-900 text-white">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-16 sm:py-24">
+          <div className="max-w-2xl space-y-4 mb-12">
+            <p className="text-xs font-bold tracking-widest text-indigo-300 uppercase">How it works</p>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">From signup to in-control in three steps</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { step: '1', title: 'Create your account', body: 'Sign in with email or Google. New workspaces complete a short company onboarding.' },
+              { step: '2', title: 'Add products & stock', body: 'Import your catalog with SKUs, prices, quantities, and reorder levels. Record an opening stock-in.' },
+              { step: '3', title: 'Sell, track, restock', body: 'Log every stock-out with a reason, watch alerts fire before shelves go empty, and export reports anytime.' },
+            ].map((s) => (
+              <div key={s.step} className="rounded-3xl border border-white/10 bg-white/5 p-8 space-y-4">
+                <div className="w-10 h-10 rounded-full bg-white text-slate-900 font-black flex items-center justify-center">{s.step}</div>
+                <h3 className="text-lg font-bold">{s.title}</h3>
+                <p className="text-slate-300 text-[14px] leading-relaxed">{s.body}</p>
+              </div>
+            ))}
+          </div>
+          <button onClick={onLogin} className="mt-10 bg-white text-slate-900 font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-100 transition-all inline-flex items-center gap-2 active:scale-95">
+            Get Started <ArrowRight size={18} />
+          </button>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div className="text-center space-y-4 mb-10">
+          <p className="text-xs font-bold tracking-widest text-indigo-500 uppercase">FAQ</p>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Frequently asked questions</h2>
+          <p className="text-slate-500 text-[15px]">Honest answers about what StockPulse does today, and what it does not do yet.</p>
+        </div>
+        <div className="space-y-3">
+          {faqs.map((item, i) => {
+            const open = openFaq === i;
+            return (
+              <div key={item.q} className={`rounded-2xl border transition-colors ${open ? 'border-slate-900 bg-white shadow-sm' : 'border-slate-200 bg-white'}`}>
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  aria-expanded={open}
+                  className="w-full flex items-center justify-between gap-4 text-left px-6 py-5"
+                >
+                  <span className="font-bold text-slate-900 text-[15px]">{item.q}</span>
+                  <ChevronDown size={18} className={`flex-shrink-0 text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+                </button>
+                {open && (
+                  <p className="px-6 pb-6 text-slate-500 text-[14px] leading-relaxed">{item.a}</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
+        <div className="bg-slate-900 rounded-[40px] px-8 py-14 sm:p-16 text-center text-white space-y-6">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Ready to ditch the paper?</h2>
+          <p className="text-slate-300 max-w-xl mx-auto text-[15px]">Join free today. Add your first products in minutes and see every count, value, and movement in one place.</p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button onClick={onLogin} className="bg-white text-slate-900 font-bold px-10 py-4 rounded-full text-[15px] hover:bg-slate-100 transition-all inline-flex items-center gap-2 active:scale-95">
+              Get Started Free <ArrowRight size={18} />
+            </button>
+            <button onClick={() => setSubPage('pricing')} className="text-white font-semibold px-8 py-4 rounded-full text-[15px] border border-white/20 hover:bg-white/10 transition-all active:scale-95">
+              View Pricing
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="w-full border-t border-slate-100 bg-white">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-14 grid gap-10 md:grid-cols-4">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 font-bold text-lg text-slate-900">
+              <div className="w-6 h-6 bg-slate-900 rounded-sm flex items-center justify-center transform -rotate-12">
+                <span className="text-white text-[10px] font-black italic">S</span>
+              </div>
+              <span className="tracking-tight">StockPulse</span>
+            </div>
+            <p className="text-slate-500 text-[13px] leading-relaxed max-w-xs">Digital inventory management for retailers and wholesalers. Free beta. No credit card required.</p>
+          </div>
+          <div className="space-y-3">
+            <p className="text-[12px] font-bold tracking-widest text-slate-400">PRODUCT</p>
+            <button onClick={() => setSubPage('about')} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Features</button>
+            <button onClick={() => setSubPage('pricing')} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Pricing</button>
+            <button onClick={() => setSubPage('changelog')} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Changelog</button>
+            <button onClick={() => setSubPage('status')} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Status</button>
+          </div>
+          <div className="space-y-3">
+            <p className="text-[12px] font-bold tracking-widest text-slate-400">GET STARTED</p>
+            <button onClick={onLogin} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Log in</button>
+            <button onClick={onLogin} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Create account</button>
+          </div>
+          <div className="space-y-3">
+            <p className="text-[12px] font-bold tracking-widest text-slate-400">SYSTEM</p>
+            <p className="text-slate-500 text-[13px]">API reachability is checked live on the Status page. Uptime history is not tracked yet.</p>
+          </div>
+        </div>
+        <div className="border-t border-slate-100">
+          <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-slate-400 text-[13px]">© {new Date().getFullYear()} StockPulse. All rights reserved.</p>
+            <p className="text-slate-400 text-[13px]">Free beta. Features and limits may change.</p>
           </div>
         </div>
       </footer>

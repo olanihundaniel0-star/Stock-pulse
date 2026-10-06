@@ -208,8 +208,8 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
             <p className="text-slate-500 dark:text-slate-400 text-sm">Total Inventory Worth</p>
             <h4 className="text-2xl font-bold mt-1 text-slate-800 dark:text-white">₦{totalWorth.toLocaleString()}</h4>
-            <div className="mt-4 flex items-center text-xs text-emerald-600 dark:text-emerald-400 gap-1 font-semibold">
-              <TrendingUp size={12} /> +2.4% from last month
+            <div className="mt-4 flex items-center text-xs text-slate-500 dark:text-slate-400 gap-1 font-medium">
+              Across {new Set(products.map(p => p.category)).size} categor{new Set(products.map(p => p.category)).size === 1 ? 'y' : 'ies'}
             </div>
           </div>
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
