@@ -6,6 +6,7 @@ import {
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const anon = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+export const isSupabaseConfigured = Boolean(url && anon);
 
 if (!url || !anon) {
   console.warn(
@@ -13,14 +14,72 @@ if (!url || !anon) {
   );
 }
 
-export const supabase = createClient(url ?? '', anon ?? '', {
+const createNoopSupabaseClient = () => ({
   auth: {
-    detectSessionInUrl: true,
-    persistSession: true,
-    autoRefreshToken: true,
-    flowType: 'pkce',
+    getSession: async () => ({
+      data: { session: null },
+      error: null,
+    }),
+    signInWithOAuth: async () => ({
+      data: null,
+      error: new Error('Supabase env is not configured.'),
+    }),
+    signInWithPassword: async () => ({
+      data: null,
+      error: new Error('Supabase env is not configured.'),
+    }),
+    signUp: async () => ({
+      data: { session: null, user: null },
+      error: new Error('Supabase env is not configured.'),
+    }),
+    signOut: async () => ({
+      error: null,
+    }),
+    exchangeCodeForSession: async () => ({
+      data: { session: null },
+      error: new Error('Supabase env is not configured.'),
+    }),
+    onAuthStateChange: () => ({
+      data: {
+        subscription: {
+          unsubscribe: () => undefined,
+        },
+      },
+    }),
+  },
+  storage: {
+    from: () => ({
+      upload: async () => ({
+        data: null,
+        error: new Error('Supabase env is not configured.'),
+      }),
+      remove: async () => ({
+        data: null,
+        error: new Error('Supabase env is not configured.'),
+      }),
+      getPublicUrl: () => ({
+        data: { publicUrl: '' },
+      }),
+    }),
   },
 });
+
+export const supabase = isSupabaseConfigured
+  ? createClient(url as string, anon as string, {
+      auth: {
+        detectSessionInUrl: true,
+        persistSession: true,
+        autoRefreshToken: true,
+        flowType: 'pkce',
+      },
+    })
+  : (createNoopSupabaseClient() as any);
+
+// NOTE: Access tokens are owned and refreshed by supabase-js; this module
+// never stores or mutates them. Consumers should read
+// `session.access_token` (or `useSession().accessToken`, which is trimmed)
+// and send it as `Bearer <token>`. No trimming is applied here so the
+// client behavior stays unchanged.
 
 export type AuthStateCallback = (
   event: AuthChangeEvent,

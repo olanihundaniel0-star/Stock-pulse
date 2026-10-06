@@ -77,7 +77,9 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
         p.category
       ].join(' ');
 
-      const matchesSearch = !searchTerm || fuzzyMatch(searchFields, searchTerm);
+      // Multi-word search: every query word must match (fuzzy) somewhere.
+      const trimmedSearch = searchTerm.trim();
+      const matchesSearch = !trimmedSearch || trimmedSearch.split(/\s+/).every(word => fuzzyMatch(searchFields, word));
       const matchesCategory = categoryFilter === 'All' || p.category === categoryFilter;
       const matchesStatus = statusFilter === 'All' || 
         (statusFilter === 'Low Stock' && p.quantity < p.reorderLevel && p.quantity > 0) ||
@@ -104,6 +106,14 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
     setPage(1);
   }, [searchTerm, categoryFilter, statusFilter]);
 
+  // Clamp page after deletes/filters shrink the result set (prevents blank pages).
+  React.useEffect(() => {
+    const clampedTotal = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
+    if (page > clampedTotal) {
+      setPage(clampedTotal);
+    }
+  }, [filteredProducts.length, page]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -118,7 +128,7 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
           />
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <button className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95">
+          <button disabled title="Export is not available yet" className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
             <Download size={18} />
             <span>Export</span>
           </button>
@@ -187,7 +197,7 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
                 <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <img src={p.image} className="w-10 h-10 rounded-lg object-cover border border-slate-100 dark:border-slate-700" alt={p.name} />
+                      <img src={p.image} onError={(e) => { e.currentTarget.style.display = 'none'; }} loading="lazy" className="w-10 h-10 rounded-lg object-cover border border-slate-100 dark:border-slate-700" alt={p.name} />
                       <div className="max-w-[150px] md:max-w-xs">
                         <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">{p.name}</p>
                         <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{p.supplierName}</p>
@@ -209,11 +219,11 @@ const Inventory: React.FC<InventoryProps> = ({ products, currentUser, onAddProdu
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="text-sm font-semibold text-slate-800 dark:text-white">₦{p.sellingPrice.toFixed(2)}</p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">₦{Number(p.sellingPrice ?? 0).toFixed(2)}</p>
                   </td>
                   {isAdmin && (
                     <td className="px-6 py-4">
-                      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">₦{p.costPrice.toFixed(2)}</p>
+                      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">₦{Number(p.costPrice ?? 0).toFixed(2)}</p>
                     </td>
                   )}
                   <td className="px-6 py-4">

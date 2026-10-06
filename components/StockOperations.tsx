@@ -25,6 +25,7 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
   const [unitPrice, setUnitPrice] = React.useState(0);
   const [date, setDate] = React.useState(new Date().toISOString().split('T')[0]);
   const [formError, setFormError] = React.useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const selectedProduct = products.find(p => p.id === selectedProductId);
 
@@ -42,13 +43,25 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (!selectedProductId) {
       setFormError('Please select a product before submitting.');
       return;
     }
-    if (!Number.isFinite(quantity) || quantity < 1) {
-      setFormError('Quantity must be at least 1.');
+    const parsedQty = typeof quantity === 'number' ? quantity : parseInt(String(quantity), 10);
+    if (!Number.isFinite(parsedQty) || parsedQty <= 0 || !Number.isInteger(parsedQty)) {
+      setFormError('Quantity must be a whole number greater than 0.');
       return;
+    }
+    if (!date || Number.isNaN(Date.parse(date))) {
+      setFormError('Please provide a valid date.');
+      return;
+    }
+    if (isStockIn) {
+      if (!Number.isFinite(unitCost) || unitCost < 0) {
+        setFormError('Unit cost must be 0 or greater.');
+        return;
+      }
     }
     if (!isStockIn) {
       if (!selectedProduct) {
@@ -68,21 +81,28 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
     setFormError(null);
     const effectiveReason = !isStockIn ? (isAdmin ? reason : StockOutReason.SALE) : undefined;
 
-    onSubmit({
-      productId: selectedProductId,
-      productName: selectedProduct?.name,
-      type,
-      quantity,
-      reason: effectiveReason,
-      notes,
-      customer: !isStockIn && effectiveReason === StockOutReason.SALE ? customer : undefined,
-      supplier: isStockIn ? supplier : undefined,
-      unitCost: isStockIn ? unitCost : undefined,
-      unitPrice: !isStockIn ? unitPrice : undefined,
-      date,
-      userId: currentUser.id,
-      userName: currentUser.name
-    });
+    setIsSubmitting(true);
+    try {
+      onSubmit({
+        productId: selectedProductId,
+        productName: selectedProduct?.name,
+        type,
+        quantity: parsedQty,
+        reason: effectiveReason,
+        notes,
+        customer: !isStockIn && effectiveReason === StockOutReason.SALE ? customer : undefined,
+        supplier: isStockIn ? supplier : undefined,
+        unitCost: isStockIn ? unitCost : undefined,
+        // Only attach a unit price for actual sales; other STOCK_OUT reasons
+        // (damaged/expired/theft/sample) have no sale price.
+        unitPrice: !isStockIn && effectiveReason === StockOutReason.SALE ? unitPrice : undefined,
+        date,
+        userId: currentUser.id,
+        userName: currentUser.name
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -132,10 +152,15 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                 min="1"
                 max={!isStockIn ? selectedProduct?.quantity : undefined}
                 className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
-                value={quantity}
+                value={Number.isNaN(quantity) ? '' : quantity}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value, 10);
-                  setQuantity(Number.isNaN(value) ? 0 : value);
+                  const raw = e.target.value;
+                  if (raw.trim() === '') {
+                    setQuantity(Number.NaN);
+                    return;
+                  }
+                  const value = parseInt(raw, 10);
+                  setQuantity(Number.isNaN(value) ? Number.NaN : value);
                 }}
               />
             </div>
@@ -183,10 +208,15 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                     type="number" 
                     step="0.01"
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-900 outline-none text-slate-900 dark:text-white"
-                    value={unitCost}
+                    value={Number.isNaN(unitCost) ? '' : unitCost}
                     onChange={(e) => {
-                      const value = parseFloat(e.target.value);
-                      setUnitCost(Number.isNaN(value) ? 0 : value);
+                      const raw = e.target.value;
+                      if (raw.trim() === '') {
+                        setUnitCost(Number.NaN);
+                        return;
+                      }
+                      const value = parseFloat(raw);
+                      setUnitCost(Number.isNaN(value) ? Number.NaN : value);
                     }}
                   />
                 </div>
@@ -240,10 +270,15 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
                     type="number"
                     step="0.01"
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-900 outline-none"
-                    value={unitPrice}
+                    value={Number.isNaN(unitPrice) ? '' : unitPrice}
                     onChange={(e) => {
-                      const value = parseFloat(e.target.value);
-                      setUnitPrice(Number.isNaN(value) ? 0 : value);
+                      const raw = e.target.value;
+                      if (raw.trim() === '') {
+                        setUnitPrice(Number.NaN);
+                        return;
+                      }
+                      const value = parseFloat(raw);
+                      setUnitPrice(Number.isNaN(value) ? Number.NaN : value);
                     }}
                   />
                 </div>
@@ -274,12 +309,13 @@ const StockOperations: React.FC<StockOpsProps> = ({ type, products, currentUser,
           </button>
           <button 
             type="submit"
-            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white rounded-xl font-semibold shadow-lg transition-all hover:scale-[1.03] active:scale-95 ${
+            disabled={isSubmitting}
+            className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white rounded-xl font-semibold shadow-lg transition-all hover:scale-[1.03] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${
               isStockIn ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'
             }`}
           >
             <CheckCircle size={20} />
-            {isStockIn ? 'Confirm Stock In' : 'Confirm Stock Out'}
+            {isSubmitting ? 'Submitting...' : (isStockIn ? 'Confirm Stock In' : 'Confirm Stock Out')}
           </button>
         </div>
       </form>

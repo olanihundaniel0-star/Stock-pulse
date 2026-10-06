@@ -406,17 +406,17 @@ const StockPulseLoader: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ minHeight:'100vh', background:'#0b1323', display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden', padding:'2.5rem 1.5rem' }}>
-      <div style={{ position:'absolute', width:340, height:340, borderRadius:'50%', background:'rgba(99,102,241,0.1)', filter:'blur(80px)', top:-80, left:-60, pointerEvents:'none' }} />
-      <div style={{ position:'absolute', width:280, height:280, borderRadius:'50%', background:'rgba(59,130,246,0.07)', filter:'blur(70px)', bottom:-50, right:-30, pointerEvents:'none' }} />
+    <div style={{ minHeight:'100vh', background:'linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%)', display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden', padding:'2.5rem 1.5rem' }}>
+      <div style={{ position:'absolute', width:340, height:340, borderRadius:'50%', background:'rgba(59,130,246,0.14)', filter:'blur(80px)', top:-80, left:-60, pointerEvents:'none' }} />
+      <div style={{ position:'absolute', width:280, height:280, borderRadius:'50%', background:'rgba(99,102,241,0.10)', filter:'blur(70px)', bottom:-50, right:-30, pointerEvents:'none' }} />
 
-      <div style={{ position:'relative', zIndex:1, width:'100%', maxWidth:540, background:'rgba(255,255,255,0.035)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:28, padding:'3rem 2.5rem 2.5rem', display:'flex', flexDirection:'column', alignItems:'center', gap:'1.6rem' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:10, color:'#f1f5f9', fontSize:26, fontWeight:700, letterSpacing:'-0.4px' }}>
-          <div style={{ width:34, height:34, background:'#f1f5f9', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', color:'#0b1323', fontWeight:900, fontStyle:'italic', fontSize:17 }}>S</div>
+      <div style={{ position:'relative', zIndex:1, width:'100%', maxWidth:540, background:'rgba(255,255,255,0.78)', backdropFilter:'blur(12px)', border:'1px solid rgba(148,163,184,0.18)', borderRadius:28, padding:'3rem 2.5rem 2.5rem', display:'flex', flexDirection:'column', alignItems:'center', gap:'1.6rem', boxShadow:'0 20px 60px rgba(15,23,42,0.08)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, color:'#0f172a', fontSize:26, fontWeight:700, letterSpacing:'-0.4px' }}>
+          <div style={{ width:34, height:34, background:'#0f172a', borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', color:'#f8fafc', fontWeight:900, fontStyle:'italic', fontSize:17 }}>S</div>
           StockPulse
         </div>
 
-        <div ref={tagRef} style={{ fontSize:15, color:'rgba(148,163,184,0.85)', minHeight:22, transition:'opacity 0.35s ease,transform 0.35s ease' }}>
+        <div ref={tagRef} style={{ fontSize:15, color:'#475569', minHeight:22, transition:'opacity 0.35s ease,transform 0.35s ease' }}>
           Syncing your inventory...
         </div>
 
@@ -445,14 +445,14 @@ const StockPulseLoader: React.FC = () => {
               </svg>
             </div>
           </div>
-          <div style={{ height:10, width:'100%', background:'rgba(15,23,42,0.9)', borderRadius:99, border:'1px solid rgba(255,255,255,0.07)', overflow:'hidden' }}>
-            <div style={{ height:'100%', background:'linear-gradient(90deg,#4f46e5,#818cf8)', borderRadius:99, boxShadow:'0 0 18px rgba(99,102,241,0.65)', animation:'spF 9s cubic-bezier(0.2,0,0.8,1) infinite' }} />
+          <div style={{ height:10, width:'100%', background:'rgba(226,232,240,0.9)', borderRadius:99, border:'1px solid rgba(148,163,184,0.18)', overflow:'hidden' }}>
+            <div style={{ height:'100%', background:'linear-gradient(90deg,#1d4ed8,#6366f1)', borderRadius:99, boxShadow:'0 0 18px rgba(59,130,246,0.45)', animation:'spF 9s cubic-bezier(0.2,0,0.8,1) infinite' }} />
           </div>
         </div>
 
         <div style={{ display:'flex', gap:6 }}>
           {[0, 0.23, 0.46].map((delay, i) => (
-            <div key={i} style={{ width:6, height:6, borderRadius:'50%', background:'rgba(99,102,241,0.4)', animation:`spD 1.4s ease-in-out ${delay}s infinite` }} />
+            <div key={i} style={{ width:6, height:6, borderRadius:'50%', background:'rgba(59,130,246,0.4)', animation:`spD 1.4s ease-in-out ${delay}s infinite` }} />
           ))}
         </div>
       </div>
@@ -460,7 +460,7 @@ const StockPulseLoader: React.FC = () => {
       <style>{`
         @keyframes spM { 0%{left:0} 74%{left:calc(100% - 96px)} 100%{left:calc(100% - 96px)} }
         @keyframes spF { 0%{width:0} 74%{width:100%} 100%{width:100%} }
-        @keyframes spD { 0%,100%{background:rgba(99,102,241,0.28);transform:scale(1)} 50%{background:rgba(99,102,241,0.9);transform:scale(1.32)} }
+        @keyframes spD { 0%,100%{background:rgba(59,130,246,0.28);transform:scale(1)} 50%{background:rgba(59,130,246,0.9);transform:scale(1.32)} }
       `}</style>
     </div>
   );
@@ -499,37 +499,10 @@ const App: React.FC = () => {
     );
   });
 
-  useEffect(() => {
-    let active = true;
-
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!active) return;
-      setHasSession(Boolean(session));
-    };
-
-    void checkSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setHasSession(Boolean(session));
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        setAuthError(null);
-      }
-      if (event === "SIGNED_OUT") {
-        setState((prev) => ({ ...prev, currentUser: null }));
-        setAuthError(null);
-      }
-    });
-
-    return () => {
-      active = false;
-      subscription.unsubscribe();
-    };
-  }, []);
+  // NOTE: Session state is owned by SessionProvider (useSession above).
+  // App intentionally does not call getSession/onAuthStateChange directly to
+  // avoid duplicate subscriptions and races; hasSession below is derived
+  // from the provider's accessToken.
 
   const syncUserFromApi = useCallback(async (accessToken: string | undefined) => {
     if (!accessToken) {
@@ -563,7 +536,14 @@ const App: React.FC = () => {
         }
         if (!details) details = `${res.status} ${res.statusText}`.trim();
 
-        setAuthError(`GET ${API_BASE}/users/me failed (${res.status}): ${details}`);
+        // Log technical details for debugging; show only a friendly,
+        // sanitized message in the UI (never render API_BASE or raw body).
+        console.error("User sync failed", { status: res.status, details });
+        setAuthError(
+          res.status === 401 || res.status === 403
+            ? "Your session has expired. Please sign in again."
+            : "We couldn't sync your account. Please try again.",
+        );
         setState((prev) => ({ ...prev, currentUser: null }));
         if (res.status === 401 || res.status === 403) {
           await supabase.auth.signOut();
@@ -576,7 +556,9 @@ const App: React.FC = () => {
       const body = await res.json();
       const user = body.user as User | undefined;
       if (!user) {
-        setAuthError("GET /users/me succeeded but response is missing `user`.");
+        // Sanitized: log the shape issue, show a friendly message.
+        console.error("User sync returned unexpected shape (missing `user`).");
+        setAuthError("We couldn't sync your account. Please try again.");
         setState((prev) => ({ ...prev, currentUser: null }));
         return;
       }
@@ -584,8 +566,9 @@ const App: React.FC = () => {
       setAuthError(null);
       setActivePage(user.companyId ? "dashboard" : "onboarding");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      setAuthError(message);
+      // Sanitized: log the raw error, show a friendly message.
+      console.error("User sync failed", err);
+      setAuthError("We couldn't sync your account. Please check your connection and try again.");
       setState((prev) => ({ ...prev, currentUser: null }));
       return;
     }
@@ -601,14 +584,19 @@ const App: React.FC = () => {
     setHasSession(Boolean(accessToken));
   }, [authReady, accessToken]);
 
+  // Stable primitives for fetchData deps (avoid refetch loops from object identity).
+  const currentUserId = state.currentUser?.id;
+  const currentCompanyId = state.currentUser?.companyId;
+  const currentUserRole = state.currentUser?.role;
+
   const fetchData = useCallback(async () => {
-    if (!state.currentUser || !state.currentUser.companyId) return;
+    if (!currentUserId || !currentCompanyId) return;
     try {
       const promises: Promise<unknown>[] = [
         api.products.getAll(),
         api.transactions.getAll(),
       ];
-      if (state.currentUser.role === UserRole.ADMIN) {
+      if (currentUserRole === UserRole.ADMIN) {
         promises.push(api.users.getAll());
       }
       const data = await Promise.all(promises);
@@ -624,10 +612,18 @@ const App: React.FC = () => {
       }));
 
       setNotifications((prev) => {
-        const existingIds = new Set(prev.map((n) => n.id));
+        // Drop notifications for products that are no longer low (restocked),
+        // then append only genuinely new low-stock items (preserving read state).
+        const lowById = new Map(
+          productsData
+            .filter((p) => p.quantity < p.reorderLevel)
+            .map((p) => [p.id, p] as const),
+        );
+        const retained = prev.filter((n) => lowById.has(n.id));
+        const retainedIds = new Set(retained.map((n) => n.id));
         const lowStockNotifications = productsData
-          .filter((p) => p.quantity < p.reorderLevel)
-          .filter((p) => !existingIds.has(p.id))
+          .filter((p) => lowById.has(p.id))
+          .filter((p) => !retainedIds.has(p.id))
           .map((p) => ({
             id: p.id,
             message: `${p.name} is running low (${p.quantity} left)`,
@@ -635,13 +631,17 @@ const App: React.FC = () => {
             type: "warning" as const,
           }));
 
-        if (lowStockNotifications.length === 0) return prev;
-        return [...prev, ...lowStockNotifications];
+        if (
+          lowStockNotifications.length === 0 &&
+          retained.length === prev.length
+        )
+          return prev;
+        return [...retained, ...lowStockNotifications];
       });
     } catch (err) {
       console.error("Failed to fetch data", err);
     }
-  }, [state.currentUser]);
+  }, [currentUserId, currentCompanyId, currentUserRole]);
 
   useEffect(() => {
     fetchData();
@@ -738,7 +738,7 @@ const App: React.FC = () => {
       <div className="min-h-screen bg-red-900 text-red-100 flex items-center justify-center p-6">
         <div className="w-full max-w-3xl rounded-2xl border border-red-300/30 bg-red-950 p-6 sm:p-8 shadow-2xl">
           <h1 className="text-2xl font-bold mb-4">Authentication Sync Error</h1>
-          <p className="text-red-200 mb-3">User sync failed after login. Error details:</p>
+          <p className="text-red-200 mb-3">We couldn&apos;t sync your account after login. Please try again.</p>
           <pre className="whitespace-pre-wrap break-words rounded-lg bg-red-900/60 p-4 text-sm leading-6 text-red-100">
             {authError}
           </pre>

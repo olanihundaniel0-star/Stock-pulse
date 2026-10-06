@@ -24,12 +24,22 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
 
     void (async () => {
-      const {
-        data: { session: initial },
-      } = await supabase.auth.getSession();
-      if (!cancelled) {
-        setSession(initial);
-        setIsReady(true);
+      try {
+        const {
+          data: { session: initial },
+        } = await supabase.auth.getSession();
+        if (!cancelled) {
+          setSession(initial);
+        }
+      } catch (err) {
+        console.error('Failed to initialize Supabase session', err);
+        if (!cancelled) {
+          setSession(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsReady(true);
+        }
       }
     })();
 
@@ -44,11 +54,18 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo<SessionContextValue>(
-    () => ({
-      session,
-      accessToken: session?.access_token,
-      isReady,
-    }),
+    () => {
+      // No behavior change: supabase-js tokens carry no whitespace. Trim
+      // defensively and normalize empty strings to undefined so consumers
+      // never send `Bearer ` / `Bearer undefined`.
+      const raw = session?.access_token;
+      const trimmed = raw?.trim();
+      return {
+        session,
+        accessToken: trimmed ? trimmed : undefined,
+        isReady,
+      };
+    },
     [session, isReady],
   );
 

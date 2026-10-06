@@ -10,8 +10,11 @@ const getHeaders = async () => {
     data: { session },
   } = await supabase.auth.getSession();
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  if (session?.access_token) {
-    headers['Authorization'] = `Bearer ${session.access_token}`;
+  // Trim defensively: supabase-js tokens carry no whitespace, so this is a
+  // no-op for valid sessions and only guards against accidental padding.
+  const token = session?.access_token?.trim();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
   return headers;
 };
@@ -59,7 +62,7 @@ export const api = {
   products: {
     getAll: async (): Promise<Product[]> => {
       const res = await fetch(`${API_BASE}/products`, { headers: await getHeaders() });
-      if (!res.ok) throw new Error('Failed to fetch products');
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to fetch products'));
       const data = await res.json();
       return Array.isArray(data) ? data : (data.items || []);
     },
@@ -69,6 +72,7 @@ export const api = {
         headers: await getHeaders(),
         body: JSON.stringify(product),
       });
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to create product'));
       return res.json();
     },
     update: async (id: string, product: Partial<Product>): Promise<Product> => {
@@ -77,13 +81,15 @@ export const api = {
         headers: await getHeaders(),
         body: JSON.stringify(product),
       });
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to update product'));
       return res.json();
     },
     delete: async (id: string): Promise<void> => {
-      await fetch(`${API_BASE}/products/${id}`, {
+      const res = await fetch(`${API_BASE}/products/${id}`, {
         method: 'DELETE',
         headers: await getHeaders(),
       });
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to delete product'));
     },
   },
 
@@ -136,7 +142,7 @@ export const api = {
   users: {
     getAll: async (): Promise<User[]> => {
       const res = await fetch(`${API_BASE}/users`, { headers: await getHeaders() });
-      if (!res.ok) throw new Error('Failed to fetch users');
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to fetch users'));
       return res.json();
     },
     create: async (user: Partial<User> & { password?: string }): Promise<User> => {
@@ -146,7 +152,7 @@ export const api = {
         headers: await getHeaders(),
         body: JSON.stringify({ ...rest, password }),
       });
-      if (!res.ok) throw new Error('Failed to create user');
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to create user'));
       return res.json();
     },
     update: async (id: string, user: Partial<User>): Promise<User> => {
@@ -155,7 +161,7 @@ export const api = {
         headers: await getHeaders(),
         body: JSON.stringify({ role: user.role, status: user.status, name: user.name }),
       });
-      if (!res.ok) throw new Error('Failed to update user');
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to update user'));
       return res.json();
     },
     updateAvatar: async (avatarUrl: string): Promise<User> => {
@@ -180,7 +186,7 @@ export const api = {
         method: 'DELETE',
         headers: await getHeaders(),
       });
-      if (!res.ok) throw new Error('Failed to delete user');
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to delete user'));
     },
   },
 
@@ -213,7 +219,7 @@ export const api = {
   stats: {
     getDashboard: async (): Promise<DashboardStats> => {
       const res = await fetch(`${API_BASE}/stats`, { headers: await getHeaders() });
-      if (!res.ok) throw new Error('Failed to fetch dashboard stats');
+      if (!res.ok) throw new Error(await readErrorMessage(res, 'Failed to fetch dashboard stats'));
       return res.json();
     },
   },

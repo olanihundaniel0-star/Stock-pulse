@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Product, Transaction, UserRole, TransactionType, StockOutReason } from '../types';
 import { 
   FileText, 
@@ -39,6 +39,13 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
 
   const isAdmin = currentUser.role === UserRole.ADMIN;
 
+  // Canonical stock-status definitions (shared by every section in this file):
+  // - Out of Stock: quantity === 0
+  // - Low Stock: 0 < quantity < reorderLevel
+  // - Healthy: quantity >= reorderLevel
+  const isOutOfStock = (p: Product) => p.quantity === 0;
+  const isLowStock = (p: Product) => p.quantity > 0 && p.quantity < p.reorderLevel;
+
   // Filter states
   const [movementSearch, setMovementSearch] = useState('');
   const [movementType, setMovementType] = useState('All');
@@ -51,8 +58,8 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
   });
 
   const getProductStatus = (product: Product): string => {
-    if (product.quantity === 0) return 'Out of Stock';
-    if (product.quantity < product.reorderLevel) return 'Low Stock';
+    if (isOutOfStock(product)) return 'Out of Stock';
+    if (isLowStock(product)) return 'Low Stock';
     return 'Healthy';
   };
 
@@ -107,15 +114,32 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
     URL.revokeObjectURL(url);
   };
 
+  const generateIntervalRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (generateIntervalRef.current !== null) {
+        clearInterval(generateIntervalRef.current);
+        generateIntervalRef.current = null;
+      }
+    };
+  }, []);
+
   const generateReport = () => {
     setIsGenerating(true);
     setGenerationProgress(0);
     setGeneratedReport(null);
 
-    const interval = setInterval(() => {
+    if (generateIntervalRef.current !== null) {
+      clearInterval(generateIntervalRef.current);
+    }
+    const interval = window.setInterval(() => {
       setGenerationProgress(prev => {
         if (prev >= 100) {
-          clearInterval(interval);
+          if (generateIntervalRef.current !== null) {
+            clearInterval(generateIntervalRef.current);
+            generateIntervalRef.current = null;
+          }
           setTimeout(() => {
             finalizeReport();
             setIsGenerating(false);
@@ -125,6 +149,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
         return prev + 5;
       });
     }, 100);
+    generateIntervalRef.current = interval;
   };
 
   const finalizeReport = () => {
@@ -145,27 +170,37 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
       result.data = Object.entries(categoryValue).map(([name, value]) => ({ name, value }));
       result.total = products.reduce((acc, p) => acc + (p.costPrice * p.quantity), 0);
     } else if (reportType === 'Health') {
-      result.critical = products.filter(p => p.quantity === 0).length;
-      result.low = products.filter(p => p.quantity < p.reorderLevel && p.quantity > 0).length;
+      // Uses the canonical definitions above: out-of-stock excludes low-stock.
+      result.critical = products.filter(isOutOfStock).length;
+      result.low = products.filter(isLowStock).length;
       result.healthy = products.filter(p => p.quantity >= p.reorderLevel).length;
     } else if (reportType === 'Performance') {
-      const salesByProd = transactions
+      // Group by stable productId so renames don't split history;
+      // fall back to productName for legacy transactions without an id.
+      const salesByProd: Record<string, { name: string; qty: number }> = {};
+      transactions
         .filter(t => t.type === TransactionType.STOCK_OUT && t.reason === StockOutReason.SALE)
-        .reduce((acc: any, t) => {
-          acc[t.productName] = (acc[t.productName] || 0) + t.quantity;
-          return acc;
-        }, {});
-      result.topSellers = Object.entries(salesByProd)
-        .sort((a: any, b: any) => b[1] - a[1])
-        .slice(0, 5);
+        .forEach(t => {
+          const key = t.productId || t.productName;
+          if (!salesByProd[key]) salesByProd[key] = { name: t.productName, qty: 0 };
+          salesByProd[key].qty += t.quantity;
+        });
+      result.topSellers = Object.values(salesByProd)
+        .sort((a, b) => b.qty - a.qty)
+        .slice(0, 5)
+        .map(entry => [entry.name, entry.qty] as [string, number]);
     }
 
     setGeneratedReport(result);
   };
 
   const renderInventoryStatus = () => {
+    // NOTE: costPrice * quantity is sensitive cost data. It is rendered only
+    // behind the isAdmin gate below (Total Value column). TODO: enforce this
+    // RBAC server-side as well so non-admin API responses never include cost.
     const totalWorth = products.reduce((acc, p) => acc + (p.costPrice * p.quantity), 0);
-    const lowStockCount = products.filter(p => p.quantity < p.reorderLevel).length;
+    // Canonical low-stock: excludes out-of-stock (kept separate above).
+    const lowStockCount = products.filter(isLowStock).length;
 
     return (
       <div className="space-y-6">
@@ -186,7 +221,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
             <p className="text-slate-500 dark:text-slate-400 text-sm">Low Stock Items</p>
             <h4 className="text-2xl font-bold mt-1 text-red-600 dark:text-red-400">{lowStockCount}</h4>
             <div className="mt-4 w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
-               <div className="bg-red-500 dark:bg-red-400 h-full" style={{ width: `${(lowStockCount/products.length)*100}%` }}></div>
+               <div className="bg-red-500 dark:bg-red-400 h-full" style={{ width: `${products.length === 0 ? 0 : (lowStockCount/products.length)*100}%` }}></div>
             </div>
           </div>
         </div>
@@ -219,9 +254,9 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                     <td className="px-6 py-4 dark:text-slate-300">₦{p.sellingPrice.toFixed(2)}</td>
                     {isAdmin && <td className="px-6 py-4 font-medium dark:text-slate-200">₦{(p.costPrice * p.quantity).toLocaleString()}</td>}
                     <td className="px-6 py-4">
-                      {p.quantity === 0 ? (
+                      {isOutOfStock(p) ? (
                         <span className="text-red-600 dark:text-red-400 font-bold">Out of Stock</span>
-                      ) : p.quantity < p.reorderLevel ? (
+                      ) : isLowStock(p) ? (
                         <span className="text-orange-600 dark:text-orange-400 font-semibold">Low Stock</span>
                       ) : (
                         <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Healthy</span>
@@ -362,8 +397,10 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
               Top Profit Contributors
             </h3>
             <div className="space-y-4">
-              {products.slice(0, 5).sort((a, b) => (b.sellingPrice - b.costPrice) - (a.sellingPrice - a.costPrice)).map(p => {
+              {/* FIX: sort the full list first, then slice the top 5 (was slice-then-sort). */}
+              {[...products].sort((a, b) => (b.sellingPrice - b.costPrice) - (a.sellingPrice - a.costPrice)).slice(0, 5).map(p => {
                 const pProfit = p.sellingPrice - p.costPrice;
+                const marginPct = !Number.isFinite(p.sellingPrice) || p.sellingPrice === 0 ? 0 : (pProfit / p.sellingPrice) * 100;
                 return (
                   <div key={p.id} className="space-y-1">
                     <div className="flex justify-between text-sm">
@@ -371,7 +408,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                       <span className="text-emerald-600 dark:text-emerald-400 font-bold">₦{pProfit.toFixed(2)} / unit</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                      <div className="bg-blue-900 dark:bg-blue-600 h-full" style={{ width: `${(pProfit / p.sellingPrice) * 100}%` }}></div>
+                      <div className="bg-blue-900 dark:bg-blue-600 h-full" style={{ width: `${Math.max(0, Math.min(100, marginPct))}%` }}></div>
                     </div>
                   </div>
                 );
@@ -381,8 +418,8 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
 
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center transition-colors">
              <PieChart size={100} className="text-blue-900/10 dark:text-blue-400/10 mb-4" />
-             <p className="text-slate-500 dark:text-slate-400 text-center text-sm">Category-wise profit distribution charts are currently generating based on the last 30 days of data.</p>
-             <button className="mt-4 px-4 py-2 bg-blue-900 dark:bg-blue-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-900/20 active:scale-95 transition-all">Refresh Analytics</button>
+              <p className="text-slate-500 dark:text-slate-400 text-center text-sm">Category-wise profit distribution charts are currently generating based on the last 30 days of data.</p>
+              <button disabled title="Analytics refresh is not yet implemented" className="mt-4 px-4 py-2 bg-blue-900 dark:bg-blue-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-900/20 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">Refresh Analytics</button>
           </div>
         </div>
       </div>
@@ -418,8 +455,8 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                 <div>
                   <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Analysis Depth</label>
                   <div className="grid grid-cols-2 gap-2">
-                    <button className="p-2 border border-blue-900 dark:border-blue-500 text-blue-900 dark:text-blue-400 rounded-lg text-xs font-bold bg-blue-50 dark:bg-blue-900/20 transition-all hover:scale-[1.03] active:scale-95">Summary</button>
-                    <button className="p-2 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-lg text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95">Deep Audit</button>
+                    <button disabled title="Summary depth is the currently supported mode" className="p-2 border border-blue-900 dark:border-blue-500 text-blue-900 dark:text-blue-400 rounded-lg text-xs font-bold bg-blue-50 dark:bg-blue-900/20 transition-all hover:scale-[1.03] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">Summary</button>
+                    <button disabled title="Deep Audit is not yet implemented" className="p-2 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 rounded-lg text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all hover:scale-[1.03] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">Deep Audit</button>
                   </div>
                 </div>
 
@@ -490,7 +527,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                     </h3>
                     <p className="text-slate-400 text-xs mt-1">Generated on {generatedReport.timestamp}</p>
                   </div>
-                  <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all hover:scale-[1.03] active:scale-95">
+                  <button disabled title="PDF export is not yet implemented" className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all hover:scale-[1.03] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
                     <Download size={16} /> Export PDF
                   </button>
                 </div>
@@ -530,7 +567,7 @@ const Reports: React.FC<ReportsProps> = ({ products, transactions, currentUser }
                             <div className="flex-1 bg-slate-100 dark:bg-slate-800 h-6 rounded-full overflow-hidden relative">
                               <div 
                                 className="h-full bg-blue-900 dark:bg-blue-600 opacity-80" 
-                                style={{ width: `${(item.value / generatedReport.total) * 100}%` }}
+                                style={{ width: `${!generatedReport.total ? 0 : (item.value / generatedReport.total) * 100}%` }}
                               ></div>
                               <div className="absolute inset-0 px-3 flex items-center justify-end text-[10px] font-black text-slate-700 dark:text-slate-300">
                                 ₦{(item.value / 1000).toFixed(1)}K

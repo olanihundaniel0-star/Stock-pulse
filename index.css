@@ -1,3 +1,16 @@
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: #f8fafc;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .float-idle-1 {
     animation: float1 4s ease-in-out infinite alternate;

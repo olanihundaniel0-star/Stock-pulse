@@ -32,6 +32,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -76,24 +77,49 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.name) newErrors.name = 'Product name is required';
-    if (!formData.sku) newErrors.sku = 'SKU is required';
-    if (formData.sku && !product && existingProducts.some(p => p.sku === formData.sku)) {
+    const name = formData.name?.trim() ?? '';
+    const sku = formData.sku?.trim() ?? '';
+    const supplierName = formData.supplierName?.trim() ?? '';
+    if (!name) newErrors.name = 'Product name is required';
+    if (!sku) newErrors.sku = 'SKU is required';
+    if (sku && !product && existingProducts.some(p => p.sku === sku)) {
       newErrors.sku = 'SKU must be unique';
     }
-    if (isAdmin && (formData.costPrice === undefined || formData.costPrice < 0)) newErrors.costPrice = 'Valid cost price is required';
-    if (formData.sellingPrice === undefined || formData.sellingPrice < (formData.costPrice || 0)) {
+    if (isAdmin && (!Number.isFinite(formData.costPrice as number) || (formData.costPrice as number) < 0)) newErrors.costPrice = 'Valid cost price is required';
+    if (!Number.isFinite(formData.sellingPrice as number) || (formData.sellingPrice as number) < 0) {
+      newErrors.sellingPrice = 'Valid selling price is required';
+    } else if (isAdmin && Number.isFinite(formData.costPrice as number) && (formData.sellingPrice as number) < (formData.costPrice as number)) {
       newErrors.sellingPrice = 'Selling price cannot be less than cost price';
     }
-    if (formData.quantity === undefined || formData.quantity < 0) newErrors.quantity = 'Quantity cannot be negative';
+    if (!Number.isFinite(formData.quantity as number) || (formData.quantity as number) < 0) newErrors.quantity = 'Valid quantity is required (cannot be negative)';
+    if (!Number.isFinite(formData.reorderLevel as number) || (formData.reorderLevel as number) < 0) newErrors.reorderLevel = 'Valid reorder level is required';
+    if (!supplierName) newErrors.supplierName = 'Supplier name is required';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleAction = (status: 'Published' | 'Draft') => {
-    if (validate()) {
-      onSave({ ...formData, status });
+    if (isSaving) return;
+    if (!validate()) {
+      return;
+    }
+    setIsSaving(true);
+    try {
+      onSave({
+        ...formData,
+        name: formData.name?.trim(),
+        sku: formData.sku?.trim(),
+        supplierName: formData.supplierName?.trim(),
+        status,
+      });
+    } catch (err) {
+      setErrors(prev => ({
+        ...prev,
+        submit: err instanceof Error ? err.message : 'Failed to save product. Please try again.',
+      }));
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -240,6 +266,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
                     value={formData.costPrice}
                     onChange={e => setFormData({ ...formData, costPrice: parseFloat(e.target.value) })}
                   />
+                  {errors.costPrice && <p className="text-red-500 text-xs mt-1 font-medium">{errors.costPrice}</p>}
                 </div>
               )}
               <div>
@@ -253,6 +280,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
                   value={formData.sellingPrice}
                   onChange={e => setFormData({ ...formData, sellingPrice: parseFloat(e.target.value) })}
                 />
+                {errors.sellingPrice && <p className="text-red-500 text-xs mt-1 font-medium">{errors.sellingPrice}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Stock Level*</label>
@@ -264,6 +292,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
                   value={formData.quantity}
                   onChange={e => setFormData({ ...formData, quantity: parseInt(e.target.value) })}
                 />
+                {errors.quantity && <p className="text-red-500 text-xs mt-1 font-medium">{errors.quantity}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Unit</label>
@@ -283,10 +312,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Reorder Level*</label>
                 <input
                   type="number"
-                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 outline-none text-slate-900 dark:text-white transition-colors"
+                  className={`w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 outline-none text-slate-900 dark:text-white transition-colors ${
+                    errors.reorderLevel ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
+                  }`}
                   value={formData.reorderLevel}
                   onChange={e => setFormData({ ...formData, reorderLevel: parseInt(e.target.value) })}
                 />
+                {errors.reorderLevel && <p className="text-red-500 text-xs mt-1 font-medium">{errors.reorderLevel}</p>}
               </div>
             </div>
           </div>
@@ -303,10 +335,13 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Supplier Name*</label>
                 <input
                   type="text"
-                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 outline-none text-slate-900 dark:text-white transition-colors"
+                  className={`w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-900 dark:focus:ring-blue-500 outline-none text-slate-900 dark:text-white transition-colors ${
+                    errors.supplierName ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
+                  }`}
                   value={formData.supplierName}
                   onChange={e => setFormData({ ...formData, supplierName: e.target.value })}
                 />
+                {errors.supplierName && <p className="text-red-500 text-xs mt-1 font-medium">{errors.supplierName}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Supplier Contact</label>
@@ -359,18 +394,21 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onClose, exi
             Cancel
           </button>
           <div className="flex items-center gap-3">
+            {errors.submit && <p className="text-red-500 text-xs font-medium mr-2">{errors.submit}</p>}
             <button
               onClick={() => handleAction('Draft')}
-              className="px-6 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold hover:bg-white dark:hover:bg-slate-700 transition-all flex items-center gap-2"
+              disabled={isSaving}
+              className="px-6 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold hover:bg-white dark:hover:bg-slate-700 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Save as Draft
             </button>
             <button
               onClick={() => handleAction('Published')}
-              className="px-8 py-2.5 bg-blue-900 dark:bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-800 dark:hover:bg-blue-500 flex items-center justify-center gap-2 shadow-xl shadow-blue-900/20 transition-all transform active:scale-95"
+              disabled={isSaving}
+              className="px-8 py-2.5 bg-blue-900 dark:bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-800 dark:hover:bg-blue-500 flex items-center justify-center gap-2 shadow-xl shadow-blue-900/20 transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save size={18} />
-              {product ? 'Update Inventory' : 'Publish Product'}
+              {isSaving ? 'Saving...' : (product ? 'Update Inventory' : 'Publish Product')}
             </button>
           </div>
         </div>

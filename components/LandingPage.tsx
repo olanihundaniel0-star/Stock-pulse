@@ -311,8 +311,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
 
   if (showAbout) {
     return (
-      <div className="min-h-screen bg-white font-['Inter'] selection:bg-blue-100 animate-in fade-in duration-500">
-        <nav className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between">
+      <div className="relative min-h-[100svh] w-full overflow-x-hidden bg-slate-50 font-['Inter'] selection:bg-blue-100 animate-in fade-in duration-500">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-24 left-[-8rem] h-72 w-72 rounded-full bg-blue-200/30 blur-3xl" />
+          <div className="absolute bottom-[-6rem] right-[-6rem] h-80 w-80 rounded-full bg-indigo-200/30 blur-3xl" />
+        </div>
+        <nav className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-6 sm:py-8 flex items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-xl text-slate-900 cursor-pointer" onClick={() => setShowAbout(false)}>
             <div className="w-6 h-6 bg-slate-900 rounded-sm flex items-center justify-center transform -rotate-12">
               <span className="text-white text-[10px] font-black italic">S</span>
@@ -324,7 +328,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           </button>
         </nav>
 
-        <section className="max-w-4xl mx-auto px-6 py-20 space-y-16">
+        <section className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-20 space-y-16">
           <div className="space-y-6 text-center">
             <BlurText
               text="The Future of Inventory Intelligence"
@@ -332,7 +336,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
               animateBy="words"
               direction="top"
               stepDuration={0.35}
-              className="text-5xl font-extrabold text-slate-900 tracking-tight justify-center"
+              className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight justify-center"
             />
             <p className="text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto">
               StockPulse was born out of a simple observation: retail growth is often throttled by manual, error-prone tracking. We built a system that feels like second nature.
@@ -382,8 +386,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   }
 
   return (
-    <div className="min-h-screen bg-white font-['Inter'] selection:bg-blue-100 overflow-x-hidden">
-      <style>{`
+        <div className="relative min-h-[100svh] w-full overflow-x-hidden bg-slate-50 font-['Inter'] selection:bg-blue-100">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-24 left-[-10rem] h-[32rem] w-[32rem] rounded-full bg-blue-200/30 blur-3xl" />
+        <div className="absolute right-[-10rem] top-40 h-[28rem] w-[28rem] rounded-full bg-indigo-200/25 blur-3xl" />
+        <div className="absolute bottom-[-8rem] left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-slate-200/50 blur-3xl" />
+      </div>
+      <div className="relative z-10 flex min-h-[100svh] w-full flex-col">
+        <style>{`
         @keyframes conveyorFlow {
           0% { transform: translateX(0); }
           100% { transform: translateX(80px); }
@@ -403,7 +413,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       `}</style>
 
       {/* Navbar */}
-      <nav className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between">
+      <nav className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-6 sm:py-8 flex items-center justify-between">
         <div className="flex items-center gap-2 font-bold text-xl text-slate-900">
           <div className="w-6 h-6 bg-slate-900 rounded-sm flex items-center justify-center transform -rotate-12">
             <span className="text-white text-[10px] font-black italic">S</span>
@@ -438,17 +448,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 pt-12 pb-32">
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
-          <div className="pt-12 space-y-10">
-            <div className="space-y-6">
+      <section className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 pt-8 sm:pt-12 lg:pt-16 pb-16 sm:pb-20 lg:pb-24">
+        <div className="grid lg:grid-cols-2 gap-12 xl:gap-16 items-center">
+          <div className="pt-6 lg:pt-12 space-y-10">
+            <div className="space-y-6 max-w-2xl">
               <BlurText
                 text="Ditch the Paper, Master Inventory."
                 delay={120}
                 animateBy="words"
                 direction="top"
                 stepDuration={0.4}
-                className="text-[72px] font-bold text-slate-900 leading-[1.1] tracking-tight"
+                className="text-5xl sm:text-6xl xl:text-[72px] font-bold text-slate-900 leading-[1.05] tracking-tight"
               />
               <BlurText
                 text="StockPulse is the all-in-one digital system for retailers and wholesalers. Stop manual counting and start gaining accurate, real-time insights into your stock levels and valuation in one powerful space."
@@ -456,7 +466,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                 animateBy="words"
                 direction="top"
                 stepDuration={0.3}
-                className="text-[17px] text-slate-500 leading-relaxed max-w-lg font-medium"
+                className="text-base sm:text-[17px] text-slate-500 leading-relaxed max-w-xl font-medium"
               />
             </div>
 
@@ -464,9 +474,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2, duration: 0.6 }}
-              className="flex flex-col gap-10"
+              className="flex flex-col gap-10 max-w-xl"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 <BorderGlow
                   borderRadius={999}
                   backgroundColor="#0f172a"
@@ -517,8 +527,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           </div>
 
           {/* Illustration */}
-          <div className="relative lg:pt-20">
-            <svg viewBox="0 0 600 500" className="w-full h-auto drop-shadow-sm select-none">
+          <div className="relative w-full max-w-3xl lg:pt-20 justify-self-center">
+            <svg viewBox="0 0 600 500" className="w-full h-auto max-h-[560px] drop-shadow-sm select-none">
               <ellipse cx="300" cy="420" rx="250" ry="40" fill="url(#grad1)" opacity="0.1" />
               <defs>
                 <radialGradient id="grad1" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
@@ -581,8 +591,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       </section>
 
       {/* Trust Section */}
-      <footer className="bg-slate-50 border-t border-slate-100 py-16">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
+      <footer className="mt-auto w-full border-t border-slate-100/80 bg-white/60 backdrop-blur-sm py-16">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
           <div className="text-[14px] font-bold tracking-widest text-slate-400">TRUSTED BY</div>
           <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
             <div className="text-xl font-black text-slate-800 tracking-tighter italic">LogisticsCo</div>
@@ -593,6 +603,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           </div>
         </div>
       </footer>
+    </div>
     </div>
   );
 };

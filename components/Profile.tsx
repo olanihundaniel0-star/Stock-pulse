@@ -90,9 +90,10 @@ const Profile: React.FC<ProfileProps> = ({
 
     setUploadError(null);
 
-    // Validate type
-    if (!file.type.startsWith('image/')) {
-      setUploadError('Please select an image file (JPEG, PNG, WebP, etc.).');
+    // Allowlist only safe raster types: block SVG (XSS risk) and other formats.
+    const ALLOWED_AVATAR_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      setUploadError('Please select a PNG, JPEG, or WebP image (SVG not allowed).');
       return;
     }
 
@@ -114,16 +115,11 @@ const Profile: React.FC<ProfileProps> = ({
       } = await supabase.auth.getSession();
       if (!session) throw new Error('Not authenticated. Please sign in again.');
 
-      // 2. Delete old file from storage if one exists
-      if (currentUser.avatarUrl) {
-        const oldPath = extractStoragePath(currentUser.avatarUrl);
-        if (oldPath) {
-          await supabase.storage.from('avatars').remove([oldPath]);
-        }
-      }
-
-      const ext = file.name.split('.').pop() ?? 'jpg';
-      const filePath = `${session.user.id}/${Date.now()}.${ext}`;
+      // 2. Upload the new file FIRST (before deleting the old one) so a
+      // failed upload never leaves the user without an avatar (no data loss).
+      const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
+      const safeExt = ['png', 'jpg', 'jpeg', 'webp'].includes(ext) ? ext : 'jpg';
+      const filePath = `${session.user.id}/${Date.now()}.${safeExt}`;
 
       // 3. Upload to Supabase Storage
       const { error: storageError } = await supabase.storage
@@ -142,7 +138,16 @@ const Profile: React.FC<ProfileProps> = ({
       // 5. Persist URL via backend
       await api.users.updateAvatar(publicUrl);
 
-      // 6. Notify parent so currentUser in App state is updated
+      // 6. Only now delete the old file (best-effort: warn but don't fail the upload).
+      const oldPath = currentUser.avatarUrl ? extractStoragePath(currentUser.avatarUrl) : null;
+      if (oldPath && oldPath !== filePath) {
+        const { error: removeError } = await supabase.storage.from('avatars').remove([oldPath]);
+        if (removeError) {
+          console.warn('Failed to delete old avatar:', removeError.message);
+        }
+      }
+
+      // 7. Notify parent so currentUser in App state is updated
       onAvatarUpdate(publicUrl);
     } catch (err: unknown) {
       const message =
@@ -162,7 +167,8 @@ const Profile: React.FC<ProfileProps> = ({
       if (currentUser.avatarUrl) {
         const path = extractStoragePath(currentUser.avatarUrl);
         if (path) {
-          await supabase.storage.from('avatars').remove([path]);
+          const { error: removeError } = await supabase.storage.from('avatars').remove([path]);
+          if (removeError) throw new Error(removeError.message);
         }
       }
       await api.users.removeAvatar();
@@ -248,7 +254,7 @@ const Profile: React.FC<ProfileProps> = ({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/webp"
               className="hidden"
               onChange={(e) => void handleFileChange(e)}
               disabled={uploading}

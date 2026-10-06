@@ -31,9 +31,12 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUser, onFilterLowStock, onViewTransactions }) => {
-  const isAdmin = currentUser.role === UserRole.ADMIN;
+  const isAdmin = currentUser?.role === UserRole.ADMIN;
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [statsError, setStatsError] = useState<string | null>(null);
+  // Range selector state (controlled). Only 30d has full backend support;
+  // 7d is derived client-side by slicing the trailing 7 points.
+  const [range, setRange] = useState<'30d' | '7d'>('30d');
 
   useEffect(() => {
     let cancelled = false;
@@ -57,9 +60,19 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
     };
   }, [products, transactions]);
 
+  // NOTE: toISOString() yields a UTC calendar date, so "today" follows UTC
+  // day boundaries rather than the viewer's local timezone. Kept deliberately
+  // so every client aggregates the same bucket; use local YYYY-MM-DD only if
+  // per-user local-day reporting is desired.
+  const getDateKey = (value: unknown): string | null => {
+    if (typeof value !== 'string' || value.trim() === '') return null;
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return null;
+    return value.split('T')[0] ?? null;
+  };
   const todayUtc = new Date().toISOString().split('T')[0];
   const fallbackTodayOut = transactions.filter(
-    (t) => t.date.split('T')[0] === todayUtc && t.type === TransactionType.STOCK_OUT,
+    (t) => getDateKey(t.date) === todayUtc && t.type === TransactionType.STOCK_OUT,
   );
 
   const totalItems = stats?.totalItems ?? products.length;
@@ -82,7 +95,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
-      const dayTransactions = transactions.filter((t) => t.date.split('T')[0] === dateStr);
+      const dayTransactions = transactions.filter((t) => getDateKey(t.date) === dateStr);
       data.push({
         name: date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
         sales: dayTransactions
@@ -97,6 +110,8 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
     stats?.chart && stats.chart.length > 0
       ? stats.chart.map((p) => ({ name: p.label, sales: p.sales }))
       : fallbackChart;
+
+  const visibleChart = range === '7d' ? chartData.slice(-7) : chartData;
 
   return (
     <div className="space-y-6">
@@ -171,14 +186,14 @@ const Dashboard: React.FC<DashboardProps> = ({ products, transactions, currentUs
               <TrendingUp size={20} className="text-blue-900 dark:text-blue-400" />
               Stock Movement Trends
             </h3>
-            <select className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-1 text-sm outline-none text-slate-900 dark:text-white transition-colors">
+            <select value={range === '30d' ? 'Last 30 Days' : 'Last 7 Days'} onChange={(e) => setRange(e.target.value === 'Last 7 Days' ? '7d' : '30d')} className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-1 text-sm outline-none text-slate-900 dark:text-white transition-colors">
               <option>Last 30 Days</option>
               <option>Last 7 Days</option>
             </select>
           </div>
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
+              <AreaChart data={visibleChart}>
                 <defs>
                   <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#1e3a8a" stopOpacity={0.1}/>
