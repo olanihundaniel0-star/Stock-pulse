@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, type ReactNode } from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, ShieldCheck, Zap, BarChart3, Globe, Package, Users, FileText, ChevronDown } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Zap, BarChart3, Globe, Package, Users, FileText, ChevronDown, Check } from 'lucide-react';
 import Changelog from './Changelog';
 import Pricing from './Pricing';
 import Status from './Status';
@@ -380,7 +380,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
               <p className="text-slate-500">Every sale, every restock, and every adjustment is reflected across your entire organization instantly. No more double-counts.</p>
             </div>
             <div className="space-y-4 p-8 bg-slate-50 rounded-3xl border border-slate-100">
-              <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-4">
                 <ShieldCheck size={24} />
               </div>
               <h3 className="text-xl font-bold text-slate-900">Role-Based Security</h3>
@@ -537,17 +537,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                 </BorderGlow>
               </div>
 
-              <div className="pt-8 space-y-3 border-t border-slate-100 max-w-sm">
-                <div className="flex flex-wrap items-center gap-2">
-                  {['Free to start', 'No credit card required', 'Real time sync'].map((pill) => (
-                    <span key={pill} className="inline-flex items-center gap-2 text-[13px] font-semibold text-slate-900 bg-white border border-slate-200 rounded-full px-4 py-2 shadow-sm">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
-                      {pill}
+              <div className="pt-8 border-t border-slate-200/80 space-y-3 w-full max-w-xl">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] font-medium text-slate-600">
+                  {['Free to start', 'No credit card required', 'Real-time sync'].map((perk) => (
+                    <span key={perk} className="inline-flex items-center gap-2">
+                      <Check size={14} className="text-blue-600 flex-shrink-0" strokeWidth={2.5} />
+                      <span>{perk}</span>
                     </span>
                   ))}
                 </div>
-                <p className="text-slate-500 text-[13px] leading-relaxed">
-                  Built for retailers and wholesalers who want accurate stock levels, valuations, and audit trails in one place. <a href="#" onClick={(e) => { e.preventDefault(); setShowAbout(true); }} className="text-slate-900 underline underline-offset-4 decoration-slate-300 font-bold">How it works →</a>
+
+                <p className="text-[13px] text-slate-500 leading-relaxed max-w-lg">
+                  Built for retailers and wholesalers who want accurate stock levels, valuations, and audit trails in one place.
                 </p>
               </div>
             </motion.div>
@@ -618,14 +619,21 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       </section>
 
       {/* Audience strip */}
-      <section className="w-full border-t border-slate-100/80 bg-white/60 backdrop-blur-sm py-12">
-        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-[13px] font-bold tracking-widest text-slate-400">BUILT FOR RETAIL & WHOLESALE TEAMS</div>
-          <div className="flex flex-wrap justify-center items-center gap-2">
-            {['SKU tracking', 'Stock in and out', 'Low stock alerts', 'Profit reports', 'Role based access', 'CSV export'].map((pill) => (
-              <span key={pill} className="inline-flex items-center gap-2 text-[13px] font-semibold text-slate-900 bg-white border border-slate-200 rounded-full px-4 py-2 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
-                {pill}
+      <section className="w-full border-y border-slate-200/70 bg-white/50 backdrop-blur-xs py-6">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Built for retail &amp; wholesale teams
+            </span>
+          </div>
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-2">
+            {['SKU tracking', 'Stock in and out', 'Low stock alerts', 'Profit reports', 'Role-based access', 'CSV export'].map((item) => (
+              <span
+                key={item}
+                className="inline-flex items-center text-xs font-medium text-slate-600 bg-white border border-slate-200/80 rounded-full px-3 py-1 shadow-2xs"
+              >
+                {item}
               </span>
             ))}
           </div>

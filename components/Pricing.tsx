@@ -49,7 +49,7 @@ const Pricing: React.FC<PricingProps> = ({ onBack, onLogin }) => {
                 'Dark mode',
               ].map((f) => (
                 <li key={f} className="flex items-center gap-3 text-slate-700 text-[15px]">
-                  <Check size={16} className="text-emerald-500 flex-shrink-0" />
+                  <Check size={16} className="text-blue-500 flex-shrink-0" />
                   {f}
                 </li>
               ))}
@@ -87,7 +87,7 @@ const Pricing: React.FC<PricingProps> = ({ onBack, onLogin }) => {
                 'Everything in Starter',
               ].map((f) => (
                 <li key={f} className="flex items-center gap-3 text-slate-700 text-[15px]">
-                  <Check size={16} className="text-emerald-500 flex-shrink-0" />
+                  <Check size={16} className="text-blue-500 flex-shrink-0" />
                   {f}
                 </li>
               ))}
