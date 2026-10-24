@@ -18,6 +18,10 @@ dist-ssr
 /.env.*
 /Stock-pulse-backend/.env*
 
+# Agent/skill directories (local only)
+.claude/
+agent/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
