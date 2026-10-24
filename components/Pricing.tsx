@@ -69,9 +69,12 @@ const Pricing: React.FC<PricingProps> = ({ onBack, onLogin }) => {
             </div>
             <div className="space-y-2">
               <h2 className="text-xl font-bold text-slate-900">Pro</h2>
-              <div className="flex items-baseline gap-2">
+              <div className="flex flex-wrap items-baseline gap-2.5">
                 <span className="text-5xl font-black text-slate-900">₦20,000</span>
                 <span className="text-slate-500 font-medium">/month</span>
+                <span className="inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 border border-blue-200">
+                  Coming soon
+                </span>
               </div>
               <p className="text-slate-500 text-sm">For growing businesses that need more power.</p>
             </div>

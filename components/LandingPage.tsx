@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, type ReactNode } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, ShieldCheck, Zap, BarChart3, Globe, Package, Users, FileText, ChevronDown, Check } from 'lucide-react';
-import Changelog from './Changelog';
 import Pricing from './Pricing';
 import Status from './Status';
 
@@ -300,7 +299,7 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
-  const [subPage, setSubPage] = useState<'about' | 'changelog' | 'pricing' | 'status' | null>(null);
+  const [subPage, setSubPage] = useState<'about' | 'pricing' | 'status' | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const faqs = [
@@ -330,7 +329,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
     },
   ];
 
-  if (subPage === 'changelog') return <Changelog onBack={() => setSubPage(null)} />;
   if (subPage === 'pricing') return <Pricing onBack={() => setSubPage(null)} onLogin={onLogin} />;
   if (subPage === 'status') return <Status onBack={() => setSubPage(null)} />;
 
@@ -351,9 +349,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             </div>
             <span className="tracking-tight">StockPulse</span>
           </div>
-          <button onClick={() => setShowAbout(false)} className="text-[14px] font-semibold text-slate-900 hover:text-blue-700 transition-colors flex items-center gap-2 hover:scale-[1.03] active:scale-95">
+          <motion.button
+            whileHover={{ x: -3 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            onClick={() => setShowAbout(false)}
+            className="text-[14px] font-semibold text-slate-900 hover:text-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
+          >
             ← Back to Home
-          </button>
+          </motion.button>
         </nav>
 
         <section className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-20 space-y-16">
@@ -404,9 +408,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
 
           <div className="bg-slate-900 rounded-[40px] p-12 text-center text-white space-y-8">
             <h3 className="text-3xl font-bold">Ready to modernize your warehouse?</h3>
-            <button onClick={onLogin} className="bg-white text-slate-900 font-bold px-10 py-4 rounded-full text-lg hover:bg-slate-100 transition-all inline-flex items-center gap-2 shadow-2xl hover:scale-105 active:scale-95">
-              Get Started <ArrowRight size={20} />
-            </button>
+            <motion.button
+              whileHover={{ scale: 1.03, y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              onClick={onLogin}
+              className="group bg-white text-slate-900 font-bold px-10 py-4 rounded-full text-lg hover:bg-slate-100 transition-all inline-flex items-center gap-2 shadow-2xl cursor-pointer"
+            >
+              Get Started <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
+            </motion.button>
           </div>
         </section>
       </div>
@@ -451,7 +461,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
         
         <div className="hidden lg:flex items-center gap-10 text-[14px] text-slate-500 font-medium">
           <a href="#" className="hover:text-slate-900 transition-colors" onClick={(e) => { e.preventDefault(); setSubPage('about'); }}>Features</a>
-          <a href="#" className="hover:text-slate-900 transition-colors" onClick={(e) => { e.preventDefault(); setSubPage('changelog'); }}>Changelog</a>
           <a href="#" className="hover:text-slate-900 transition-colors" onClick={(e) => { e.preventDefault(); setSubPage('pricing'); }}>Pricing</a>
           <a href="#" className="hover:text-slate-900 transition-colors" onClick={(e) => { e.preventDefault(); setSubPage('status'); }}>Status</a>
         </div>
@@ -468,9 +477,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             animated={false}
             className="rounded-full"
           >
-            <button onClick={onLogin} className="bg-slate-900 text-white text-[14px] font-semibold px-5 py-2.5 rounded-full hover:bg-slate-800 flex items-center gap-2 group transition-all active:scale-95">
-              Log-in <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              onClick={onLogin}
+              className="bg-slate-900 text-white text-[14px] font-semibold px-5 py-2.5 rounded-full hover:bg-slate-800 flex items-center gap-2 group transition-colors cursor-pointer"
+            >
+              Log-in <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-200" />
+            </motion.button>
           </BorderGlow>
         </div>
       </nav>
@@ -516,9 +531,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   animated={true}
                   className="rounded-full"
                 >
-                  <button onClick={onLogin} className="bg-slate-900 text-white font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-800 transition-all flex items-center gap-2 shadow-xl shadow-slate-200 active:scale-95">
-                    Get Started <ArrowRight size={18} />
-                  </button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                    onClick={onLogin}
+                    className="group bg-slate-900 text-white font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-800 transition-colors flex items-center gap-2 shadow-xl shadow-slate-200 cursor-pointer"
+                  >
+                    Get Started <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-200" />
+                  </motion.button>
                 </BorderGlow>
                 <BorderGlow
                   borderRadius={999}
@@ -531,9 +552,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   animated={true}
                   className="rounded-full"
                 >
-                  <button onClick={() => setShowAbout(true)} className="bg-white border border-slate-200 text-slate-600 font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-50 transition-colors active:scale-95">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                    onClick={() => setShowAbout(true)}
+                    className="bg-white border border-slate-200 text-slate-600 font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer"
+                  >
                     Learn About Us
-                  </button>
+                  </motion.button>
                 </BorderGlow>
               </div>
 
@@ -656,13 +683,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             { icon: <FileText size={22} />, title: 'Reports and audit trail', body: 'Movement history, profit analysis, and one-click CSV exports. Every transaction keeps its who, what, and why.' },
             { icon: <Users size={22} />, title: 'Teams and companies', body: 'Onboard your company, invite users, manage roles and statuses, and keep each workspace\u2019s data isolated.' },
           ].map((f) => (
-            <div key={f.title} className="space-y-4 p-8 bg-white rounded-3xl border border-slate-100 shadow-sm">
-              <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center mb-2">
+            <motion.div
+              key={f.title}
+              whileHover={{ y: -6, transition: { duration: 0.2, ease: 'easeOut' } }}
+              className="group space-y-4 p-8 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/60 hover:border-slate-200 transition-all duration-300"
+            >
+              <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center mb-2 group-hover:bg-blue-600 group-hover:scale-105 transition-all duration-300">
                 {f.icon}
               </div>
-              <h3 className="text-lg font-bold text-slate-900">{f.title}</h3>
+              <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-900 transition-colors">{f.title}</h3>
               <p className="text-slate-500 text-[14px] leading-relaxed">{f.body}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -680,16 +711,26 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
               { step: '2', title: 'Add products & stock', body: 'Import your catalog with SKUs, prices, quantities, and reorder levels. Record an opening stock-in.' },
               { step: '3', title: 'Sell, track, restock', body: 'Log every stock-out with a reason, watch alerts fire before shelves go empty, and export reports anytime.' },
             ].map((s) => (
-              <div key={s.step} className="rounded-3xl border border-white/10 bg-white/5 p-8 space-y-4">
-                <div className="w-10 h-10 rounded-full bg-white text-slate-900 font-black flex items-center justify-center">{s.step}</div>
+              <motion.div
+                key={s.step}
+                whileHover={{ y: -6, transition: { duration: 0.2, ease: 'easeOut' } }}
+                className="group rounded-3xl border border-white/10 bg-white/5 p-8 space-y-4 hover:border-white/20 hover:bg-white/[0.08] hover:shadow-2xl hover:shadow-black/30 transition-all duration-300"
+              >
+                <div className="w-10 h-10 rounded-full bg-white text-slate-900 font-black flex items-center justify-center group-hover:scale-110 transition-transform duration-200">{s.step}</div>
                 <h3 className="text-lg font-bold">{s.title}</h3>
                 <p className="text-slate-300 text-[14px] leading-relaxed">{s.body}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
-          <button onClick={onLogin} className="mt-10 bg-white text-slate-900 font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-100 transition-all inline-flex items-center gap-2 active:scale-95">
-            Get Started <ArrowRight size={18} />
-          </button>
+          <motion.button
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            onClick={onLogin}
+            className="group mt-10 bg-white text-slate-900 font-bold px-8 py-4 rounded-full text-[15px] hover:bg-slate-100 hover:shadow-xl transition-all inline-flex items-center gap-2 cursor-pointer shadow-lg"
+          >
+            Get Started <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-200" />
+          </motion.button>
         </div>
       </section>
 
@@ -704,20 +745,68 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           {faqs.map((item, i) => {
             const open = openFaq === i;
             return (
-              <div key={item.q} className={`rounded-2xl border transition-colors ${open ? 'border-slate-900 bg-white shadow-sm' : 'border-slate-200 bg-white'}`}>
+              <motion.div
+                key={item.q}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.2 }}
+                className={`rounded-2xl border transition-colors overflow-hidden ${
+                  open ? 'border-slate-900 bg-white shadow-sm' : 'border-slate-200 bg-white hover:border-slate-300'
+                }`}
+              >
                 <button
                   type="button"
                   onClick={() => setOpenFaq(open ? null : i)}
                   aria-expanded={open}
-                  className="w-full flex items-center justify-between gap-4 text-left px-6 py-5"
+                  className="w-full flex items-center justify-between gap-4 text-left px-6 py-5 cursor-pointer select-none"
                 >
                   <span className="font-bold text-slate-900 text-[15px]">{item.q}</span>
-                  <ChevronDown size={18} className={`flex-shrink-0 text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+                  <motion.div
+                    animate={{ rotate: open ? 180 : 0 }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    className="flex-shrink-0 text-slate-500"
+                  >
+                    <ChevronDown size={18} />
+                  </motion.div>
                 </button>
-                {open && (
-                  <p className="px-6 pb-6 text-slate-500 text-[14px] leading-relaxed">{item.a}</p>
-                )}
-              </div>
+                <AnimatePresence initial={false}>
+                  {open && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{
+                        height: 'auto',
+                        opacity: 1,
+                        transition: {
+                          height: { duration: 0.35, ease: [0.04, 0.62, 0.23, 0.98] },
+                          opacity: { duration: 0.25, delay: 0.08 },
+                        },
+                      }}
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                        transition: {
+                          height: { duration: 0.25, ease: 'easeInOut' },
+                          opacity: { duration: 0.15 },
+                        },
+                      }}
+                      className="overflow-hidden"
+                    >
+                      <motion.p
+                        initial={{ y: -6, opacity: 0 }}
+                        animate={{
+                          y: 0,
+                          opacity: 1,
+                          transition: { duration: 0.25, delay: 0.1, ease: 'easeOut' },
+                        }}
+                        exit={{ y: -6, opacity: 0, transition: { duration: 0.15 } }}
+                        className="px-6 pb-6 text-slate-500 text-[14px] leading-relaxed"
+                      >
+                        {item.a}
+                      </motion.p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
         </div>
@@ -729,12 +818,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Ready to ditch the paper?</h2>
           <p className="text-slate-300 max-w-xl mx-auto text-[15px]">Join free today. Add your first products in minutes and see every count, value, and movement in one place.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button onClick={onLogin} className="bg-white text-slate-900 font-bold px-10 py-4 rounded-full text-[15px] hover:bg-slate-100 transition-all inline-flex items-center gap-2 active:scale-95">
-              Get Started Free <ArrowRight size={18} />
-            </button>
-            <button onClick={() => setSubPage('pricing')} className="text-white font-semibold px-8 py-4 rounded-full text-[15px] border border-white/20 hover:bg-white/10 transition-all active:scale-95">
+            <motion.button
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              onClick={onLogin}
+              className="group bg-white text-slate-900 font-bold px-10 py-4 rounded-full text-[15px] hover:bg-slate-100 transition-all inline-flex items-center gap-2 cursor-pointer shadow-xl hover:shadow-2xl"
+            >
+              Get Started Free <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-200" />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              onClick={() => setSubPage('pricing')}
+              className="text-white font-semibold px-8 py-4 rounded-full text-[15px] border border-white/20 hover:bg-white/10 transition-all cursor-pointer"
+            >
               View Pricing
-            </button>
+            </motion.button>
           </div>
         </div>
       </section>
@@ -755,7 +856,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             <p className="text-[12px] font-bold tracking-widest text-slate-400">PRODUCT</p>
             <button onClick={() => setSubPage('about')} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Features</button>
             <button onClick={() => setSubPage('pricing')} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Pricing</button>
-            <button onClick={() => setSubPage('changelog')} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Changelog</button>
             <button onClick={() => setSubPage('status')} className="block text-slate-600 hover:text-slate-900 text-[14px] font-medium transition-colors">Status</button>
           </div>
           <div className="space-y-3">
